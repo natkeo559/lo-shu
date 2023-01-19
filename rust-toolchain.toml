@@ -1,0 +1,5 @@
+#   std::simd is a nightly-only experimental API
+
+[toolchain]
+channel = "nightly"
+
