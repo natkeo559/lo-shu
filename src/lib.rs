@@ -2,7 +2,4 @@
 
 pub mod order_three;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-}
+pub use order_three::*;
