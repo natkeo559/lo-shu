@@ -1,13 +1,11 @@
 use rayon::prelude::*;
 use std::simd::*;
 
-pub fn iterate_perms() {
-    let x = (0..362890)
+pub fn iterate_perms() -> Vec<[u8; 9]> {
+    (0..362890)
         .into_par_iter()
         .filter_map(|k| check(kth_perm(k)))
-        .collect::<Vec<_>>();
-
-    println!("{:?}", x);
+        .collect::<Vec<_>>()
 }
 
 pub fn kth_perm(k: i32) -> [u8; 9] {
