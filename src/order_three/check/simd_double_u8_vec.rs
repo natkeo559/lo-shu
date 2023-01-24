@@ -79,6 +79,6 @@ pub fn simd_double_u8_vec(v: Vec<u8>) -> Option<Vec<u8>> {
         [_, _, _, _, _, _, _, _, true, true, true, true, true, true, true, true] => {
             Some(v[9..16].to_owned())
         }
-        _ => None
+        _ => None,
     }
 }

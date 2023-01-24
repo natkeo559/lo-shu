@@ -1,6 +1,5 @@
-use rayon::prelude::*;
 use crate::check::simd_single_u8_arr::simd_single_u8_arr;
-
+use rayon::prelude::*;
 
 pub fn iterate_perms() -> Vec<[u8; 9]> {
     (0..362890)

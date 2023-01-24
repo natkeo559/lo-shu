@@ -1,5 +1,5 @@
-use itertools::Itertools;
 use crate::check::simd_double_u8_vec::simd_double_u8_vec;
+use itertools::Itertools;
 
 pub fn iterate_perms() -> Vec<Vec<u8>> {
     (1u8..10)
