@@ -1,21 +1,6 @@
-use itertools::Itertools;
 use std::simd::*;
 
-fn main() {
-    iterate_perms();
-}
-
-pub fn iterate_perms() -> Vec<Vec<u8>> {
-    (1u8..10)
-        .permutations(9)
-        .chunks(2)
-        .into_iter()
-        .filter_map(|chunk| check(chunk.flatten().collect::<Vec<u8>>()))
-        .collect::<Vec<_>>()
-}
-
-// #[inline(never)]
-pub fn check(v: Vec<u8>) -> Option<Vec<u8>> {
+pub fn simd_double_u8_vec(v: Vec<u8>) -> Option<Vec<u8>> {
     const VSUM: Simd<u8, 16_usize> = u8x16::from_array([
         15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
     ]);
@@ -94,6 +79,6 @@ pub fn check(v: Vec<u8>) -> Option<Vec<u8>> {
         [_, _, _, _, _, _, _, _, true, true, true, true, true, true, true, true] => {
             Some(v[9..16].to_owned())
         }
-        _ => None,
+        _ => None
     }
 }

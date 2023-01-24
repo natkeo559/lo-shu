@@ -3,3 +3,4 @@
 pub mod order_three;
 
 pub use order_three::*;
+pub use check::*;
