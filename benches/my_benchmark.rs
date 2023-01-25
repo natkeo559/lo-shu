@@ -3,7 +3,7 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 use lo_shu::order_three::permute::*;
 
-pub fn criterion_benchmark(c: &mut Criterion) {
+pub fn simd_u8_iterative_bench(c: &mut Criterion) {
     c.bench_function("simd_threaded_kth_u8", |b| {
         b.iter(|| simd_threaded_kth_u8::iterate_perms())
     });
@@ -15,5 +15,5 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, criterion_benchmark);
+criterion_group!(benches, simd_u8_iterative_bench);
 criterion_main!(benches);
