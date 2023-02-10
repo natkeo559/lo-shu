@@ -21,3 +21,7 @@ harness = false
 [[bench]]
 name = "iai_bench"
 harness = false
+
+[[bench]]
+name = "lib_bench"
+harness = false
