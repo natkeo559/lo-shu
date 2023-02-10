@@ -11,7 +11,17 @@ rayon = "1.6.1"
 
 [dev-dependencies]
 criterion = "0.4.0"
+iai = "0.1.1"
+
 
 [[bench]]
 name = "my_benchmark"
+harness = false
+
+[[bench]]
+name = "iai_bench"
+harness = false
+
+[[bench]]
+name = "lib_bench"
 harness = false

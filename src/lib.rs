@@ -1,6 +1,5 @@
 #![feature(portable_simd)]
 
-pub mod order_three;
+pub mod core;
 
-pub use check::*;
-pub use order_three::*;
+pub use crate::core::*;
