@@ -3,8 +3,6 @@ name = "lo-shu"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 itertools = "0.10.5"
 rayon = "1.6.1"
@@ -15,4 +13,8 @@ iai = "0.1.1"
 
 [[bench]]
 name = "lib_bench"
+harness = false
+
+[[bench]]
+name = "perf_function"
 harness = false

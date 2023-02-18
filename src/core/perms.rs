@@ -1,39 +1,80 @@
 use crate::Square;
 
-pub trait KthPerm<T> {
-    ///In-place constructor for permutations of squares given 'k' from the lexicographically ordered set of permutations.
-    fn kth_perm(&mut self, k: i32) -> Self;
-}
+macro_rules! impl_int_perms {
+    ($t: ty) => {
+        impl Square<$t> {
+            ///
+            /// Based on:
+            /// https://stackoverflow.com/questions/31216097/given-n-and-k-return-the-kth-permutation-sequence
+            /// 
+            pub fn kth_perm(k: i32) -> Square<$t> {
+                let mut n = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+                let mut indeces = [0; 9];
 
-impl<T: Clone + Copy> KthPerm<T> for Square<T> {
-    fn kth_perm(&mut self, k: i32) -> Self {
-        /*
-        Based on:
-        https://stackoverflow.com/questions/31216097/given-n-and-k-return-the-kth-permutation-sequence
-        */
-
-        let mut indeces = [0; 9];
-
-        let mut divisor = 1;
-        for place in 1..10 {
-            if k / divisor == 0 {
-                break;
-            }
-            indeces[9 - place] = (k / divisor) % place as i32;
-            divisor *= place as i32;
-        }
-        for (i, index) in indeces.iter().enumerate() {
-            //30% IMPROVEMENT!
-            if index != &(i as i32) {
-                let temp = self.array[*index as usize];
-                let mut j = *index as usize;
-                while j > i {
-                    self.array[j] = self.array[j - 1];
-                    j -= 1;
+                let mut divisor = 1;
+                for place in 1..10 {
+                    if k / divisor == 0 {
+                        break;
+                    }
+                    indeces[9 - place] = (k / divisor) % place as i32;
+                    divisor *= place as i32;
                 }
-                self.array[i] = temp;
+                for i in 0..9 {
+                    let index = indeces[i] as usize + i;
+                    if index != i {
+                        let temp = n[index];
+                        let mut j = index;
+                        while j > i {
+                            n[j] = n[j - 1];
+                            j -= 1;
+                        }
+                        n[i] = temp;
+                    }
+                }
+                Square { array: n }
             }
         }
-        Self { array: self.array }
-    }
+    };
 }
+
+macro_rules! impl_float_perms {
+    ($t: ty) => {
+        impl Square<$t> {
+            ///
+            /// Based on:
+            /// https://stackoverflow.com/questions/31216097/given-n-and-k-return-the-kth-permutation-sequence
+            /// 
+            pub fn kth_perm(k: i32) -> Square<$t> {
+                let mut n = [1., 2., 3., 4., 5., 6., 7., 8., 9.];
+                let mut indeces = [0; 9];
+
+                let mut divisor = 1;
+                for place in 1..10 {
+                    if k / divisor == 0 {
+                        break;
+                    }
+                    indeces[9 - place] = (k / divisor) % place as i32;
+                    divisor *= place as i32;
+                }
+                for i in 0..9 {
+                    let index = indeces[i] as usize + i;
+                    if index != i {
+                        let temp = n[index];
+                        let mut j = index;
+                        while j > i {
+                            n[j] = n[j - 1];
+                            j -= 1;
+                        }
+                        n[i] = temp;
+                    }
+                }
+                Square { array: n }
+            }
+        }
+    };
+}
+
+impl_int_perms!(u8);
+impl_int_perms!(u16);
+impl_float_perms!(f32);
+impl_float_perms!(f64);
