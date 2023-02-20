@@ -1,16 +1,16 @@
 use rayon::prelude::*;
 
-use crate::Square;
+use crate::Square3;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Permutation<T: Copy + Clone> {
-    pub square: Square<T>,
+    pub square: Square3<T>,
     pub index: usize,
 }
 
 macro_rules! impl_int_perms {
     ($t: ty) => {
-        impl Square<$t> {
+        impl Square3<$t> {
             /// Constructor for a permutation given k, the index of the permutation from its lexcographically ordered permutation group, Sym(M).
             ///
             /// Based on:
@@ -41,7 +41,7 @@ macro_rules! impl_int_perms {
                     }
                 }
                 Permutation {
-                    square: Square { array: n },
+                    square: Square3 { array: n },
                     index: k as usize,
                 }
             }
@@ -51,7 +51,7 @@ macro_rules! impl_int_perms {
 
 macro_rules! impl_float_perms {
     ($t: ty) => {
-        impl Square<$t> {
+        impl Square3<$t> {
             /// Constructor for a permutation given k, the index of the permutation from its lexcographically ordered permutation group, Sym(M).
             //
             /// Based on:
@@ -82,7 +82,7 @@ macro_rules! impl_float_perms {
                     }
                 }
                 Permutation {
-                    square: Square { array: n },
+                    square: Square3 { array: n },
                     index: k as usize,
                 }
             }
@@ -92,8 +92,8 @@ macro_rules! impl_float_perms {
 
 macro_rules! impl_perm_range {
     ($t: ty) => {
-        impl Square<$t> {
-            /// Produces an iterator of permutations given a start and end index of the desired permutations from its lexcographically ordered permutation group, Sym(M)
+        impl Square3<$t> {
+            /// Produces an iterator of permutations given the start and end index of the desired permutations from its lexcographically ordered permutation group, Sym(M)
             ///
             pub fn permutation_range(
                 start: usize,
@@ -101,7 +101,7 @@ macro_rules! impl_perm_range {
             ) -> impl ParallelIterator<Item = Permutation<$t>> {
                 (start..stop)
                     .into_par_iter()
-                    .map(|i| Square::<$t>::kth_perm(i as i32))
+                    .map(|i| Square3::<$t>::kth_perm(i as i32))
             }
         }
     };
@@ -117,3 +117,31 @@ impl_perm_range!(u8);
 impl_perm_range!(u16);
 impl_perm_range!(f32);
 impl_perm_range!(f64);
+
+#[cfg(test)]
+mod test_perms3 {
+    use super::*;
+
+    #[test]
+    fn test_kth() {
+        let a: Permutation<u8> = Square3::<u8>::kth_perm(362879);
+        let a_result = Permutation {
+            square: Square3 {
+                array: [9u8, 8, 7, 6, 5, 4, 3, 2, 1],
+            },
+            index: 362879,
+        };
+
+        assert_eq!(a, a_result);
+
+        let a: Permutation<f32> = Square3::<f32>::kth_perm(362879);
+        let a_result = Permutation {
+            square: Square3 {
+                array: [9., 8., 7., 6., 5., 4., 3., 2., 1.],
+            },
+            index: 362879,
+        };
+
+        assert_eq!(a, a_result);
+    }
+}
