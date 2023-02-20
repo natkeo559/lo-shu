@@ -4,4 +4,4 @@ mod square;
 
 pub use check::Check;
 pub use perms::Permutation;
-pub use square::Square;
+pub use square::Square3;
