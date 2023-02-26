@@ -2,14 +2,16 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{Check, OrderThree, Permutation};
+use lo_shu::{Check, OrderThree, Params, Permutation};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use std::time::Duration;
 
 fn solve_order_three_linear() {
-    let b = (0..362879)
+    let b = (0..{ OrderThree::PERMUTATIONS - 1 })
         .into_par_iter()
-        .filter_map(|k| unsafe { Permutation::<u8, OrderThree>::kth(k).unsafe_check_strict() })
+        .filter_map(|k| unsafe {
+            Permutation::<u8, { OrderThree::ELEMENTS }>::kth(k).unsafe_check_strict()
+        })
         .collect::<Vec<_>>();
 
     assert!(b.len() == 8)
@@ -27,7 +29,7 @@ pub fn order_three_bench(c: &mut Criterion) {
 
     let i = black_box(100);
     group.bench_with_input("order_three_kth_perm", &i, |b, i| {
-        b.iter(|| Permutation::<u8, OrderThree>::kth(*i))
+        b.iter(|| Permutation::<u8, { OrderThree::ELEMENTS }>::kth(*i))
     });
 
     group.finish();

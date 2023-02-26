@@ -1,14 +1,7 @@
-use crate::params::Params;
-
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
-pub struct Square<T: Clone + Copy, P: Params>(pub [T; P::ELEMENTS])
-where
-    [(); P::ELEMENTS]:;
+pub struct Square<T: Clone + Copy, const N: usize>(pub [T; N]);
 
-impl<T: Clone + Copy, P: Params> Square<T, P>
-where
-    [(); P::ELEMENTS]:,
-{
+impl<T: Clone + Copy, const N: usize> Square<T, N> {
     /// Returns the number of elements in the Square.
     pub fn len(&mut self) -> usize {
         self.0.len()
@@ -38,20 +31,16 @@ where
     }
 }
 
-impl<T: Clone + Copy, P: Params> Square<T, P>
-where
-    [(); P::ELEMENTS]:,
-{
+impl<T: Clone + Copy, const N: usize> Square<T, N> {
     ///Creates a Square from an array.
-    pub fn from_array(array: [T; P::ELEMENTS]) -> Square<T, P> {
+    pub fn from_array(array: [T; N]) -> Square<T, N> {
         Square(array)
     }
 }
 
-impl<I, T: Clone + Copy, P: Params> std::ops::Index<I> for Square<T, P>
+impl<I, T: Clone + Copy, const N: usize> std::ops::Index<I> for Square<T, N>
 where
     I: std::slice::SliceIndex<[T]>,
-    [(); P::ELEMENTS]:,
 {
     type Output = I::Output;
 
@@ -60,10 +49,9 @@ where
     }
 }
 
-impl<I, T: Clone + Copy, P: Params> std::ops::IndexMut<I> for Square<T, P>
+impl<I, T: Clone + Copy, const N: usize> std::ops::IndexMut<I> for Square<T, N>
 where
     I: std::slice::SliceIndex<[T]>,
-    [(); P::ELEMENTS]:,
 {
     fn index_mut(&mut self, index: I) -> &mut Self::Output {
         &mut self.0[index]
@@ -72,13 +60,13 @@ where
 
 #[cfg(test)]
 mod test_square3 {
-    use crate::OrderThree;
+    use crate::{OrderThree, Params};
 
     use super::*;
 
     #[test]
     fn test_square() {
-        let a = Square::<u8, OrderThree>::from_array([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        let a = Square::<u8, { OrderThree::ELEMENTS }>::from_array([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         println!("{:?}", a)
     }
 }
