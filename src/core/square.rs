@@ -60,13 +60,11 @@ where
 
 #[cfg(test)]
 mod test_square3 {
-    use crate::{OrderThree, Params};
-
     use super::*;
 
     #[test]
     fn test_square() {
-        let a = Square::<u8, { OrderThree::ELEMENTS }>::from_array([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        let a = Square::<u8, 9>::from_array([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         println!("{:?}", a)
     }
 }

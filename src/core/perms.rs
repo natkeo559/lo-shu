@@ -1,4 +1,4 @@
-use crate::{params::Params, OrderThree, Square};
+use crate::{OrderThree, Params, Square};
 
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
 pub struct Permutation<T: Copy + Clone, const N: usize> {
@@ -6,11 +6,11 @@ pub struct Permutation<T: Copy + Clone, const N: usize> {
     pub index: usize,
 }
 
-impl Permutation<u8, { OrderThree::ELEMENTS }> {
-    pub fn first() -> Permutation<u8, { OrderThree::ELEMENTS }> {
-        let mut arr: [u8; OrderThree::ELEMENTS] = [0; OrderThree::ELEMENTS];
-        for (elem, val) in arr.iter_mut().zip(1..=OrderThree::ELEMENTS as u8) {
-            *elem = val;
+impl Permutation<u8, 9> {
+    pub fn first() -> Permutation<u8, 9> {
+        let mut arr: [u8; 9] = [0; 9];
+        for (elem, val) in arr.iter_mut().zip(1..=9_u8) {
+            *elem = val % OrderThree::MODULUS as u8;
         }
         Permutation {
             square: Square(arr),
@@ -18,16 +18,16 @@ impl Permutation<u8, { OrderThree::ELEMENTS }> {
         }
     }
 
-    pub fn kth(k: usize) -> Permutation<u8, { OrderThree::ELEMENTS }> {
-        let mut n = Permutation::<u8, { OrderThree::ELEMENTS }>::first();
-        let mut indeces = [0; { OrderThree::ELEMENTS }];
+    pub fn kth(k: usize) -> Permutation<u8, 9> {
+        let mut n = Permutation::<u8, 9>::first();
+        let mut indeces = [0; 9];
 
         let mut divisor = 1;
-        for place in 1..OrderThree::ELEMENTS + 1 {
+        for place in 1..9 + 1 {
             if k / divisor == 0 {
                 break;
             }
-            indeces[OrderThree::ELEMENTS - place] = (k / divisor) % place;
+            indeces[9 - place] = (k / divisor) % place;
             divisor *= place;
         }
         for (i, item) in indeces.iter().enumerate() {
@@ -49,14 +49,12 @@ impl Permutation<u8, { OrderThree::ELEMENTS }> {
     }
 }
 
-pub trait NextPerm<T: Copy, const N: usize> {
-    fn next_perm(&mut self) -> Option<&mut Permutation<T, { OrderThree::ELEMENTS }>>;
+pub trait Perms<T: Copy + PartialOrd, const N: usize> {
+    fn next_perm(&mut self) -> Option<&mut Permutation<T, 9>>;
 }
 
-impl<T: Copy + PartialOrd> NextPerm<T, { OrderThree::ELEMENTS }>
-    for Permutation<T, { OrderThree::ELEMENTS }>
-{
-    fn next_perm(&mut self) -> Option<&mut Permutation<T, { OrderThree::ELEMENTS }>> {
+impl Perms<u8, 9> for Permutation<u8, 9> {
+    fn next_perm(&mut self) -> Option<&mut Permutation<u8, 9>> {
         // Find non-increasing suffix
         let mut i: usize = self.square.len() - 1;
         while i > 0 && self.square[i - 1] >= self.square[i] {
@@ -82,33 +80,45 @@ impl<T: Copy + PartialOrd> NextPerm<T, { OrderThree::ELEMENTS }>
 
 #[cfg(test)]
 mod test_perms3 {
-    use crate::{NextPerm, OrderThree, Params, Permutation};
+    use crate::{OrderThree, Params, Perms, Permutation};
 
     #[test]
     fn test_first() {
-        let a = Permutation::<u8, { OrderThree::ELEMENTS }>::first();
+        let a = Permutation::<u8, 9>::first();
         println!("{:?}", &a);
     }
 
     #[test]
     fn test_next() {
-        let mut a = Permutation::<u8, { OrderThree::ELEMENTS }>::first();
+        let mut a = Permutation::<u8, 9>::first();
         a = *a.next_perm().unwrap();
         println!("{:?}", &a);
     }
 
     #[test]
     fn test_kth() {
-        let a = Permutation::<u8, { OrderThree::ELEMENTS }>::kth(0);
+        let a = Permutation::<u8, 9>::kth(0);
         println!("{:?}", a);
 
-        let a = Permutation::<u8, { OrderThree::ELEMENTS }>::kth(1);
+        let a = Permutation::<u8, 9>::kth(1);
         println!("{:?}", &a);
 
-        let a = Permutation::<u8, { OrderThree::ELEMENTS }>::kth(OrderThree::PERMUTATIONS - 2);
+        let a = Permutation::<u8, 9>::kth(OrderThree::PERMUTATIONS - 2);
         println!("{:?}", &a);
 
-        let a = Permutation::<u8, { OrderThree::ELEMENTS }>::kth(OrderThree::PERMUTATIONS - 1);
+        let a = Permutation::<u8, 9>::kth(OrderThree::PERMUTATIONS - 1);
         println!("{:?}", &a);
+    }
+
+    #[test]
+    fn test_id() {
+        // let mut a = Permutation::<u8, 9>::first();
+        // println!("{:?}", a.perm_id());
+
+        // let mut a = Permutation::<u8, 9>::kth(OrderThree::PERMUTATIONS - 1);
+        // println!("{:?}", a.perm_id());
+
+        // let mut a = Permutation::<u8, 9>::kth(499);
+        // println!("{:?}", a.perm_id());
     }
 }
