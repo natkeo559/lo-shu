@@ -10,6 +10,7 @@ fn solve_order_three_linear() {
     let b = (0..362879)
         .into_par_iter()
         .filter_map(|k| unsafe { Permutation::<u8, OrderThree>::kth(k).unsafe_check_strict() })
+        .map(|r| r.index)
         .collect::<Vec<_>>();
 
     assert!(b.len() == 8)
@@ -25,9 +26,8 @@ pub fn order_three_bench(c: &mut Criterion) {
         b.iter(|| solve_order_three_linear())
     });
 
-    let i = black_box(100);
-    group.bench_with_input("order_three_kth_perm", &i, |b, i| {
-        b.iter(|| Permutation::<u8, OrderThree>::kth(*i))
+    group.bench_function("kth", |b| {
+        b.iter(|| Permutation::<u8, OrderThree>::kth(black_box(100)))
     });
 
     group.finish();

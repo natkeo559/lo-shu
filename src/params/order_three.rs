@@ -1,6 +1,6 @@
 use crate::params::Params;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct OrderThree;
 
 impl Params for OrderThree {

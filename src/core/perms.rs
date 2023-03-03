@@ -1,19 +1,26 @@
-use crate::{Square, params::Params};
+use crate::{params::Params, Square};
+use rayon::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
-pub struct Permutation<T: Copy + Clone, P: Params> where [(); P::ELEMENTS]: {
+pub struct Permutation<T: Copy + Clone, P: Params>
+where
+    [(); P::ELEMENTS]:,
+{
     pub square: Square<T, P>,
     pub index: usize,
 }
 
-impl<P: Params> Permutation<u8, P> where [(); P::ELEMENTS]:{
+impl<P: Params> Permutation<u8, P>
+where
+    [(); P::ELEMENTS]:,
+{
     pub fn first() -> Permutation<u8, P> {
         let mut arr: [u8; P::ELEMENTS] = [0; P::ELEMENTS];
         for (elem, val) in arr.iter_mut().zip(1..=P::ELEMENTS as u8) {
             *elem = val;
         }
         Permutation {
-            square: Square (arr),
+            square: Square(arr),
             index: 0,
         }
     }
@@ -47,13 +54,33 @@ impl<P: Params> Permutation<u8, P> where [(); P::ELEMENTS]:{
             index: k,
         }
     }
+
+    pub fn par_permutation_range(
+        start: usize,
+        stop: usize,
+    ) -> impl ParallelIterator<Item = Permutation<u8, P>> {
+        (start..stop).into_par_iter().map(|i| Permutation::kth(i))
+    }
+
+    pub fn permutation_range(
+        start: usize,
+        stop: usize,
+    ) -> impl Iterator<Item = Permutation<u8, P>> {
+        (start..stop).map(|i| Permutation::kth(i))
+    }
 }
 
-pub trait NextPerm<T: Copy, P: Params> where [(); P::ELEMENTS]:{
+pub trait NextPerm<T: Copy, P: Params>
+where
+    [(); P::ELEMENTS]:,
+{
     fn next_perm(&mut self) -> Option<&mut Permutation<T, P>>;
 }
 
-impl<T: Copy + PartialOrd, P: Params> NextPerm<T, P> for Permutation<T, P> where [(); P::ELEMENTS]:{
+impl<T: Copy + PartialOrd, P: Params> NextPerm<T, P> for Permutation<T, P>
+where
+    [(); P::ELEMENTS]:,
+{
     fn next_perm(&mut self) -> Option<&mut Permutation<T, P>> {
         // Find non-increasing suffix
         let mut i: usize = P::ELEMENTS - 1;
@@ -80,33 +107,79 @@ impl<T: Copy + PartialOrd, P: Params> NextPerm<T, P> for Permutation<T, P> where
 
 #[cfg(test)]
 mod test_perms3 {
-    use crate::{NextPerm, Permutation, OrderThree, Params};
+    use rayon::prelude::ParallelIterator;
+
+    use crate::{NextPerm, OrderThree, Params, Permutation, Square};
 
     #[test]
     fn test_first() {
+        let result: Permutation<u8, OrderThree> = Permutation {
+            square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+            index: 0,
+        };
         let a = Permutation::<u8, OrderThree>::first();
-        println!("{:?}", &a);
+        assert_eq!(result, a);
     }
 
     #[test]
     fn test_next() {
+        let result: Permutation<u8, OrderThree> = Permutation {
+            square: Square([1, 2, 3, 4, 5, 6, 7, 9, 8]),
+            index: 1,
+        };
         let mut a = Permutation::<u8, OrderThree>::first();
         a = *a.next_perm().unwrap();
-        println!("{:?}", &a);
+        assert_eq!(result, a);
     }
 
     #[test]
     fn test_kth() {
+        const MAX: usize = OrderThree::PERMUTATIONS;
+
+        let results: [Permutation<u8, OrderThree>; 4] = [
+            Permutation {
+                square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+                index: 0,
+            },
+            Permutation {
+                square: Square([1, 2, 3, 4, 5, 6, 7, 9, 8]),
+                index: 1,
+            },
+            Permutation {
+                square: Square([9, 8, 7, 6, 5, 4, 3, 1, 2]),
+                index: 362878,
+            },
+            Permutation {
+                square: Square([9, 8, 7, 6, 5, 4, 3, 2, 1]),
+                index: 362879,
+            },
+        ];
         let a = Permutation::<u8, OrderThree>::kth(0);
-        println!("{:?}", a);
+        assert_eq!(results[0], a);
 
         let a = Permutation::<u8, OrderThree>::kth(1);
-        println!("{:?}", &a);
+        assert_eq!(results[1], a);
 
-        let a = Permutation::<u8, OrderThree>::kth(OrderThree::PERMUTATIONS - 2);
-        println!("{:?}", &a);
+        let a = Permutation::<u8, OrderThree>::kth(MAX - 2);
+        assert_eq!(results[2], a);
 
-        let a = Permutation::<u8, OrderThree>::kth(OrderThree::PERMUTATIONS - 1);
-        println!("{:?}", &a);
+        let a = Permutation::<u8, OrderThree>::kth(MAX - 1);
+        assert_eq!(results[3], a);
+    }
+
+    #[test]
+    fn test_par_perm_iter() {
+        let a = Permutation::<u8, OrderThree>::par_permutation_range(0, 8);
+        let a_vec = a.collect::<Vec<Permutation<u8, OrderThree>>>();
+        assert_eq!(8, a_vec.len());
+        assert_eq!(7, a_vec.last().unwrap().index)
+    }
+
+    #[test]
+    fn test_perm_iter() {
+        let a = Permutation::<u8, OrderThree>::permutation_range(0, 8);
+        let a_vec = a.collect::<Vec<Permutation<u8, OrderThree>>>();
+        assert_eq!(8, a_vec.len());
+        assert_eq!(7, a_vec.last().unwrap().index)
     }
 }
