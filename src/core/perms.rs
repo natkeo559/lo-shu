@@ -55,33 +55,7 @@ where
         }
     }
 
-    pub fn par_permutation_range(
-        start: usize,
-        stop: usize,
-    ) -> impl ParallelIterator<Item = Permutation<u8, P>> {
-        (start..stop).into_par_iter().map(|i| Permutation::kth(i))
-    }
-
-    pub fn permutation_range(
-        start: usize,
-        stop: usize,
-    ) -> impl Iterator<Item = Permutation<u8, P>> {
-        (start..stop).map(|i| Permutation::kth(i))
-    }
-}
-
-pub trait NextPerm<T: Copy, P: Params>
-where
-    [(); P::ELEMENTS]:,
-{
-    fn next_perm(&mut self) -> Option<&mut Permutation<T, P>>;
-}
-
-impl<T: Copy + PartialOrd, P: Params> NextPerm<T, P> for Permutation<T, P>
-where
-    [(); P::ELEMENTS]:,
-{
-    fn next_perm(&mut self) -> Option<&mut Permutation<T, P>> {
+    pub fn next_perm(&mut self) -> Option<&mut Permutation<u8, P>> {
         // Find non-increasing suffix
         let mut i: usize = P::ELEMENTS - 1;
         while i > 0 && self.square[i - 1] >= self.square[i] {
@@ -103,13 +77,27 @@ where
         self.index += 1;
         Some(self)
     }
+
+    pub fn par_permutation_range(
+        start: usize,
+        stop: usize,
+    ) -> impl ParallelIterator<Item = Permutation<u8, P>> {
+        (start..stop).into_par_iter().map(|i| Permutation::kth(i))
+    }
+
+    pub fn permutation_range(
+        start: usize,
+        stop: usize,
+    ) -> impl Iterator<Item = Permutation<u8, P>> {
+        (start..stop).map(|i| Permutation::kth(i))
+    }
 }
 
 #[cfg(test)]
 mod test_perms3 {
     use rayon::prelude::ParallelIterator;
 
-    use crate::{NextPerm, OrderThree, Params, Permutation, Square};
+    use crate::{OrderThree, Params, Permutation, Square};
 
     #[test]
     fn test_first() {
