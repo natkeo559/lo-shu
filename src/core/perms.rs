@@ -1,7 +1,8 @@
 use crate::{params::Params, Square};
 use rayon::prelude::*;
+use std::hash::{Hash, Hasher};
 
-#[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, PartialOrd)]
 pub struct Permutation<T: Copy + Clone, P: Params>
 where
     [(); P::ELEMENTS]:,
@@ -92,6 +93,26 @@ where
         (start..stop).map(|i| Permutation::kth(i))
     }
 }
+
+impl<T: Clone + Copy + Hash, P: Params> Hash for Permutation<T, P>
+where
+    [(); P::ELEMENTS]:,
+{
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.index.hash(state)
+    }
+}
+
+impl<T: Copy + Clone + PartialEq, P: Params> PartialEq for Permutation<T, P>
+where
+    [(); P::ELEMENTS]:,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.index == other.index
+    }
+}
+
+impl<T: Copy + Clone + Eq, P: Params> Eq for Permutation<T, P> where [(); P::ELEMENTS]: {}
 
 #[cfg(test)]
 mod test_perms3 {

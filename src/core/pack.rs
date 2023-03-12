@@ -1,110 +1,83 @@
-use crate::{OrderThree, Params, Permutation, Square};
+use crate::{Params, Square};
 
-#[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, PartialEq, PartialOrd)]
 pub struct PackedPermutation<T: Copy + Clone, P: Params>
 where
     [(); P::ELEMENTS]:,
 {
     pub square: Square<T, P>,
-    pub index: usize,
+    pub index: Vec<usize>,
 }
 
-pub trait PackU4 {
-    fn pack_two(data: [u8; 2]) -> u8;
-    fn pack_four(data: [u8; 4]) -> u16;
-    fn pack_eight(data: [u8; 8]) -> u32;
+#[rustfmt::skip]
+pub fn pack_u4x2(data: [u8; 2]) -> u8 {
+    ((data[0] & 0x0F) << 4) | (data[1] & 0x0F)
 }
 
-impl PackU4 for Permutation<u8, OrderThree> {
-    fn pack_two(data: [u8; 2]) -> u8 {
-        ((data[0] & 0x0F) << 4) | (data[1] & 0x0F)
-    }
-
-    fn pack_four(data: [u8; 4]) -> u16 {
-        (data[3] as u16 & 0x0F)
-            | (data[2] as u16 & 0x0F) << 4
-            | (data[1] as u16 & 0x0F) << 8
-            | (data[0] as u16 & 0x0F) << 12
-    }
-
-    fn pack_eight(data: [u8; 8]) -> u32 {
-        (data[7] as u32 & 0x0F)
-            | (data[6] as u32 & 0x0F) << 4
-            | (data[5] as u32 & 0x0F) << 8
-            | (data[4] as u32 & 0x0F) << 12
-            | (data[3] as u32 & 0x0F) << 16
-            | (data[2] as u32 & 0x0F) << 20
-            | (data[1] as u32 & 0x0F) << 24
-            | (data[0] as u32 & 0x0F) << 28
-    }
+#[rustfmt::skip]
+pub fn pack_u4x4(data: [u8; 4]) -> u16 {
+    (data[3] as u16 & 0x0F)
+        | (data[2] as u16 & 0x0F) << 4
+        | (data[1] as u16 & 0x0F) << 8
+        | (data[0] as u16 & 0x0F) << 12
 }
 
-// pub fn pack_2xu4(a: u8, b: u8) -> u8 {
-//     ((a & 0x0F) << 4) | (b & 0x0F)
-// }
+#[rustfmt::skip]
+pub fn pack_u4x8(data: [u8; 8]) -> u32 {
+    (data[7] as u32 & 0x0F)
+        | (data[6] as u32 & 0x0F) << 4
+        | (data[5] as u32 & 0x0F) << 8
+        | (data[4] as u32 & 0x0F) << 12
+        | (data[3] as u32 & 0x0F) << 16
+        | (data[2] as u32 & 0x0F) << 20
+        | (data[1] as u32 & 0x0F) << 24
+        | (data[0] as u32 & 0x0F) << 28
+}
 
-// pub fn unpack_2xu4(p: u8) -> (u8, u8) {
-//     ((p >> 4) & 0x0F, p & 0x0F)
-// }
+#[rustfmt::skip]
+pub fn pack_u4x16(data: [u8; 16]) -> u64 {
+    (data[15] as u64 & 0x0F)
+        | (data[14] as u64 & 0x0F) << 4
+        | (data[13] as u64 & 0x0F) << 8
+        | (data[12] as u64 & 0x0F) << 12
+        | (data[11] as u64 & 0x0F) << 16
+        | (data[10] as u64 & 0x0F) << 20
+        | (data[9 ] as u64 & 0x0F) << 24
+        | (data[8 ] as u64 & 0x0F) << 28
+        | (data[7 ] as u64 & 0x0F) << 32
+        | (data[6 ] as u64 & 0x0F) << 36
+        | (data[5 ] as u64 & 0x0F) << 40
+        | (data[4 ] as u64 & 0x0F) << 44
+        | (data[3 ] as u64 & 0x0F) << 48
+        | (data[2 ] as u64 & 0x0F) << 52
+        | (data[1 ] as u64 & 0x0F) << 56
+        | (data[0 ] as u64 & 0x0F) << 60
+}
 
-// pub fn pack_4xu4(a: u8, b: u8, c: u8, d: u8) -> u16 {
-//     (d as u16 & 0x0F) | (c as u16 & 0x0F) << 4 | (b as u16 & 0x0F) << 8 | (a as u16 & 0x0F) << 12
-// }
+#[cfg(test)]
+mod pack_test {
+    use crate::core::pack::*;
+    use crate::{OrderThree, Permutation};
 
-// pub fn unpack_4xu4(p: u16) -> (u8, u8, u8, u8) {
-//     (
-//         ((p >> 12) as u8 & 0x0F),
-//         (p >> 8) as u8 & 0x0F,
-//         (p >> 4) as u8 & 0x0F,
-//         p as u8 & 0x0F,
-//     )
-// }
+    #[test]
+    fn test_pack_2() {
+        let x = Permutation::<u8, OrderThree>::permutation_range(0, 2)
+            .map(|i| i.square.0.into_iter().enumerate())
+            .enumerate();
 
-// pub fn pack_8xu4(a: u8, b: u8, c: u8, d: u8, e: u8, f: u8, g: u8, h: u8) -> u32 {
-//     (h as u32 & 0x0F)
-//         | (g as u32 & 0x0F) << 4
-//         | (f as u32 & 0x0F) << 8
-//         | (e as u32 & 0x0F) << 12
-//         | (d as u32 & 0x0F) << 16
-//         | (c as u32 & 0x0F) << 20
-//         | (b as u32 & 0x0F) << 24
-//         | (a as u32 & 0x0F) << 28
-// }
+        let mut arr = [[0u8; 2]; 9];
+        for (idxo, sq) in x {
+            for (idxs, i) in sq {
+                arr[idxs][idxo] = i
+            }
+        }
 
-// pub fn unpack_8xu4(p: u32) -> (u8, u8, u8, u8, u8, u8, u8, u8) {
-//     (
-//         (p >> 28) as u8 & 0x0F,
-//         (p >> 24) as u8 & 0x0F,
-//         (p >> 20) as u8 & 0x0F,
-//         (p >> 16) as u8 & 0x0F,
-//         (p >> 12) as u8 & 0x0F,
-//         (p >> 8) as u8 & 0x0F,
-//         (p >> 4) as u8 & 0x0F,
-//         p as u8 & 0x0F,
-//     )
-// }
-
-// #[cfg(test)]
-// mod pack_test {
-//     use super::*;
-
-//     #[test]
-//     fn test_u8_pack() {
-//         let a: u8 = 15;
-//         let b: u8 = 15;
-//         let c: u8 = 15;
-//         let d: u8 = 15;
-//         let e: u8 = 15;
-//         let f: u8 = 15;
-//         let g: u8 = 15;
-//         let h: u8 = 15;
-
-//         let p2 = pack_2xu4(a, b);
-//         let p4 = pack_4xu4(a, b, c, d);
-//         let p8 = pack_8xu4(a, b, c, d, e, f, g, h);
-
-//         assert_eq!((a, b), unpack_2xu4(p2));
-//         assert_eq!((a, b, c, d), unpack_4xu4(p4));
-//         assert_eq!((a, b, c, d, e, f, g, h), unpack_8xu4(p8));
-//     }
-// }
+        let _packed_arr: [u8; 9] = arr
+            .into_iter()
+            .map(|i| pack_u4x2(i))
+            .collect::<Vec<_>>()
+            .as_slice()
+            .try_into()
+            .unwrap();
+    }
+}

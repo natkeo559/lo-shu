@@ -1,15 +1,15 @@
 use crate::{Params, Permutation, Square};
 
-pub trait SquareTransforms<T: Copy + Clone, P: Params>
+pub trait Transform<T: Copy + Clone, P: Params>
 where
     [(); P::ELEMENTS]:,
 {
     fn perm_id(&mut self) -> Permutation<T, P>;
     fn rotate_90(&mut self) -> Self;
-    // fn reflect_x(&mut self) -> Self;
+    fn reflect_x(&mut self) -> Self;
 }
 
-impl<P: Params + Copy> SquareTransforms<u8, P> for Square<u8, P>
+impl<P: Params + Copy> Transform<u8, P> for Square<u8, P>
 where
     [(); P::ELEMENTS]:,
 {
@@ -56,16 +56,24 @@ where
         Square(a)
     }
 
-    // fn reflect_x(&mut self) -> Self {
-    //     Square([
-    //         self[2], self[1], self[0], self[5], self[4], self[3], self[8], self[7], self[6],
-    //     ])
-    // }
+    fn reflect_x(&mut self) -> Self {
+        let mut a = [0; P::ELEMENTS];
+
+        for (i, (x, y)) in (0..P::ELEMENTS)
+            .map(|x| x / P::ORDER)
+            .zip((0..P::ELEMENTS).rev().map(|y| y % P::ORDER))
+            .enumerate()
+        {
+            a[i] = self[x * P::ORDER + y]
+        }
+
+        Square(a)
+    }
 }
 
 #[cfg(test)]
 mod test_transform {
-    use crate::{OrderThree, Params, Permutation, Square, SquareTransforms};
+    use crate::{OrderThree, Params, Permutation, Square, Transform};
 
     #[test]
     fn test_id() {
@@ -104,10 +112,10 @@ mod test_transform {
         assert_eq!(Square([9, 8, 7, 6, 5, 4, 3, 2, 1]), b);
     }
 
-    // #[test]
-    // fn test_reflect_x() {
-    //     let mut a = Permutation::<u8, OrderThree>::first().square;
-    //     let b = a.reflect_x();
-    //     assert_eq!(Square([3, 2, 1, 6, 5, 4, 9, 8, 7]), b);
-    // }
+    #[test]
+    fn test_reflect_x() {
+        let mut a = Permutation::<u8, OrderThree>::first().square;
+        let b = a.reflect_x();
+        assert_eq!(Square([3, 2, 1, 6, 5, 4, 9, 8, 7]), b);
+    }
 }

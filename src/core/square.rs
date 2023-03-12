@@ -1,6 +1,8 @@
+use std::hash::{Hash, Hasher};
+
 use crate::params::Params;
 
-#[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, PartialOrd)]
 pub struct Square<T: Clone + Copy, P: Params>(pub [T; P::ELEMENTS])
 where
     [(); P::ELEMENTS]:;
@@ -69,6 +71,26 @@ where
         &mut self.0[index]
     }
 }
+
+impl<T: Clone + Copy + Hash, P: Params> Hash for Square<T, P>
+where
+    [(); P::ELEMENTS]:,
+{
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state)
+    }
+}
+
+impl<T: Copy + Clone + PartialEq, P: Params> PartialEq for Square<T, P>
+where
+    [(); P::ELEMENTS]:,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
+impl<T: Copy + Clone + Eq, P: Params> Eq for Square<T, P> where [(); P::ELEMENTS]: {}
 
 #[cfg(test)]
 mod test_square3 {
