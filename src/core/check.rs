@@ -1,4 +1,4 @@
-use crate::{params::Params, OrderThree, Permutation};
+use crate::{params::Params, OrderThree, Permutation, PackedPermutation};
 use std::simd::*;
 
 pub trait Check<T: Clone + Copy, P: Params>
@@ -13,6 +13,20 @@ where
     /// Use of `get_unchecked` is unsafe. For a safe abstraction, use `get` to return references to Square elements.
     unsafe fn unsafe_check_strict(&mut self) -> Option<Permutation<T, P>>;
 }
+
+pub trait CheckPacked<T: Clone + Copy, P: Params>
+where
+    [(); P::ELEMENTS]:,
+{
+    /// Checks if Permutation of element type T, order N is magic.
+    ///
+    ///
+    /// # Safety
+    ///
+    /// Use of `get_unchecked` is unsafe. For a safe abstraction, use `get` to return references to Square elements.
+    unsafe fn unsafe_check_strict(&mut self);
+}
+
 
 impl Check<u8, OrderThree> for Permutation<u8, OrderThree> {
     unsafe fn unsafe_check_strict(&mut self) -> Option<Permutation<u8, OrderThree>> {
@@ -60,5 +74,11 @@ impl Check<u8, OrderThree> for Permutation<u8, OrderThree> {
             true => Some(*self),
             false => None,
         }
+    }
+}
+
+impl CheckPacked<u8, OrderThree> for PackedPermutation<u8, OrderThree>{
+    unsafe fn unsafe_check_strict(&mut self) {
+        
     }
 }

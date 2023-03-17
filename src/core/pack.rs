@@ -1,4 +1,6 @@
-use crate::{Params, Square};
+use itertools::Itertools;
+
+use crate::{Params, Permutation, Square};
 
 #[derive(Clone, Debug, PartialEq, PartialOrd)]
 pub struct PackedPermutation<T: Copy + Clone, P: Params>
@@ -7,6 +9,143 @@ where
 {
     pub square: Square<T, P>,
     pub index: Vec<usize>,
+}
+
+impl<T: Copy + Clone, P: Params> PackedPermutation<T, P>
+where
+    [(); P::ELEMENTS]:,
+{
+    pub fn pack_two_from_p_iter(
+        iter: impl Iterator<Item = Permutation<u8, P>>,
+    ) -> PackedPermutation<u8, P> {
+        let owned = iter.collect_vec();
+
+        let squares = owned
+            .iter()
+            .map(|i| i.square.0.into_iter().enumerate())
+            .enumerate();
+
+        let indeces = owned.iter().map(|i| i.index).collect_vec();
+
+        let mut arr = [[0u8; 2]; P::ELEMENTS];
+        for (idxo, sq) in squares {
+            for (idxs, i) in sq {
+                arr[idxs][idxo] = i
+            }
+        }
+
+        let packed_arr: [u8; P::ELEMENTS] = arr
+            .into_iter()
+            .map(|i| pack_u4x2(i))
+            .collect::<Vec<_>>()
+            .as_slice()
+            .try_into()
+            .unwrap();
+
+        PackedPermutation {
+            square: Square(packed_arr),
+            index: indeces,
+        }
+    }
+
+    pub fn pack_four_from_p_iter(
+        iter: impl Iterator<Item = Permutation<u8, P>>,
+    ) -> PackedPermutation<u16, P> {
+        let owned = iter.collect_vec();
+
+        let squares = owned
+            .iter()
+            .map(|i| i.square.0.into_iter().enumerate())
+            .enumerate();
+
+        let indeces = owned.iter().map(|i| i.index).collect_vec();
+
+        let mut arr = [[0u8; 4]; P::ELEMENTS];
+        for (idxo, sq) in squares {
+            for (idxs, i) in sq {
+                arr[idxs][idxo] = i
+            }
+        }
+
+        let packed_arr: [u16; P::ELEMENTS] = arr
+            .into_iter()
+            .map(|i| pack_u4x4(i))
+            .collect::<Vec<_>>()
+            .as_slice()
+            .try_into()
+            .unwrap();
+
+        PackedPermutation {
+            square: Square(packed_arr),
+            index: indeces,
+        }
+    }
+
+    pub fn pack_eight_from_p_iter(
+        iter: impl Iterator<Item = Permutation<u8, P>>,
+    ) -> PackedPermutation<u32, P> {
+        let owned = iter.collect_vec();
+
+        let squares = owned
+            .iter()
+            .map(|i| i.square.0.into_iter().enumerate())
+            .enumerate();
+
+        let indeces = owned.iter().map(|i| i.index).collect_vec();
+
+        let mut arr = [[0u8; 8]; P::ELEMENTS];
+        for (idxo, sq) in squares {
+            for (idxs, i) in sq {
+                arr[idxs][idxo] = i
+            }
+        }
+
+        let packed_arr: [u32; P::ELEMENTS] = arr
+            .into_iter()
+            .map(|i| pack_u4x8(i))
+            .collect::<Vec<_>>()
+            .as_slice()
+            .try_into()
+            .unwrap();
+
+        PackedPermutation {
+            square: Square(packed_arr),
+            index: indeces,
+        }
+    }
+
+    pub fn pack_sixteen_from_p_iter(
+        iter: impl Iterator<Item = Permutation<u8, P>>,
+    ) -> PackedPermutation<u64, P> {
+        let owned = iter.collect_vec();
+
+        let squares = owned
+            .iter()
+            .map(|i| i.square.0.into_iter().enumerate())
+            .enumerate();
+
+        let indeces = owned.iter().map(|i| i.index).collect_vec();
+
+        let mut arr = [[0u8; 16]; P::ELEMENTS];
+        for (idxo, sq) in squares {
+            for (idxs, i) in sq {
+                arr[idxs][idxo] = i
+            }
+        }
+
+        let packed_arr: [u64; P::ELEMENTS] = arr
+            .into_iter()
+            .map(|i| pack_u4x16(i))
+            .collect::<Vec<_>>()
+            .as_slice()
+            .try_into()
+            .unwrap();
+
+        PackedPermutation {
+            square: Square(packed_arr),
+            index: indeces,
+        }
+    }
 }
 
 #[rustfmt::skip]
@@ -61,23 +200,14 @@ mod pack_test {
 
     #[test]
     fn test_pack_2() {
-        let x = Permutation::<u8, OrderThree>::permutation_range(0, 2)
-            .map(|i| i.square.0.into_iter().enumerate())
-            .enumerate();
+        let x_r: PackedPermutation<u8, OrderThree> = PackedPermutation {
+            square: Square([17, 34, 51, 68, 85, 102, 119, 137, 152]),
+            index: vec![0, 1],
+        };
+        let x = Permutation::<u8, OrderThree>::permutation_range(0, 2);
 
-        let mut arr = [[0u8; 2]; 9];
-        for (idxo, sq) in x {
-            for (idxs, i) in sq {
-                arr[idxs][idxo] = i
-            }
-        }
+        let packed = PackedPermutation::<u8, OrderThree>::pack_two_from_p_iter(x);
 
-        let _packed_arr: [u8; 9] = arr
-            .into_iter()
-            .map(|i| pack_u4x2(i))
-            .collect::<Vec<_>>()
-            .as_slice()
-            .try_into()
-            .unwrap();
+        assert_eq!(x_r, packed);
     }
 }
