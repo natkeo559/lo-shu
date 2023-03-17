@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 itertools = "0.10.5"
+lazy_static = "1.4.0"
 rayon = "1.6.1"
 
 [dev-dependencies]
@@ -16,5 +17,13 @@ name = "lib_bench"
 harness = false
 
 [[bench]]
+name = "test_order_three"
+harness = false
+
+[[bench]]
 name = "perf_function"
+harness = false
+
+[[bench]]
+name = "core_pack"
 harness = false
