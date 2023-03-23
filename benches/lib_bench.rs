@@ -23,7 +23,7 @@ pub fn order_three_bench(c: &mut Criterion) {
     group.noise_threshold(0.03);
 
     group.bench_function("solve_order_three_linear", |b| {
-        b.iter(|| solve_order_three_linear())
+        b.iter(solve_order_three_linear)
     });
 
     group.bench_function("kth", |b| {

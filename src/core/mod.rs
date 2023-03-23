@@ -5,7 +5,7 @@ mod perms;
 mod square;
 mod transform;
 
-pub use check::Check;
+pub use check::{Check, CheckPacked};
 // pub use perms::Permutation;
 pub use group::Group;
 pub use pack::*;

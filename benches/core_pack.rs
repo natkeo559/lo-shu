@@ -26,22 +26,22 @@ fn pack_sixteen_bench() {
 
 fn pack_two_from_iter_bench() {
     let x = Permutation::<u8, OrderThree>::permutation_range(0, 2);
-    let _a = PackedPermutation::<u8, OrderThree>::pack_two_from_p_iter(x);
+    let _a = PackedPermutation::<u8, 2, OrderThree>::pack_two_from_p_iter(x);
 }
 
 fn pack_four_from_iter_bench() {
     let x = Permutation::<u8, OrderThree>::permutation_range(0, 4);
-    let _a = PackedPermutation::<u8, OrderThree>::pack_four_from_p_iter(x);
+    let _a = PackedPermutation::<u8, 4, OrderThree>::pack_four_from_p_iter(x);
 }
 
 fn pack_eight_from_iter_bench() {
     let x = Permutation::<u8, OrderThree>::permutation_range(0, 8);
-    let _a = PackedPermutation::<u8, OrderThree>::pack_eight_from_p_iter(x);
+    let _a = PackedPermutation::<u8, 8, OrderThree>::pack_eight_from_p_iter(x);
 }
 
 fn pack_sixteen_from_iter_bench() {
     let x = Permutation::<u8, OrderThree>::permutation_range(0, 16);
-    let _a = PackedPermutation::<u8, OrderThree>::pack_sixteen_from_p_iter(x);
+    let _a = PackedPermutation::<u8, 16, OrderThree>::pack_sixteen_from_p_iter(x);
 }
 
 pub fn pack_bench(c: &mut Criterion) {
@@ -49,28 +49,60 @@ pub fn pack_bench(c: &mut Criterion) {
     group.sample_size(1000);
     group.noise_threshold(0.03);
 
-    group.bench_function("two", |b| b.iter(|| black_box(pack_two_bench())));
+    group.bench_function("two", |b| {
+        b.iter(|| {
+            pack_two_bench();
+            black_box(())
+        })
+    });
 
-    group.bench_function("four", |b| b.iter(|| black_box(pack_four_bench())));
+    group.bench_function("four", |b| {
+        b.iter(|| {
+            pack_four_bench();
+            black_box(())
+        })
+    });
 
-    group.bench_function("eight", |b| b.iter(|| black_box(pack_eight_bench())));
+    group.bench_function("eight", |b| {
+        b.iter(|| {
+            pack_eight_bench();
+            black_box(())
+        })
+    });
 
-    group.bench_function("sixteen", |b| b.iter(|| black_box(pack_sixteen_bench())));
+    group.bench_function("sixteen", |b| {
+        b.iter(|| {
+            pack_sixteen_bench();
+            black_box(())
+        })
+    });
 
     group.bench_function("two_iter", |b| {
-        b.iter(|| black_box(pack_two_from_iter_bench()))
+        b.iter(|| {
+            pack_two_from_iter_bench();
+            black_box(())
+        })
     });
 
     group.bench_function("four_iter", |b| {
-        b.iter(|| black_box(pack_four_from_iter_bench()))
+        b.iter(|| {
+            pack_four_from_iter_bench();
+            black_box(())
+        })
     });
 
     group.bench_function("eight_iter", |b| {
-        b.iter(|| black_box(pack_eight_from_iter_bench()))
+        b.iter(|| {
+            pack_eight_from_iter_bench();
+            black_box(())
+        })
     });
 
     group.bench_function("sixteen_iter", |b| {
-        b.iter(|| black_box(pack_sixteen_from_iter_bench()))
+        b.iter(|| {
+            pack_sixteen_from_iter_bench();
+            black_box(())
+        })
     });
 
     group.finish();

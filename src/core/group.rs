@@ -59,12 +59,12 @@ mod test_group {
 
         let mut c = HashSet::new();
         c.insert(a.square);
-        assert_eq!(false, b.is_disjoint(&c));
+        assert!(!b.is_disjoint(&c));
 
         let d = Permutation::<u8, OrderThree>::kth(4);
         c.clear();
         c.insert(d.square);
 
-        assert_eq!(true, b.is_disjoint(&c))
+        assert!(b.is_disjoint(&c))
     }
 }

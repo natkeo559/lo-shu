@@ -1,31 +1,36 @@
-use itertools::Itertools;
-
 use crate::{Params, Permutation, Square};
 
 #[derive(Clone, Debug, PartialEq, PartialOrd)]
-pub struct PackedPermutation<T: Copy + Clone, P: Params>
+pub struct PackedPermutation<T: Copy + Clone, const N: usize, P: Params>
 where
     [(); P::ELEMENTS]:,
 {
     pub square: Square<T, P>,
-    pub index: Vec<usize>,
+    pub index: [usize; N],
 }
 
-impl<T: Copy + Clone, P: Params> PackedPermutation<T, P>
+impl<T: Copy + Clone, const N: usize, P: Params> PackedPermutation<T, N, P>
 where
     [(); P::ELEMENTS]:,
 {
     pub fn pack_two_from_p_iter(
-        iter: impl Iterator<Item = Permutation<u8, P>>,
-    ) -> PackedPermutation<u8, P> {
-        let owned = iter.collect_vec();
+        mut iter: impl Iterator<Item = Permutation<u8, P>>,
+    ) -> PackedPermutation<u8, N, P> {
+        let owned = [iter.next().unwrap(), iter.next().unwrap()];
+
+        if iter.next().is_some() {
+            panic!("Iterator is too big!")
+        }
 
         let squares = owned
             .iter()
             .map(|i| i.square.0.into_iter().enumerate())
             .enumerate();
 
-        let indeces = owned.iter().map(|i| i.index).collect_vec();
+        let mut indeces = [0usize; N];
+        for (index, item) in owned.iter().map(|i| i.index).enumerate() {
+            indeces[index] = item;
+        }
 
         let mut arr = [[0u8; 2]; P::ELEMENTS];
         for (idxo, sq) in squares {
@@ -36,7 +41,7 @@ where
 
         let packed_arr: [u8; P::ELEMENTS] = arr
             .into_iter()
-            .map(|i| pack_u4x2(i))
+            .map(pack_u4x2)
             .collect::<Vec<_>>()
             .as_slice()
             .try_into()
@@ -49,16 +54,28 @@ where
     }
 
     pub fn pack_four_from_p_iter(
-        iter: impl Iterator<Item = Permutation<u8, P>>,
-    ) -> PackedPermutation<u16, P> {
-        let owned = iter.collect_vec();
+        mut iter: impl Iterator<Item = Permutation<u8, P>>,
+    ) -> PackedPermutation<u16, N, P> {
+        let owned = [
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+        ];
+
+        if iter.next().is_some() {
+            panic!("Iterator is too big!")
+        }
 
         let squares = owned
             .iter()
             .map(|i| i.square.0.into_iter().enumerate())
             .enumerate();
 
-        let indeces = owned.iter().map(|i| i.index).collect_vec();
+        let mut indeces = [0usize; N];
+        for (index, item) in owned.iter().map(|i| i.index).enumerate() {
+            indeces[index] = item;
+        }
 
         let mut arr = [[0u8; 4]; P::ELEMENTS];
         for (idxo, sq) in squares {
@@ -69,7 +86,7 @@ where
 
         let packed_arr: [u16; P::ELEMENTS] = arr
             .into_iter()
-            .map(|i| pack_u4x4(i))
+            .map(pack_u4x4)
             .collect::<Vec<_>>()
             .as_slice()
             .try_into()
@@ -82,16 +99,32 @@ where
     }
 
     pub fn pack_eight_from_p_iter(
-        iter: impl Iterator<Item = Permutation<u8, P>>,
-    ) -> PackedPermutation<u32, P> {
-        let owned = iter.collect_vec();
+        mut iter: impl Iterator<Item = Permutation<u8, P>>,
+    ) -> PackedPermutation<u32, N, P> {
+        let owned = [
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+        ];
+
+        if iter.next().is_some() {
+            panic!("Iterator is too big!")
+        }
 
         let squares = owned
             .iter()
             .map(|i| i.square.0.into_iter().enumerate())
             .enumerate();
 
-        let indeces = owned.iter().map(|i| i.index).collect_vec();
+        let mut indeces = [0usize; N];
+        for (index, item) in owned.iter().map(|i| i.index).enumerate() {
+            indeces[index] = item;
+        }
 
         let mut arr = [[0u8; 8]; P::ELEMENTS];
         for (idxo, sq) in squares {
@@ -102,7 +135,7 @@ where
 
         let packed_arr: [u32; P::ELEMENTS] = arr
             .into_iter()
-            .map(|i| pack_u4x8(i))
+            .map(pack_u4x8)
             .collect::<Vec<_>>()
             .as_slice()
             .try_into()
@@ -115,16 +148,40 @@ where
     }
 
     pub fn pack_sixteen_from_p_iter(
-        iter: impl Iterator<Item = Permutation<u8, P>>,
-    ) -> PackedPermutation<u64, P> {
-        let owned = iter.collect_vec();
+        mut iter: impl Iterator<Item = Permutation<u8, P>>,
+    ) -> PackedPermutation<u64, N, P> {
+        let owned = [
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+            iter.next().unwrap(),
+        ];
+
+        if iter.next().is_some() {
+            panic!("Iterator is too big!")
+        }
 
         let squares = owned
             .iter()
             .map(|i| i.square.0.into_iter().enumerate())
             .enumerate();
 
-        let indeces = owned.iter().map(|i| i.index).collect_vec();
+        let mut indeces = [0usize; N];
+        for (index, item) in owned.iter().map(|i| i.index).enumerate() {
+            indeces[index] = item;
+        }
 
         let mut arr = [[0u8; 16]; P::ELEMENTS];
         for (idxo, sq) in squares {
@@ -135,7 +192,7 @@ where
 
         let packed_arr: [u64; P::ELEMENTS] = arr
             .into_iter()
-            .map(|i| pack_u4x16(i))
+            .map(pack_u4x16)
             .collect::<Vec<_>>()
             .as_slice()
             .try_into()
@@ -193,6 +250,60 @@ pub fn pack_u4x16(data: [u8; 16]) -> u64 {
         | (data[0 ] as u64 & 0x0F) << 60
 }
 
+#[rustfmt::skip]
+pub fn unpack_u4x2(data: u8) -> [u8; 2] {
+    [
+        (data >> 4) & 0x0F,
+        data & 0x0F,
+    ]
+}
+
+#[rustfmt::skip]
+pub fn unpack_u4x4(data: u16) -> [u8; 4] {
+    [
+        (data >> 12) as u8 & 0x0F,
+        (data >> 8 ) as u8 & 0x0F,
+        (data >> 4 ) as u8 & 0x0F,
+        data as u8 & 0x0F,
+    ]
+}
+
+#[rustfmt::skip]
+pub fn unpack_u4x8(data: u32) -> [u8; 8] {
+    [
+        (data >> 28) as u8 & 0x0F,
+        (data >> 24) as u8 & 0x0F,
+        (data >> 20) as u8 & 0x0F,
+        (data >> 16) as u8 & 0x0F,
+        (data >> 12) as u8 & 0x0F,
+        (data >> 8 ) as u8 & 0x0F,
+        (data >> 4 ) as u8 & 0x0F,
+        data as u8 & 0x0F,
+    ]
+}
+
+#[rustfmt::skip]
+pub fn unpack_u4x16(data: u64) -> [u8; 16] {
+    [
+        (data >> 60) as u8 & 0x0F,
+        (data >> 56) as u8 & 0x0F,
+        (data >> 52) as u8 & 0x0F,
+        (data >> 48) as u8 & 0x0F,
+        (data >> 44) as u8 & 0x0F,
+        (data >> 40) as u8 & 0x0F,
+        (data >> 36) as u8 & 0x0F,
+        (data >> 32) as u8 & 0x0F,
+        (data >> 28) as u8 & 0x0F,
+        (data >> 24) as u8 & 0x0F,
+        (data >> 20) as u8 & 0x0F,
+        (data >> 16) as u8 & 0x0F,
+        (data >> 12) as u8 & 0x0F,
+        (data >> 8 ) as u8 & 0x0F,
+        (data >> 4 ) as u8 & 0x0F,
+        data as u8 & 0x0F,
+    ]
+}
+
 #[cfg(test)]
 mod pack_test {
     use crate::core::pack::*;
@@ -200,14 +311,27 @@ mod pack_test {
 
     #[test]
     fn test_pack_2() {
-        let x_r: PackedPermutation<u8, OrderThree> = PackedPermutation {
+        let x_r: PackedPermutation<u8, 2, OrderThree> = PackedPermutation {
             square: Square([17, 34, 51, 68, 85, 102, 119, 137, 152]),
-            index: vec![0, 1],
+            index: [0, 1],
         };
         let x = Permutation::<u8, OrderThree>::permutation_range(0, 2);
 
-        let packed = PackedPermutation::<u8, OrderThree>::pack_two_from_p_iter(x);
+        let packed = PackedPermutation::<u8, 2, OrderThree>::pack_two_from_p_iter(x);
 
+        assert_eq!(x_r, packed);
+    }
+
+    #[test]
+    fn test_pack_4() {
+        let x_r: PackedPermutation<u16, 4, OrderThree> = PackedPermutation {
+            square: Square([4369, 8738, 13107, 17476, 21845, 26214, 30600, 35193, 39063]),
+            index: [0, 1, 2, 3],
+        };
+
+        let x = Permutation::<u8, OrderThree>::permutation_range(0, 4);
+
+        let packed = PackedPermutation::<u8, 4, OrderThree>::pack_four_from_p_iter(x);
         assert_eq!(x_r, packed);
     }
 }

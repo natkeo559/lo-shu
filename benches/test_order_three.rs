@@ -1,7 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{OrderThree, Permutation, Check};
+use lo_shu::{Check, OrderThree, Permutation};
 use rayon::prelude::*;
 
 fn main() {
@@ -11,5 +11,5 @@ fn main() {
         .map(|r| r.index)
         .collect::<Vec<_>>();
 
-    println!("{:?}",b)
+    println!("{:?}", b)
 }
