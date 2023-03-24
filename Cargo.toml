@@ -25,7 +25,7 @@ name = "perf_function"
 harness = false
 
 [[bench]]
-name = "core_pack"
+name = "core_compress"
 harness = false
 
 [[bench]]

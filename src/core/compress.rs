@@ -1,7 +1,7 @@
 use crate::{Params, Permutation, Square};
 
 #[derive(Clone, Debug, PartialEq, PartialOrd)]
-pub struct PackedPermutation<T: Copy + Clone, const N: usize, P: Params>
+pub struct CompressedPermutation<T: Copy + Clone, const N: usize, P: Params>
 where
     [(); P::ELEMENTS]:,
 {
@@ -9,13 +9,13 @@ where
     pub index: [usize; N],
 }
 
-impl<T: Copy + Clone, const N: usize, P: Params> PackedPermutation<T, N, P>
+impl<T: Copy + Clone, const N: usize, P: Params> CompressedPermutation<T, N, P>
 where
     [(); P::ELEMENTS]:,
 {
-    pub fn pack_two_from_p_iter(
+    pub fn compress_two_from_p_iter(
         mut iter: impl Iterator<Item = Permutation<u8, P>>,
-    ) -> PackedPermutation<u8, N, P> {
+    ) -> CompressedPermutation<u8, N, P> {
         let owned = [iter.next().unwrap(), iter.next().unwrap()];
 
         if iter.next().is_some() {
@@ -47,15 +47,15 @@ where
             .try_into()
             .unwrap();
 
-        PackedPermutation {
+        CompressedPermutation {
             square: Square(packed_arr),
             index: indeces,
         }
     }
 
-    pub fn pack_four_from_p_iter(
+    pub fn compress_four_from_p_iter(
         mut iter: impl Iterator<Item = Permutation<u8, P>>,
-    ) -> PackedPermutation<u16, N, P> {
+    ) -> CompressedPermutation<u16, N, P> {
         let owned = [
             iter.next().unwrap(),
             iter.next().unwrap(),
@@ -92,15 +92,15 @@ where
             .try_into()
             .unwrap();
 
-        PackedPermutation {
+        CompressedPermutation {
             square: Square(packed_arr),
             index: indeces,
         }
     }
 
-    pub fn pack_eight_from_p_iter(
+    pub fn compress_eight_from_p_iter(
         mut iter: impl Iterator<Item = Permutation<u8, P>>,
-    ) -> PackedPermutation<u32, N, P> {
+    ) -> CompressedPermutation<u32, N, P> {
         let owned = [
             iter.next().unwrap(),
             iter.next().unwrap(),
@@ -141,15 +141,15 @@ where
             .try_into()
             .unwrap();
 
-        PackedPermutation {
+        CompressedPermutation {
             square: Square(packed_arr),
             index: indeces,
         }
     }
 
-    pub fn pack_sixteen_from_p_iter(
+    pub fn compress_sixteen_from_p_iter(
         mut iter: impl Iterator<Item = Permutation<u8, P>>,
-    ) -> PackedPermutation<u64, N, P> {
+    ) -> CompressedPermutation<u64, N, P> {
         let owned = [
             iter.next().unwrap(),
             iter.next().unwrap(),
@@ -198,7 +198,7 @@ where
             .try_into()
             .unwrap();
 
-        PackedPermutation {
+        CompressedPermutation {
             square: Square(packed_arr),
             index: indeces,
         }
@@ -306,32 +306,32 @@ pub fn unpack_u4x16(data: u64) -> [u8; 16] {
 
 #[cfg(test)]
 mod pack_test {
-    use crate::core::pack::*;
+    use crate::core::compress::*;
     use crate::{OrderThree, Permutation};
 
     #[test]
     fn test_pack_2() {
-        let x_r: PackedPermutation<u8, 2, OrderThree> = PackedPermutation {
+        let x_r: CompressedPermutation<u8, 2, OrderThree> = CompressedPermutation {
             square: Square([17, 34, 51, 68, 85, 102, 119, 137, 152]),
             index: [0, 1],
         };
         let x = Permutation::<u8, OrderThree>::permutation_range(0, 2);
 
-        let packed = PackedPermutation::<u8, 2, OrderThree>::pack_two_from_p_iter(x);
+        let packed = CompressedPermutation::<u8, 2, OrderThree>::compress_two_from_p_iter(x);
 
         assert_eq!(x_r, packed);
     }
 
     #[test]
     fn test_pack_4() {
-        let x_r: PackedPermutation<u16, 4, OrderThree> = PackedPermutation {
+        let x_r: CompressedPermutation<u16, 4, OrderThree> = CompressedPermutation {
             square: Square([4369, 8738, 13107, 17476, 21845, 26214, 30600, 35193, 39063]),
             index: [0, 1, 2, 3],
         };
 
         let x = Permutation::<u8, OrderThree>::permutation_range(0, 4);
 
-        let packed = PackedPermutation::<u8, 4, OrderThree>::pack_four_from_p_iter(x);
+        let packed = CompressedPermutation::<u8, 4, OrderThree>::compress_four_from_p_iter(x);
         assert_eq!(x_r, packed);
     }
 }

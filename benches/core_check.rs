@@ -2,7 +2,7 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{Check, CheckPacked, OrderThree, PackedPermutation, Params, Permutation};
+use lo_shu::{Check, CheckCompressed, CompressedPermutation, OrderThree, Params, Permutation};
 // use std::time::Duration;
 fn check_single() {
     let mut a = Permutation::<u8, OrderThree>::kth(69074);
@@ -10,19 +10,19 @@ fn check_single() {
     assert_eq!(Some(Permutation::<u8, OrderThree>::kth(69074)), r);
 }
 
-fn check_packed_2x() {
+fn check_compressed_2x() {
     let p = Permutation::<u8, OrderThree>::permutation_range(69073, 69075);
-    let mut b = PackedPermutation::<u8, 2, OrderThree>::pack_two_from_p_iter(p);
+    let mut b = CompressedPermutation::<u8, 2, OrderThree>::compress_two_from_p_iter(p);
     let c = unsafe { b.unsafe_check_strict() };
 
     assert_eq!(vec![None, Some(69074)], c)
 }
 
-fn check_all_packed_2x() {
+fn check_all_compressed_2x() {
     let mut r = vec![];
     for a in 0..OrderThree::PERMUTATIONS / 2 {
         let p = Permutation::<u8, OrderThree>::permutation_range(2 * a, 2 * a + 2);
-        let mut b = PackedPermutation::<u8, 2, OrderThree>::pack_two_from_p_iter(p);
+        let mut b = CompressedPermutation::<u8, 2, OrderThree>::compress_two_from_p_iter(p);
         let c = unsafe { b.unsafe_check_strict() };
         for i in c {
             if i.is_some() {
@@ -45,11 +45,11 @@ fn check_all_packed_2x() {
     );
 }
 
-fn check_all_packed_16x() {
+fn check_all_compressed_16x() {
     let mut r = vec![];
     for a in 0..OrderThree::PERMUTATIONS / 16 {
         let p = Permutation::<u8, OrderThree>::permutation_range(16 * a, 16 * a + 16);
-        let mut b = PackedPermutation::<u8, 16, OrderThree>::pack_sixteen_from_p_iter(p);
+        let mut b = CompressedPermutation::<u8, 16, OrderThree>::compress_sixteen_from_p_iter(p);
         let c = unsafe { b.unsafe_check_strict() };
         for i in c {
             if i.is_some() {
@@ -77,32 +77,18 @@ pub fn check_bench(c: &mut Criterion) {
     group.sample_size(1000);
     group.noise_threshold(0.03);
 
-    group.bench_function("check_single", |b| {
-        b.iter(|| {
-            check_single();
-            black_box(())
-        })
+    group.bench_function("check_single", |b| b.iter(|| black_box(check_single())));
+
+    group.bench_function("check_compressed_2x", |b| {
+        b.iter(|| black_box(check_compressed_2x()))
     });
 
-    group.bench_function("check_packed_2x", |b| {
-        b.iter(|| {
-            check_packed_2x();
-            black_box(())
-        })
+    group.bench_function("check_all_compressed_2x", |b| {
+        b.iter(|| black_box(check_all_compressed_2x()))
     });
 
-    group.bench_function("check_all_packed_2x", |b| {
-        b.iter(|| {
-            check_all_packed_2x();
-            black_box(())
-        })
-    });
-
-    group.bench_function("check_all_packed_16x", |b| {
-        b.iter(|| {
-            check_all_packed_16x();
-            black_box(())
-        })
+    group.bench_function("check_all_compressed_16x", |b| {
+        b.iter(|| black_box(check_all_compressed_16x()))
     });
 
     group.finish();

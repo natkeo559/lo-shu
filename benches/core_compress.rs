@@ -3,7 +3,7 @@
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use lo_shu::{
-    pack_u4x16, pack_u4x2, pack_u4x4, pack_u4x8, OrderThree, PackedPermutation, Permutation,
+    pack_u4x16, pack_u4x2, pack_u4x4, pack_u4x8, CompressedPermutation, OrderThree, Permutation,
 };
 
 fn pack_two_bench() {
@@ -26,26 +26,26 @@ fn pack_sixteen_bench() {
 
 fn pack_two_from_iter_bench() {
     let x = Permutation::<u8, OrderThree>::permutation_range(0, 2);
-    let _a = PackedPermutation::<u8, 2, OrderThree>::pack_two_from_p_iter(x);
+    let _a = CompressedPermutation::<u8, 2, OrderThree>::compress_two_from_p_iter(x);
 }
 
 fn pack_four_from_iter_bench() {
     let x = Permutation::<u8, OrderThree>::permutation_range(0, 4);
-    let _a = PackedPermutation::<u8, 4, OrderThree>::pack_four_from_p_iter(x);
+    let _a = CompressedPermutation::<u8, 4, OrderThree>::compress_four_from_p_iter(x);
 }
 
 fn pack_eight_from_iter_bench() {
     let x = Permutation::<u8, OrderThree>::permutation_range(0, 8);
-    let _a = PackedPermutation::<u8, 8, OrderThree>::pack_eight_from_p_iter(x);
+    let _a = CompressedPermutation::<u8, 8, OrderThree>::compress_eight_from_p_iter(x);
 }
 
 fn pack_sixteen_from_iter_bench() {
     let x = Permutation::<u8, OrderThree>::permutation_range(0, 16);
-    let _a = PackedPermutation::<u8, 16, OrderThree>::pack_sixteen_from_p_iter(x);
+    let _a = CompressedPermutation::<u8, 16, OrderThree>::compress_sixteen_from_p_iter(x);
 }
 
 pub fn pack_bench(c: &mut Criterion) {
-    let mut group = c.benchmark_group("pack");
+    let mut group = c.benchmark_group("compress");
     group.sample_size(1000);
     group.noise_threshold(0.03);
 
