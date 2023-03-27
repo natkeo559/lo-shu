@@ -14,7 +14,7 @@ where
     /// # Safety
     ///
     /// Use of `get_unchecked` is unsafe. For a safe abstraction, use `get` to return references to Square elements.
-    unsafe fn unsafe_check_strict(&mut self) -> Option<Permutation<T, P>>;
+    unsafe fn unsafe_check_strict(&mut self) -> Option<Permutation<P>>;
 }
 
 pub trait CheckCompressed<P: Params>
@@ -30,8 +30,8 @@ where
     unsafe fn unsafe_check_strict(&mut self) -> Vec<Option<usize>>;
 }
 
-impl Check<u8, OrderThree> for Permutation<u8, OrderThree> {
-    unsafe fn unsafe_check_strict(&mut self) -> Option<Permutation<u8, OrderThree>> {
+impl Check<u8, OrderThree> for Permutation<OrderThree> {
+    unsafe fn unsafe_check_strict(&mut self) -> Option<Permutation<OrderThree>> {
         static VMASK: Simd<u8, 8_usize> =
             u8x8::from_array([OrderThree::MAGIC_SUM as u8; OrderThree::CONSTRAINT_VECTORS]);
 
@@ -420,7 +420,7 @@ mod test_check {
 
     #[test]
     fn check_packed_2x() {
-        let p = Permutation::<u8, OrderThree>::permutation_range(69073, 69075);
+        let p = Permutation::<OrderThree>::permutation_range(69073, 69075);
         let mut b = CompressedPermutation::<u8, 2, OrderThree>::compress_two_from_p_iter(p);
         let c = unsafe { b.unsafe_check_strict() };
         let r = c.into_iter().filter_map(|i| i).collect::<Vec<_>>();
@@ -429,7 +429,7 @@ mod test_check {
 
     #[test]
     fn check_packed_8x() {
-        let p = Permutation::<u8, OrderThree>::permutation_range(69073, 69081);
+        let p = Permutation::<OrderThree>::permutation_range(69073, 69081);
         let mut b = CompressedPermutation::<u8, 8, OrderThree>::compress_eight_from_p_iter(p);
         let c = unsafe { b.unsafe_check_strict() };
         let r = c.into_iter().filter_map(|i| i).collect::<Vec<_>>();
@@ -438,7 +438,7 @@ mod test_check {
 
     #[test]
     fn check_packed_16x() {
-        let p = Permutation::<u8, OrderThree>::permutation_range(69073, 69089);
+        let p = Permutation::<OrderThree>::permutation_range(69073, 69089);
         let mut b = CompressedPermutation::<u64, 16, OrderThree>::compress_sixteen_from_p_iter(p);
         let c = unsafe { b.unsafe_check_strict() };
         let r = c.into_iter().filter_map(|i| i).collect::<Vec<_>>();

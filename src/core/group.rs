@@ -8,8 +8,8 @@ where
     fn generate_d(&self) -> HashSet<Self>;
 }
 
-impl Group for Square<u8, OrderThree> {
-    fn generate_d(&self) -> HashSet<Square<u8, OrderThree>> {
+impl Group for Square<OrderThree> {
+    fn generate_d(&self) -> HashSet<Square<OrderThree>> {
         let mut set = HashSet::new();
         let mut a = *self;
 
@@ -27,8 +27,8 @@ impl Group for Square<u8, OrderThree> {
     }
 }
 
-impl Group for Permutation<u8, OrderThree> {
-    fn generate_d(&self) -> HashSet<Permutation<u8, OrderThree>> {
+impl Group for Permutation<OrderThree> {
+    fn generate_d(&self) -> HashSet<Permutation<OrderThree>> {
         let mut set = HashSet::new();
         let mut a = self.square;
 
@@ -53,7 +53,7 @@ mod test_group {
 
     #[test]
     fn test_d() {
-        let a = Permutation::<u8, OrderThree>::first();
+        let a = Permutation::<OrderThree>::first();
         let b = a.square.generate_d();
         assert_eq!(8, b.len());
 
@@ -61,10 +61,14 @@ mod test_group {
         c.insert(a.square);
         assert!(!b.is_disjoint(&c));
 
-        let d = Permutation::<u8, OrderThree>::kth(4);
+        let a = Permutation::<OrderThree>::first();
+        let b = a.square.generate_d();
+        assert_eq!(8, b.len());
+
+        let d = Permutation::<OrderThree>::kth(4);
         c.clear();
         c.insert(d.square);
 
-        assert!(b.is_disjoint(&c))
+        assert!(b.is_disjoint(&c));
     }
 }

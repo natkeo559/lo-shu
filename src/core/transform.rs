@@ -1,19 +1,19 @@
 use crate::{Params, Permutation, Square};
 
-pub trait Transform<T: Copy + Clone, P: Params>
+pub trait Transform<P: Params>
 where
     [(); P::ELEMENTS]:,
 {
-    fn perm_id(&mut self) -> Permutation<T, P>;
+    fn perm_id(&mut self) -> Permutation<P>;
     fn rotate_90(&mut self) -> Self;
     fn reflect_x(&mut self) -> Self;
 }
 
-impl<P: Params + Copy> Transform<u8, P> for Square<u8, P>
+impl<P: Params + Copy> Transform<P> for Square<P>
 where
     [(); P::ELEMENTS]:,
 {
-    fn perm_id(&mut self) -> Permutation<u8, P> {
+    fn perm_id(&mut self) -> Permutation<P> {
         let n = P::ELEMENTS;
 
         let mut result = 0usize;
@@ -77,7 +77,7 @@ mod test_transform {
 
     #[test]
     fn test_id() {
-        let mut a = Permutation::<u8, OrderThree>::first().square;
+        let mut a = Permutation::<OrderThree>::first().square;
         assert_eq!(
             Permutation {
                 square: a,
@@ -86,7 +86,7 @@ mod test_transform {
             a.perm_id()
         );
 
-        let mut a = Permutation::<u8, OrderThree>::kth(OrderThree::PERMUTATIONS - 1).square;
+        let mut a = Permutation::<OrderThree>::kth(OrderThree::PERMUTATIONS - 1).square;
         assert_eq!(
             Permutation {
                 square: a,
@@ -95,7 +95,7 @@ mod test_transform {
             a.perm_id()
         );
 
-        let mut a = Permutation::<u8, OrderThree>::kth(499).square;
+        let mut a = Permutation::<OrderThree>::kth(499).square;
         assert_eq!(
             Permutation {
                 square: a,
@@ -107,14 +107,14 @@ mod test_transform {
 
     #[test]
     fn test_rotate_90() {
-        let mut a = Permutation::<u8, OrderThree>::first().square;
+        let mut a = Permutation::<OrderThree>::first().square;
         let b = a.rotate_90().rotate_90();
         assert_eq!(Square([9, 8, 7, 6, 5, 4, 3, 2, 1]), b);
     }
 
     #[test]
     fn test_reflect_x() {
-        let mut a = Permutation::<u8, OrderThree>::first().square;
+        let mut a = Permutation::<OrderThree>::first().square;
         let b = a.reflect_x();
         assert_eq!(Square([3, 2, 1, 6, 5, 4, 9, 8, 7]), b);
     }

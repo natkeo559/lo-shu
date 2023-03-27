@@ -25,22 +25,22 @@ fn pack_sixteen_bench() {
 }
 
 fn pack_two_from_iter_bench() {
-    let x = Permutation::<u8, OrderThree>::permutation_range(0, 2);
+    let x = Permutation::<OrderThree>::permutation_range(0, 2);
     let _a = CompressedPermutation::<u8, 2, OrderThree>::compress_two_from_p_iter(x);
 }
 
 fn pack_four_from_iter_bench() {
-    let x = Permutation::<u8, OrderThree>::permutation_range(0, 4);
+    let x = Permutation::<OrderThree>::permutation_range(0, 4);
     let _a = CompressedPermutation::<u8, 4, OrderThree>::compress_four_from_p_iter(x);
 }
 
 fn pack_eight_from_iter_bench() {
-    let x = Permutation::<u8, OrderThree>::permutation_range(0, 8);
+    let x = Permutation::<OrderThree>::permutation_range(0, 8);
     let _a = CompressedPermutation::<u8, 8, OrderThree>::compress_eight_from_p_iter(x);
 }
 
 fn pack_sixteen_from_iter_bench() {
-    let x = Permutation::<u8, OrderThree>::permutation_range(0, 16);
+    let x = Permutation::<OrderThree>::permutation_range(0, 16);
     let _a = CompressedPermutation::<u8, 16, OrderThree>::compress_sixteen_from_p_iter(x);
 }
 

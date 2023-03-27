@@ -5,13 +5,13 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use lo_shu::{Check, CheckCompressed, CompressedPermutation, OrderThree, Params, Permutation};
 // use std::time::Duration;
 fn check_single() {
-    let mut a = Permutation::<u8, OrderThree>::kth(69074);
+    let mut a = Permutation::<OrderThree>::kth(69074);
     let r = unsafe { a.unsafe_check_strict() };
-    assert_eq!(Some(Permutation::<u8, OrderThree>::kth(69074)), r);
+    assert_eq!(Some(Permutation::<OrderThree>::kth(69074)), r);
 }
 
 fn check_compressed_2x() {
-    let p = Permutation::<u8, OrderThree>::permutation_range(69073, 69075);
+    let p = Permutation::<OrderThree>::permutation_range(69073, 69075);
     let mut b = CompressedPermutation::<u8, 2, OrderThree>::compress_two_from_p_iter(p);
     let c = unsafe { b.unsafe_check_strict() };
 
@@ -21,7 +21,7 @@ fn check_compressed_2x() {
 fn check_all_compressed_2x() {
     let mut r = vec![];
     for a in 0..OrderThree::PERMUTATIONS / 2 {
-        let p = Permutation::<u8, OrderThree>::permutation_range(2 * a, 2 * a + 2);
+        let p = Permutation::<OrderThree>::permutation_range(2 * a, 2 * a + 2);
         let mut b = CompressedPermutation::<u8, 2, OrderThree>::compress_two_from_p_iter(p);
         let c = unsafe { b.unsafe_check_strict() };
         for i in c {
@@ -48,7 +48,7 @@ fn check_all_compressed_2x() {
 fn check_all_compressed_16x() {
     let mut r = vec![];
     for a in 0..OrderThree::PERMUTATIONS / 16 {
-        let p = Permutation::<u8, OrderThree>::permutation_range(16 * a, 16 * a + 16);
+        let p = Permutation::<OrderThree>::permutation_range(16 * a, 16 * a + 16);
         let mut b = CompressedPermutation::<u8, 16, OrderThree>::compress_sixteen_from_p_iter(p);
         let c = unsafe { b.unsafe_check_strict() };
         for i in c {

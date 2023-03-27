@@ -7,5 +7,5 @@ mod transform;
 pub use compress::*;
 pub use group::Group;
 pub use perms::Permutation;
-pub use square::Square;
+pub use square::{GenericSquare, Square};
 pub use transform::Transform;
