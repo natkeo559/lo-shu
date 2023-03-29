@@ -6,6 +6,7 @@ where
     Self: Sized,
 {
     fn generate_d(&self) -> HashSet<Self>;
+    fn generate_d_indexes(&self) -> HashSet<usize>;
 }
 
 impl Group for Square<OrderThree> {
@@ -22,6 +23,30 @@ impl Group for Square<OrderThree> {
         set.insert(a.reflect_x().rotate_90());
         set.insert(a.reflect_x().rotate_90().rotate_90());
         set.insert(a.reflect_x().rotate_90().rotate_90().rotate_90());
+
+        set
+    }
+
+    fn generate_d_indexes(&self) -> HashSet<usize> {
+        let mut set = HashSet::new();
+        let mut a = *self;
+
+        set.insert(a.perm_id().index);
+        set.insert(a.rotate_90().perm_id().index);
+        set.insert(a.rotate_90().rotate_90().perm_id().index);
+        set.insert(a.rotate_90().rotate_90().rotate_90().perm_id().index);
+
+        set.insert(a.reflect_x().perm_id().index);
+        set.insert(a.reflect_x().rotate_90().perm_id().index);
+        set.insert(a.reflect_x().rotate_90().rotate_90().perm_id().index);
+        set.insert(
+            a.reflect_x()
+                .rotate_90()
+                .rotate_90()
+                .rotate_90()
+                .perm_id()
+                .index,
+        );
 
         set
     }
@@ -43,6 +68,30 @@ impl Group for Permutation<OrderThree> {
         set.insert(a.reflect_x().rotate_90().rotate_90().rotate_90().perm_id());
         set
     }
+
+    fn generate_d_indexes(&self) -> HashSet<usize> {
+        let mut set = HashSet::new();
+        let mut a = self.square;
+
+        set.insert(a.perm_id().index);
+        set.insert(a.rotate_90().perm_id().index);
+        set.insert(a.rotate_90().rotate_90().perm_id().index);
+        set.insert(a.rotate_90().rotate_90().rotate_90().perm_id().index);
+
+        set.insert(a.reflect_x().perm_id().index);
+        set.insert(a.reflect_x().rotate_90().perm_id().index);
+        set.insert(a.reflect_x().rotate_90().rotate_90().perm_id().index);
+        set.insert(
+            a.reflect_x()
+                .rotate_90()
+                .rotate_90()
+                .rotate_90()
+                .perm_id()
+                .index,
+        );
+
+        set
+    }
 }
 
 #[cfg(test)]
@@ -52,23 +101,40 @@ mod test_group {
     use super::*;
 
     #[test]
-    fn test_d() {
+    fn test_generate_d() {
         let a = Permutation::<OrderThree>::first();
         let b = a.square.generate_d();
-        assert_eq!(8, b.len());
-
         let mut c = HashSet::new();
         c.insert(a.square);
+
+        assert_eq!(8, b.len());
         assert!(!b.is_disjoint(&c));
 
         let a = Permutation::<OrderThree>::first();
-        let b = a.square.generate_d();
+        let b = a.generate_d();
+        let mut c = HashSet::new();
+        c.insert(a);
+
         assert_eq!(8, b.len());
+        assert!(!b.is_disjoint(&c));
+    }
 
-        let d = Permutation::<OrderThree>::kth(4);
-        c.clear();
-        c.insert(d.square);
+    #[test]
+    fn test_generate_d_indexes() {
+        let a = Permutation::<OrderThree>::first();
+        let b = a.generate_d_indexes();
+        let mut c = HashSet::new();
+        c.insert(a.index);
 
-        assert!(b.is_disjoint(&c));
+        assert_eq!(8, b.len());
+        assert!(!b.is_disjoint(&c));
+
+        let a = Permutation::<OrderThree>::first();
+        let b = a.square.generate_d_indexes();
+        let mut c = HashSet::new();
+        c.insert(a.index);
+
+        assert_eq!(8, b.len());
+        assert!(!b.is_disjoint(&c));
     }
 }

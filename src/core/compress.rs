@@ -14,23 +14,17 @@ where
     [(); P::ELEMENTS]:,
 {
     pub fn compress_two_from_p_iter(
-        mut iter: impl Iterator<Item = Permutation<P>>,
+        iter: impl Iterator<Item = Permutation<P>>,
     ) -> CompressedPermutation<u8, N, P> {
-        let owned = [iter.next().unwrap(), iter.next().unwrap()];
-
-        if iter.next().is_some() {
-            panic!("Iterator is too big!")
-        }
-
-        let squares = owned
-            .iter()
-            .map(|i| i.square.0.into_iter().enumerate())
-            .enumerate();
-
         let mut indeces = [0usize; N];
-        for (index, item) in owned.iter().map(|i| i.index).enumerate() {
-            indeces[index] = item;
-        }
+        let squares = iter
+            .take(N)
+            .map(|item| (item.square, item.index))
+            .enumerate()
+            .map(|(index, (square, idx))| {
+                indeces[index] = idx;
+                (index, square.0.into_iter().enumerate())
+            });
 
         let mut arr = [[0u8; 2]; P::ELEMENTS];
         for (idxo, sq) in squares {
@@ -39,13 +33,10 @@ where
             }
         }
 
-        let packed_arr: [u8; P::ELEMENTS] = arr
-            .into_iter()
-            .map(pack_u4x2)
-            .collect::<Vec<_>>()
-            .as_slice()
-            .try_into()
-            .unwrap();
+        let mut packed_arr = [0; P::ELEMENTS];
+        for (index, item) in arr.into_iter().enumerate() {
+            packed_arr[index] = pack_u4x2(item);
+        }
 
         CompressedPermutation {
             square: GenericSquare(packed_arr),
@@ -54,28 +45,17 @@ where
     }
 
     pub fn compress_four_from_p_iter(
-        mut iter: impl Iterator<Item = Permutation<P>>,
+        iter: impl Iterator<Item = Permutation<P>>,
     ) -> CompressedPermutation<u16, N, P> {
-        let owned = [
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-        ];
-
-        if iter.next().is_some() {
-            panic!("Iterator is too big!")
-        }
-
-        let squares = owned
-            .iter()
-            .map(|i| i.square.0.into_iter().enumerate())
-            .enumerate();
-
         let mut indeces = [0usize; N];
-        for (index, item) in owned.iter().map(|i| i.index).enumerate() {
-            indeces[index] = item;
-        }
+        let squares = iter
+            .take(N)
+            .map(|item| (item.square, item.index))
+            .enumerate()
+            .map(|(index, (square, idx))| {
+                indeces[index] = idx;
+                (index, square.0.into_iter().enumerate())
+            });
 
         let mut arr = [[0u8; 4]; P::ELEMENTS];
         for (idxo, sq) in squares {
@@ -84,13 +64,10 @@ where
             }
         }
 
-        let packed_arr: [u16; P::ELEMENTS] = arr
-            .into_iter()
-            .map(pack_u4x4)
-            .collect::<Vec<_>>()
-            .as_slice()
-            .try_into()
-            .unwrap();
+        let mut packed_arr = [0; P::ELEMENTS];
+        for (index, item) in arr.into_iter().enumerate() {
+            packed_arr[index] = pack_u4x4(item);
+        }
 
         CompressedPermutation {
             square: GenericSquare(packed_arr),
@@ -99,32 +76,17 @@ where
     }
 
     pub fn compress_eight_from_p_iter(
-        mut iter: impl Iterator<Item = Permutation<P>>,
+        iter: impl Iterator<Item = Permutation<P>>,
     ) -> CompressedPermutation<u32, N, P> {
-        let owned = [
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-        ];
-
-        if iter.next().is_some() {
-            panic!("Iterator is too big!")
-        }
-
-        let squares = owned
-            .iter()
-            .map(|i| i.square.0.into_iter().enumerate())
-            .enumerate();
-
         let mut indeces = [0usize; N];
-        for (index, item) in owned.iter().map(|i| i.index).enumerate() {
-            indeces[index] = item;
-        }
+        let squares = iter
+            .take(N)
+            .map(|item| (item.square, item.index))
+            .enumerate()
+            .map(|(index, (square, idx))| {
+                indeces[index] = idx;
+                (index, square.0.into_iter().enumerate())
+            });
 
         let mut arr = [[0u8; 8]; P::ELEMENTS];
         for (idxo, sq) in squares {
@@ -133,13 +95,10 @@ where
             }
         }
 
-        let packed_arr: [u32; P::ELEMENTS] = arr
-            .into_iter()
-            .map(pack_u4x8)
-            .collect::<Vec<_>>()
-            .as_slice()
-            .try_into()
-            .unwrap();
+        let mut packed_arr = [0; P::ELEMENTS];
+        for (index, item) in arr.into_iter().enumerate() {
+            packed_arr[index] = pack_u4x8(item);
+        }
 
         CompressedPermutation {
             square: GenericSquare(packed_arr),
@@ -148,40 +107,17 @@ where
     }
 
     pub fn compress_sixteen_from_p_iter(
-        mut iter: impl Iterator<Item = Permutation<P>>,
+        iter: impl Iterator<Item = Permutation<P>>,
     ) -> CompressedPermutation<u64, N, P> {
-        let owned = [
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-            iter.next().unwrap(),
-        ];
-
-        if iter.next().is_some() {
-            panic!("Iterator is too big!")
-        }
-
-        let squares = owned
-            .iter()
-            .map(|i| i.square.0.into_iter().enumerate())
-            .enumerate();
-
         let mut indeces = [0usize; N];
-        for (index, item) in owned.iter().map(|i| i.index).enumerate() {
-            indeces[index] = item;
-        }
+        let squares = iter
+            .take(N)
+            .map(|item| (item.square, item.index))
+            .enumerate()
+            .map(|(index, (square, idx))| {
+                indeces[index] = idx;
+                (index, square.0.into_iter().enumerate())
+            });
 
         let mut arr = [[0u8; 16]; P::ELEMENTS];
         for (idxo, sq) in squares {
@@ -190,13 +126,10 @@ where
             }
         }
 
-        let packed_arr: [u64; P::ELEMENTS] = arr
-            .into_iter()
-            .map(pack_u4x16)
-            .collect::<Vec<_>>()
-            .as_slice()
-            .try_into()
-            .unwrap();
+        let mut packed_arr = [0; P::ELEMENTS];
+        for (index, item) in arr.into_iter().enumerate() {
+            packed_arr[index] = pack_u4x16(item);
+        }
 
         CompressedPermutation {
             square: GenericSquare(packed_arr),

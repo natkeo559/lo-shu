@@ -112,7 +112,7 @@ where
 impl<P: Params> Eq for Permutation<P> where [(); P::ELEMENTS]: {}
 
 #[cfg(test)]
-mod test_perms3 {
+mod test_perms {
     use rayon::prelude::ParallelIterator;
 
     use crate::{OrderThree, Params, Permutation, Square};

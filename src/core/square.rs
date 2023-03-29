@@ -16,12 +16,12 @@ impl<T: Clone + Copy, P: Params> GenericSquare<T, P>
 where
     [(); P::ELEMENTS]:,
 {
-    pub fn len(&mut self) -> usize {
+    pub fn len(&self) -> usize {
         self.0.len()
     }
 
     /// Returns `true` if the slice has a length of 0.
-    pub fn is_empty(&mut self) -> bool {
+    pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 
@@ -53,12 +53,12 @@ impl<P: Params> Square<P>
 where
     [(); P::ELEMENTS]:,
 {
-    pub fn len(&mut self) -> usize {
+    pub fn len(&self) -> usize {
         self.0.len()
     }
 
     /// Returns `true` if the slice has a length of 0.
-    pub fn is_empty(&mut self) -> bool {
+    pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 
@@ -171,14 +171,17 @@ where
 impl<P: Params> Eq for Square<P> where [(); P::ELEMENTS]: {}
 
 #[cfg(test)]
-mod test_square3 {
+mod test_square {
     use crate::OrderThree;
 
     use super::*;
 
     #[test]
-    fn test_square() {
+    fn test_square_from_array() {
         let a = Square::<OrderThree>::from_array([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-        println!("{:?}", a)
+
+        assert_eq!(Square([1, 2, 3, 4, 5, 6, 7, 8, 9]), a);
+        assert_eq!(9, a.len());
+        assert_eq!(5, a[4]);
     }
 }
