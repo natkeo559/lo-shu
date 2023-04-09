@@ -21,11 +21,11 @@ name = "test_order_three"
 harness = false
 
 [[bench]]
-name = "perf_function"
+name = "core_compress"
 harness = false
 
 [[bench]]
-name = "core_compress"
+name = "core_check_compressed"
 harness = false
 
 [[bench]]

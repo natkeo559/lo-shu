@@ -4,8 +4,13 @@ pub trait Transform<P: Params>
 where
     [(); P::ELEMENTS]:,
 {
+    /// Identifies the Permutation (Square and index) given just a Square.
     fn perm_id(&mut self) -> Permutation<P>;
+
+    /// Rotates a Square 90 degrees counter-clockwise.
     fn rotate_90(&mut self) -> Self;
+
+    /// Reflects a Square about the Y-axis.
     fn reflect_x(&mut self) -> Self;
 }
 
@@ -45,12 +50,12 @@ where
     fn rotate_90(&mut self) -> Self {
         let mut a = [0; P::ELEMENTS];
 
-        for (i, (x, y)) in (0..P::ELEMENTS)
-            .map(|x| x % P::ORDER)
-            .zip((0..P::ELEMENTS).map(|y| y / P::ORDER).rev())
-            .enumerate()
-        {
-            a[i] = self[x * P::ORDER + y]
+        for (i, (x, y)) in a.iter_mut().zip(
+            (0..P::ELEMENTS)
+                .map(|x| x % P::ORDER)
+                .zip((0..P::ELEMENTS).rev().map(|y| y / P::ORDER)),
+        ) {
+            *i = self[x * P::ORDER + y]
         }
 
         Square(a)
@@ -59,12 +64,12 @@ where
     fn reflect_x(&mut self) -> Self {
         let mut a = [0; P::ELEMENTS];
 
-        for (i, (x, y)) in (0..P::ELEMENTS)
-            .map(|x| x / P::ORDER)
-            .zip((0..P::ELEMENTS).rev().map(|y| y % P::ORDER))
-            .enumerate()
-        {
-            a[i] = self[x * P::ORDER + y]
+        for (i, (x, y)) in a.iter_mut().zip(
+            (0..P::ELEMENTS)
+                .map(|x| x / P::ORDER)
+                .zip((0..P::ELEMENTS).rev().map(|y| y % P::ORDER)),
+        ) {
+            *i = self[x * P::ORDER + y]
         }
 
         Square(a)
@@ -108,8 +113,8 @@ mod test_transform {
     #[test]
     fn test_rotate_90() {
         let mut a = Permutation::<OrderThree>::first().square;
-        let b = a.rotate_90().rotate_90();
-        assert_eq!(Square([9, 8, 7, 6, 5, 4, 3, 2, 1]), b);
+        let b = a.rotate_90();
+        assert_eq!(Square([3, 6, 9, 2, 5, 8, 1, 4, 7]), b);
     }
 
     #[test]

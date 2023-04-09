@@ -15,19 +15,19 @@ impl<P: Params> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
-    pub fn first() -> Permutation<P> {
+    pub fn first() -> Self {
         let mut arr: [u8; P::ELEMENTS] = [0; P::ELEMENTS];
         for (elem, val) in arr.iter_mut().zip(1..=P::ELEMENTS as u8) {
             *elem = val;
         }
-        Permutation {
+        Self {
             square: Square(arr),
             index: 0,
         }
     }
 
-    pub fn kth(k: usize) -> Permutation<P> {
-        let mut n = Permutation::<P>::first();
+    pub fn kth(k: usize) -> Self {
+        let mut n = Self::first();
         let mut indeces = [0; P::ELEMENTS];
 
         let mut divisor = 1;
@@ -50,13 +50,13 @@ where
                 n.square[i] = temp;
             }
         }
-        Permutation {
+        Self {
             square: n.square,
             index: k,
         }
     }
 
-    pub fn next_perm(&mut self) -> Option<&mut Permutation<P>> {
+    pub fn next_perm(&mut self) -> Option<&mut Self> {
         // Find non-increasing suffix
         let mut i: usize = P::ELEMENTS - 1;
         while i > 0 && self.square[i - 1] >= self.square[i] {
@@ -79,15 +79,12 @@ where
         Some(self)
     }
 
-    pub fn par_permutation_range(
-        start: usize,
-        stop: usize,
-    ) -> impl ParallelIterator<Item = Permutation<P>> {
-        (start..stop).into_par_iter().map(|i| Permutation::kth(i))
+    pub fn par_permutation_range(start: usize, stop: usize) -> impl ParallelIterator<Item = Self> {
+        (start..stop).into_par_iter().map(|i| Self::kth(i))
     }
 
-    pub fn permutation_range(start: usize, stop: usize) -> impl Iterator<Item = Permutation<P>> {
-        (start..stop).map(|i| Permutation::kth(i))
+    pub fn permutation_range(start: usize, stop: usize) -> impl Iterator<Item = Self> {
+        (start..stop).map(|i| Self::kth(i))
     }
 }
 

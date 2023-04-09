@@ -5,7 +5,14 @@ pub trait Group
 where
     Self: Sized,
 {
+    /// Generate the dihedral group for a Square or Permutation
+    ///
+    /// Note: Because this function uses a HashSet, the result will contain non-trivial ordering
     fn generate_d(&self) -> HashSet<Self>;
+
+    /// Generate the dihedral group for a Square or Permutation. The resulting HashSet will only contain the indexes of the associated Squares or Permutations.
+    ///
+    /// Note: Because this function uses a HashSet, the result will contain non-trivial ordering
     fn generate_d_indexes(&self) -> HashSet<usize>;
 }
 
@@ -22,7 +29,7 @@ impl Group for Square<OrderThree> {
         set.insert(a.reflect_x());
         set.insert(a.reflect_x().rotate_90());
         set.insert(a.reflect_x().rotate_90().rotate_90());
-        set.insert(a.reflect_x().rotate_90().rotate_90().rotate_90());
+        set.insert(a.rotate_90().reflect_x());
 
         set
     }
@@ -39,14 +46,7 @@ impl Group for Square<OrderThree> {
         set.insert(a.reflect_x().perm_id().index);
         set.insert(a.reflect_x().rotate_90().perm_id().index);
         set.insert(a.reflect_x().rotate_90().rotate_90().perm_id().index);
-        set.insert(
-            a.reflect_x()
-                .rotate_90()
-                .rotate_90()
-                .rotate_90()
-                .perm_id()
-                .index,
-        );
+        set.insert(a.rotate_90().reflect_x().perm_id().index);
 
         set
     }
@@ -65,7 +65,7 @@ impl Group for Permutation<OrderThree> {
         set.insert(a.reflect_x().perm_id());
         set.insert(a.reflect_x().rotate_90().perm_id());
         set.insert(a.reflect_x().rotate_90().rotate_90().perm_id());
-        set.insert(a.reflect_x().rotate_90().rotate_90().rotate_90().perm_id());
+        set.insert(a.rotate_90().reflect_x().perm_id());
         set
     }
 
@@ -81,14 +81,7 @@ impl Group for Permutation<OrderThree> {
         set.insert(a.reflect_x().perm_id().index);
         set.insert(a.reflect_x().rotate_90().perm_id().index);
         set.insert(a.reflect_x().rotate_90().rotate_90().perm_id().index);
-        set.insert(
-            a.reflect_x()
-                .rotate_90()
-                .rotate_90()
-                .rotate_90()
-                .perm_id()
-                .index,
-        );
+        set.insert(a.rotate_90().reflect_x().perm_id().index);
 
         set
     }
