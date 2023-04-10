@@ -20,7 +20,7 @@ where
 impl Check<OrderThree> for Permutation<OrderThree> {
     unsafe fn check_unsafe(&self) -> Option<Permutation<OrderThree>> {
         static VMASK: Simd<u8, 8_usize> =
-            u8x8::from_array([OrderThree::MAGIC_SUM as u8; OrderThree::CONSTRAINT_VECTORS]);
+            Simd::from_array([OrderThree::MAGIC_SUM as u8; OrderThree::CONSTRAINT_VECTORS]);
 
         let mut a: Simd<u8, 8_usize> = u8x8::from_array([
             *self.square.get_unchecked(0),
@@ -49,7 +49,7 @@ impl Check<OrderThree> for Permutation<OrderThree> {
             return None;
         }
 
-        b = u8x8::from_array([
+        b = Simd::from_array([
             *self.square.get_unchecked(2),
             *self.square.get_unchecked(5),
             *self.square.get_unchecked(8),
@@ -75,7 +75,7 @@ impl Check<OrderThree> for Permutation<OrderThree> {
         static VMASK: Simd<u8, 8_usize> =
             u8x8::from_array([OrderThree::MAGIC_SUM as u8; OrderThree::CONSTRAINT_VECTORS]);
 
-        let mut a: Simd<u8, 8_usize> = u8x8::from_array([
+        let mut a: Simd<u8, 8_usize> = Simd::from_array([
             *self.square.get(0).unwrap(),
             *self.square.get(3).unwrap(),
             *self.square.get(6).unwrap(),
@@ -86,7 +86,7 @@ impl Check<OrderThree> for Permutation<OrderThree> {
             *self.square.get(2).unwrap(),
         ]);
 
-        let mut b: Simd<u8, 8_usize> = u8x8::from_array([
+        let mut b: Simd<u8, 8_usize> = Simd::from_array([
             *self.square.get(1).unwrap(),
             *self.square.get(4).unwrap(),
             *self.square.get(7).unwrap(),
@@ -102,7 +102,7 @@ impl Check<OrderThree> for Permutation<OrderThree> {
             return None;
         }
 
-        b = u8x8::from_array([
+        b = Simd::from_array([
             *self.square.get(2).unwrap(),
             *self.square.get(5).unwrap(),
             *self.square.get(8).unwrap(),
