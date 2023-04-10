@@ -7,12 +7,14 @@ where
 {
     /// Generate the dihedral group for a Square or Permutation
     ///
-    /// Note: Because this function uses a HashSet, the result will contain non-trivial ordering
+    /// # Note: 
+    /// Because this function uses a HashSet, the result will contain non-trivial ordering
     fn generate_d(&self) -> HashSet<Self>;
 
     /// Generate the dihedral group for a Square or Permutation. The resulting HashSet will only contain the indexes of the associated Squares or Permutations.
     ///
-    /// Note: Because this function uses a HashSet, the result will contain non-trivial ordering
+    /// # Note: 
+    /// Because this function uses a HashSet, the result will contain non-trivial ordering
     fn generate_d_indexes(&self) -> HashSet<usize>;
 }
 
