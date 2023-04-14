@@ -17,7 +17,15 @@ name = "lib_bench"
 harness = false
 
 [[bench]]
+name = "mpsc_bench"
+harness = false
+
+[[bench]]
 name = "test_order_three"
+harness = false
+
+[[bench]]
+name = "test_order_three_mpsc"
 harness = false
 
 [[bench]]

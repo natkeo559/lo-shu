@@ -2,7 +2,7 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{Check, OrderThree, Params, Permutation, Group};
+use lo_shu::{Check, Group, OrderThree, Params, Permutation};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use std::{collections::HashSet, time::Duration};
 
@@ -19,7 +19,9 @@ fn solve_order_three_linear() {
 fn order_three_dihedral() {
     let a = (0..OrderThree::PERMUTATIONS)
         .into_par_iter()
-        .find_map_first(|i| Permutation::<OrderThree>::kth(i).check()).unwrap().generate_d();
+        .find_map_first(|i| Permutation::<OrderThree>::kth(i).check())
+        .unwrap()
+        .generate_d();
 
     assert!(a.len() == 8)
 }
@@ -32,7 +34,6 @@ pub fn order_three_bench(c: &mut Criterion) {
 
     group.bench_function("solve_linear", |b| b.iter(solve_order_three_linear));
     group.bench_function("solve_dihedral", |b| b.iter(order_three_dihedral));
-
 
     group.bench_function("kth", |b| {
         b.iter(|| Permutation::<OrderThree>::kth(black_box(1000)))

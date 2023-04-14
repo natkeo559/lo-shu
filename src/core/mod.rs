@@ -1,3 +1,4 @@
+mod channels;
 mod compress;
 mod group;
 mod perms;
@@ -9,3 +10,4 @@ pub use group::Group;
 pub use perms::Permutation;
 pub use square::{GenericSquare, Square};
 pub use transform::Transform;
+pub use channels::{ThreadManager, Worker};

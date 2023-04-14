@@ -5,4 +5,5 @@ pub trait Params {
     const MAGIC_SUM: u32;
     const PERMUTATIONS: usize;
     const CONSTRAINT_VECTORS: usize;
+    const ELEMENT_BITS: usize;
 }

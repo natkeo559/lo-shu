@@ -172,16 +172,30 @@ impl<P: Params> Eq for Square<P> where [(); P::ELEMENTS]: {}
 
 #[cfg(test)]
 mod test_square {
-    use crate::OrderThree;
+    use crate::{OrderFour, OrderThree};
 
     use super::*;
 
     #[test]
-    fn test_square_from_array() {
+    fn test_square_from_array_3() {
         let a = Square::<OrderThree>::from_array([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
         assert_eq!(Square([1, 2, 3, 4, 5, 6, 7, 8, 9]), a);
         assert_eq!(9, a.len());
+        assert_eq!(5, a[4]);
+    }
+
+    #[test]
+    fn test_square_from_array_4() {
+        let a = Square::<OrderFour>::from_array([
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+        ]);
+
+        assert_eq!(
+            Square([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]),
+            a
+        );
+        assert_eq!(16, a.len());
         assert_eq!(5, a[4]);
     }
 }
