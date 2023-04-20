@@ -1,6 +1,6 @@
 use std::hash::{Hash, Hasher};
 
-use crate::params::Params;
+use crate::order::Params;
 
 #[derive(Clone, Copy, Debug, PartialOrd)]
 pub struct Square<P: Params>(pub [u8; P::ELEMENTS])

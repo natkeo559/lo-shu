@@ -1,4 +1,4 @@
-use crate::params::Params;
+use crate::order::Params;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct OrderThree;

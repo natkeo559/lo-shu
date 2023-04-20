@@ -1,4 +1,4 @@
-use crate::{params::Params, Square};
+use crate::{order::Params, Square};
 use rayon::prelude::*;
 use std::hash::{Hash, Hasher};
 

@@ -4,8 +4,8 @@
 
 pub mod checkers;
 pub mod core;
-pub mod params;
+pub mod order;
 
 pub use crate::checkers::*;
 pub use crate::core::*;
-pub use crate::params::*;
+pub use crate::order::*;

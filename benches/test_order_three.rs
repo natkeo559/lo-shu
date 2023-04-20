@@ -27,8 +27,4 @@ fn main() {
     let b = order_three_dihedral();
 
     assert_eq!(a, b);
-
-    for i in b {
-        println!("{:?}", i)
-    }
 }
