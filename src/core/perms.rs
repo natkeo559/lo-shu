@@ -31,7 +31,7 @@ where
         let mut indeces = [0; P::ELEMENTS];
 
         let mut divisor = 1;
-        for place in 1..P::ELEMENTS + 1 {
+        for place in 1..=P::ELEMENTS {
             if k / divisor == 0 {
                 break;
             }
@@ -122,6 +122,19 @@ mod test_perms {
         };
         let a = Permutation::<OrderThree>::first();
         assert_eq!(result, a);
+    }
+
+    #[test]
+    fn trya() {
+        let k = 10;
+        let a = (1..=5)
+            .map(|b| (1..b).fold(1, |a, b| a * b))
+            .filter(|a| k / a != 0)
+            .enumerate();
+
+        for i in a {
+            println!("{:?}", i);
+        }
     }
 
     #[test]
