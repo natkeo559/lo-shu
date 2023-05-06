@@ -5,7 +5,7 @@ where
     [(); P::ELEMENTS]:,
 {
     /// Identifies the Permutation (Square and index) given just a Square.
-    fn perm_id(&mut self) -> Permutation<P>;
+    fn to_perm(&mut self) -> Permutation<P>;
 
     /// Rotates a Square 90 degrees counter-clockwise.
     fn rotate_90(&mut self) -> Self;
@@ -18,7 +18,7 @@ impl<P: Params + Copy> Transform<P> for Square<P>
 where
     [(); P::ELEMENTS]:,
 {
-    fn perm_id(&mut self) -> Permutation<P> {
+    fn to_perm(&mut self) -> Permutation<P> {
         let n = P::ELEMENTS;
 
         let mut result = 0usize;
@@ -89,13 +89,13 @@ mod test_transform {
 
     #[test]
     fn test_id_3() {
-        let mut a = Permutation::<OrderThree>::first().square;
+        let mut a = Permutation::<OrderThree>::identity().square;
         assert_eq!(
             Permutation {
                 square: a,
                 index: 0
             },
-            a.perm_id()
+            a.to_perm()
         );
 
         let mut a = Permutation::<OrderThree>::kth(OrderThree::PERMUTATIONS - 1).square;
@@ -104,7 +104,7 @@ mod test_transform {
                 square: a,
                 index: OrderThree::PERMUTATIONS - 1
             },
-            a.perm_id()
+            a.to_perm()
         );
 
         let mut a = Permutation::<OrderThree>::kth(499).square;
@@ -113,19 +113,19 @@ mod test_transform {
                 square: a,
                 index: 499
             },
-            a.perm_id()
+            a.to_perm()
         );
     }
 
     #[test]
     fn test_id_4() {
-        let mut a = Permutation::<OrderFour>::first().square;
+        let mut a = Permutation::<OrderFour>::identity().square;
         assert_eq!(
             Permutation {
                 square: a,
                 index: 0
             },
-            a.perm_id()
+            a.to_perm()
         );
 
         let mut a = Permutation::<OrderFour>::kth(OrderFour::PERMUTATIONS - 1).square;
@@ -134,7 +134,7 @@ mod test_transform {
                 square: a,
                 index: OrderFour::PERMUTATIONS - 1
             },
-            a.perm_id()
+            a.to_perm()
         );
 
         let mut a = Permutation::<OrderFour>::kth(499).square;
@@ -143,20 +143,20 @@ mod test_transform {
                 square: a,
                 index: 499
             },
-            a.perm_id()
+            a.to_perm()
         );
     }
 
     #[test]
     fn test_rotate_90_3() {
-        let mut a = Permutation::<OrderThree>::first().square;
+        let mut a = Permutation::<OrderThree>::identity().square;
         let b = a.rotate_90();
         assert_eq!(Square([3, 6, 9, 2, 5, 8, 1, 4, 7]), b);
     }
 
     #[test]
     fn test_rotate_90_4() {
-        let mut a = Permutation::<OrderFour>::first().square;
+        let mut a = Permutation::<OrderFour>::identity().square;
         let b = a.rotate_90();
         assert_eq!(
             Square([4, 8, 12, 16, 3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13]),
@@ -166,14 +166,14 @@ mod test_transform {
 
     #[test]
     fn test_reflect_x() {
-        let mut a = Permutation::<OrderThree>::first().square;
+        let mut a = Permutation::<OrderThree>::identity().square;
         let b = a.reflect_x();
         assert_eq!(Square([3, 2, 1, 6, 5, 4, 9, 8, 7]), b);
     }
 
     #[test]
     fn test_reflect_x_4() {
-        let mut a = Permutation::<OrderFour>::first().square;
+        let mut a = Permutation::<OrderFour>::identity().square;
         let b = a.reflect_x();
         assert_eq!(
             Square([4, 3, 2, 1, 8, 7, 6, 5, 12, 11, 10, 9, 16, 15, 14, 13]),

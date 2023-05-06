@@ -1,5 +1,5 @@
-use crate::{Params, Permutation};
-use std::{collections::HashMap, marker::PhantomData};
+use crate::{Params, Permutation, Square, Transform};
+use std::{collections::HashMap, fmt, marker::PhantomData};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Cycles<P: Params> {
@@ -7,7 +7,7 @@ pub struct Cycles<P: Params> {
     phantom: PhantomData<P>,
 }
 
-impl<P: Params> Cycles<P> {
+impl<P: Params + Copy> Cycles<P> {
     pub fn new() -> Self {
         Self {
             k: vec![],
@@ -26,16 +26,39 @@ impl<P: Params> Cycles<P> {
         self.k.push(value)
     }
 
-    pub fn to_permutation(&self) {}
+    pub fn into_permutation(&mut self) -> Permutation<P>
+    where
+        [(); P::ELEMENTS]:,
+    {
+        let mut s = [0; P::ELEMENTS];
+        // self.k.reverse();
+        for (index, item) in s.iter_mut().enumerate() {
+            *item = (index + 1) as u8;
+            for j in &self.k {
+                if let Some(p) = j.iter().position(|&a| a == (index + 1)) {
+                    let next = (p + 1) % j.len();
+                    *item = j[next] as u8;
+                }
+            }
+        }
+
+        Square::<P>::from_array(s).to_perm()
+    }
 }
 
-impl<P: Params> Default for Cycles<P> {
+impl<P: Params> fmt::Display for Cycles<P> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self.k)
+    }
+}
+
+impl<P: Params + Copy> Default for Cycles<P> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<P: Params> Permutation<P>
+impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
@@ -88,13 +111,13 @@ mod test_ops {
     fn test_cyclic() {
         let a_s = Cycles::from_vecs(vec![vec![1, 4, 5, 3, 2, 9, 6, 7, 8]]);
         let a = Square::<OrderThree>::from_array([4, 9, 2, 5, 3, 7, 8, 1, 6])
-            .perm_id()
+            .to_perm()
             .cyclic_notation();
         assert_eq!(a_s, a);
 
         let b_s = Cycles::from_vecs(vec![vec![1, 4, 3, 2, 9, 6, 7, 8]]);
         let b = Square::<OrderThree>::from_array([4, 9, 2, 3, 5, 7, 8, 1, 6])
-            .perm_id()
+            .to_perm()
             .cyclic_notation();
         assert_eq!(b_s, b);
 
@@ -111,22 +134,34 @@ mod test_ops {
         let c = Square::<OrderFour>::from_array([
             4, 14, 15, 1, 9, 7, 6, 12, 5, 11, 10, 8, 16, 2, 3, 13,
         ])
-        .perm_id()
+        .to_perm()
         .cyclic_notation();
         assert_eq!(c_s, c);
     }
 
     #[test]
     fn cycle_tests() {
-        let b: Vec<usize> = (0..OrderThree::PERMUTATIONS)
+        let b = (0..OrderThree::PERMUTATIONS)
             .into_par_iter()
             .filter_map(|k| Permutation::<OrderThree>::kth(k).check())
-            .map(|i| i.index)
-            .collect();
+            .collect::<Vec<_>>();
 
         for i in b {
-            let a = Permutation::<OrderThree>::kth(i);
-            println!("{:?}", a.cyclic_notation().k)
+            println!("{:?}", i.cyclic_notation().k)
         }
+    }
+
+    #[test]
+    fn test_into_perm() {
+        let a = Permutation::<OrderThree>::kth(50000);
+        println!("{:?}", a);
+
+        let b = a.cyclic_notation();
+        println!("{}", b);
+
+        let c = b.clone().into_permutation();
+        println!("{:?}", c);
+
+        assert_eq!(a, c)
     }
 }

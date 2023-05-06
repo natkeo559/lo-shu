@@ -15,7 +15,7 @@ impl<P: Params> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
-    pub fn first() -> Self {
+    pub fn identity() -> Self {
         let mut arr: [u8; P::ELEMENTS] = [0; P::ELEMENTS];
         for (elem, val) in arr.iter_mut().zip(1..=P::ELEMENTS as u8) {
             *elem = val;
@@ -27,7 +27,7 @@ where
     }
 
     pub fn kth(k: usize) -> Self {
-        let mut n = Self::first();
+        let mut n = Self::identity();
         let mut indeces = [0; P::ELEMENTS];
 
         let mut divisor = 1;
@@ -50,10 +50,8 @@ where
                 n.square[i] = temp;
             }
         }
-        Self {
-            square: n.square,
-            index: k,
-        }
+        n.index = k;
+        n
     }
 
     pub fn next_perm(&mut self) -> Option<&mut Self> {
@@ -120,7 +118,7 @@ mod test_perms {
             square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9]),
             index: 0,
         };
-        let a = Permutation::<OrderThree>::first();
+        let a = Permutation::<OrderThree>::identity();
         assert_eq!(result, a);
     }
 
@@ -143,7 +141,7 @@ mod test_perms {
             square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]),
             index: 0,
         };
-        let a = Permutation::<OrderFour>::first();
+        let a = Permutation::<OrderFour>::identity();
         assert_eq!(result, a);
     }
 
@@ -153,7 +151,7 @@ mod test_perms {
             square: Square([1, 2, 3, 4, 5, 6, 7, 9, 8]),
             index: 1,
         };
-        let mut a = Permutation::<OrderThree>::first();
+        let mut a = Permutation::<OrderThree>::identity();
         a = *a.next_perm().unwrap();
         assert_eq!(result, a);
     }
@@ -164,7 +162,7 @@ mod test_perms {
             square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 15]),
             index: 1,
         };
-        let mut a = Permutation::<OrderFour>::first();
+        let mut a = Permutation::<OrderFour>::identity();
         a = *a.next_perm().unwrap();
         assert_eq!(result, a);
     }

@@ -25,6 +25,7 @@ fn main() {
     let a = order_three_linear();
 
     let b = order_three_dihedral();
+    println!("A: {} B: {}", a.len(), b.len());
 
     assert_eq!(a, b);
 }
