@@ -8,4 +8,3 @@ pub use channels::{ThreadManager, Worker};
 pub use compress::*;
 pub use perms::Permutation;
 pub use square::{GenericSquare, Square};
-pub use transform::Transform;

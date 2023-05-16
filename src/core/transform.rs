@@ -1,24 +1,10 @@
 use crate::{Params, Permutation, Square};
 
-pub trait Transform<P: Params>
+impl<P: Params + Copy> Square<P>
 where
     [(); P::ELEMENTS]:,
 {
-    /// Identifies the Permutation (Square and index) given just a Square.
-    fn to_perm(&mut self) -> Permutation<P>;
-
-    /// Rotates a Square 90 degrees counter-clockwise.
-    fn rotate_90(&mut self) -> Self;
-
-    /// Reflects a Square about the Y-axis.
-    fn reflect_x(&mut self) -> Self;
-}
-
-impl<P: Params + Copy> Transform<P> for Square<P>
-where
-    [(); P::ELEMENTS]:,
-{
-    fn to_perm(&mut self) -> Permutation<P> {
+    pub fn to_perm(&mut self) -> Permutation<P> {
         let n = P::ELEMENTS;
 
         let mut result = 0usize;
@@ -54,7 +40,7 @@ where
         }
     }
 
-    fn rotate_90(&mut self) -> Self {
+    pub fn rotate_90(&mut self) -> Self {
         let mut a = [0; P::ELEMENTS];
 
         for (i, (x, y)) in a.iter_mut().zip(
@@ -68,7 +54,7 @@ where
         Square(a)
     }
 
-    fn reflect_x(&mut self) -> Self {
+    pub fn reflect_x(&mut self) -> Self {
         let mut a = [0; P::ELEMENTS];
 
         for (i, (x, y)) in a.iter_mut().zip(
@@ -83,9 +69,22 @@ where
     }
 }
 
+impl<P: Params + Copy> Permutation<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    pub fn rotate_90(&mut self) -> Self {
+        self.square.rotate_90().to_perm()
+    }
+
+    pub fn reflect_x(&mut self) -> Self {
+        self.square.reflect_x().to_perm()
+    }
+}
+
 #[cfg(test)]
 mod test_transform {
-    use crate::{OrderFour, OrderThree, Params, Permutation, Square, Transform};
+    use crate::{OrderFour, OrderThree, Params, Permutation, Square};
 
     #[test]
     fn test_id_3() {

@@ -1,4 +1,4 @@
-use crate::{Params, Permutation, Square, Transform};
+use crate::{Params, Permutation, Square};
 use std::{collections::HashMap, fmt, marker::PhantomData};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -104,7 +104,7 @@ where
 
 #[cfg(test)]
 mod test_ops {
-    use crate::{Check, Cycles, OrderFour, OrderThree, Params, Permutation, Square, Transform};
+    use crate::{Check, Cycles, OrderFour, OrderThree, Params, Permutation, Square};
     use rayon::prelude::*;
 
     #[test]

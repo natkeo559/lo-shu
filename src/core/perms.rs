@@ -1,5 +1,6 @@
 use crate::{order::Params, Square};
 use rayon::prelude::*;
+use std::fmt;
 use std::hash::{Hash, Hasher};
 
 #[derive(Clone, Copy, Debug, PartialOrd)]
@@ -27,6 +28,7 @@ where
     }
 
     pub fn kth(k: usize) -> Self {
+        let ogk = k;
         let mut n = Self::identity();
         let mut indeces = [0; P::ELEMENTS];
 
@@ -50,7 +52,7 @@ where
                 n.square[i] = temp;
             }
         }
-        n.index = k;
+        n.index = ogk;
         n
     }
 
@@ -106,6 +108,18 @@ where
 
 impl<P: Params> Eq for Permutation<P> where [(); P::ELEMENTS]: {}
 
+impl<P: Params> fmt::Display for Permutation<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "k: {}", self.index)?;
+        writeln!(f, "{}", self.square)?;
+
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod test_perms {
     use rayon::prelude::ParallelIterator;
@@ -120,6 +134,7 @@ mod test_perms {
         };
         let a = Permutation::<OrderThree>::identity();
         assert_eq!(result, a);
+        println!("{}", a)
     }
 
     #[test]

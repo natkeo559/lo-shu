@@ -1,4 +1,7 @@
+use std::fmt;
 use std::hash::{Hash, Hasher};
+
+use itertools::Itertools;
 
 use crate::order::Params;
 
@@ -170,6 +173,23 @@ where
 
 impl<P: Params> Eq for Square<P> where [(); P::ELEMENTS]: {}
 
+impl<P: Params> fmt::Display for Square<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut a = self.0.into_iter();
+        for i in 1..=P::ORDER {
+            write!(f, "{:?}", a.by_ref().take(P::ORDER).collect_vec())?;
+            if i != P::ORDER {
+                writeln!(f)?;
+            }
+        }
+
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod test_square {
     use crate::{OrderFour, OrderThree};
@@ -197,5 +217,6 @@ mod test_square {
         );
         assert_eq!(16, a.len());
         assert_eq!(5, a[4]);
+        println!("{}", a)
     }
 }

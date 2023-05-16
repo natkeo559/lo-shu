@@ -1,8 +1,6 @@
-use crate::{Params, Permutation, Square, Transform};
-use std::{
-    collections::HashMap,
-    ops::{Mul, Not},
-};
+use crate::{Params, Permutation, Square};
+use std::collections::HashMap;
+use std::ops::{Mul, MulAssign};
 
 #[allow(clippy::suspicious_arithmetic_impl)]
 impl<P: Params + Copy> Mul for Permutation<P>
@@ -21,13 +19,26 @@ where
     }
 }
 
-impl<P: Params + Copy> Not for Permutation<P>
+#[allow(clippy::suspicious_op_assign_impl)]
+impl<P: Params + Copy> MulAssign for Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
-    type Output = Self;
+    fn mul_assign(&mut self, rhs: Self) {
+        let mut s = [0u8; P::ELEMENTS];
+        for (i, e) in s.iter_mut().zip(rhs.square.0.into_iter()) {
+            *i = self.square[(e - 1) as usize];
+        }
 
-    fn not(self) -> Self::Output {
+        *self = Square::<P>::from_array(s).to_perm()
+    }
+}
+
+impl<P: Params + Copy> Permutation<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    pub fn inv(&self) -> Self {
         let map = self
             .square
             .0
@@ -43,20 +54,80 @@ where
     }
 }
 
+impl<P: Params + Copy> Permutation<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    pub fn pow(&self, n: i32) -> Self {
+        if n == 0 {
+            return Permutation::identity();
+        }
+        let mut init = *self;
+        if n.is_negative() {
+            init = init.inv();
+        }
+        (1..n.abs()).map(|_| init).fold(init, |a, b| b * a)
+    }
+}
+
+impl<P: Params + Copy> Permutation<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    pub fn conj(&self, conjugate: Self) -> Self {
+        conjugate.inv() * *self * conjugate
+    }
+}
+
 #[cfg(test)]
-mod test_op {
-    use crate::{OrderThree, Permutation, Transform};
+mod test_ops {
+    use crate::{OrderThree, Permutation};
 
     #[test]
-    fn test_op() {
-        let a = Permutation::<OrderThree>::kth(227590)
-            .square
-            .reflect_x()
-            .to_perm();
+    fn test_mul() {
+        let e = Permutation::<OrderThree>::identity();
+        let mut a = Permutation::<OrderThree>::kth(400);
+        let b = e.clone().rotate_90();
+        let r = a.clone().rotate_90();
 
-        for i in 0..50 {
-            let b = Permutation::<OrderThree>::kth(i);
-            println!("({}) b*a*!b = {:?}", i, (b * a * !b).cyclic_notation().k);
-        }
+        let c = a * b;
+        assert_eq!(r, c);
+
+        a *= b;
+        assert_eq!(c, a);
+        assert_eq!(b, e * b)
+    }
+
+    #[test]
+    fn test_pow() {
+        let e = Permutation::<OrderThree>::identity();
+        let a = e.clone().rotate_90();
+
+        assert_eq!(a.inv() * a.inv(), a.pow(-2));
+        assert_eq!(a.inv(), a.pow(-1));
+        assert_eq!(e, a.pow(0));
+        assert_eq!(a, a.pow(1));
+        assert_eq!(a * a, a.pow(2));
+    }
+
+    #[test]
+    fn test_inv() {
+        let e = Permutation::<OrderThree>::identity();
+        let b = e.clone().rotate_90();
+        let a = Permutation::<OrderThree>::kth(400);
+
+        assert_eq!(e, a * a.inv());
+        assert_eq!(a, a * b * b.inv());
+        assert_eq!(a.inv() * b, (b.inv() * a).inv());
+        assert_eq!(a * b, (b.inv() * a.inv()).inv());
+        assert_eq!(b.inv() * a.inv(), (a * b).inv());
+    }
+
+    #[test]
+    fn test_conj() {
+        let a = Permutation::<OrderThree>::identity().rotate_90();
+        let b = Permutation::<OrderThree>::identity().reflect_x();
+        println!("{}", b.conj(a));
+        println!("{}", a.conj(b));
     }
 }
