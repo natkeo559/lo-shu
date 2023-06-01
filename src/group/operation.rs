@@ -10,12 +10,12 @@ where
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self {
-        let mut s = [0u8; P::ELEMENTS];
-        for (i, e) in s.iter_mut().zip(rhs.square.0.into_iter()) {
-            *i = self.square[(e - 1) as usize];
+        let mut set = [0u8; P::ELEMENTS];
+        for (set_x, rhs_x) in set.iter_mut().zip(rhs.square.0.into_iter().map(|x| x - 1)) {
+            *set_x = self.square[rhs_x as usize];
         }
 
-        Square::<P>::from_array(s).to_perm()
+        Square::<P>::from_array(set).to_perm()
     }
 }
 
@@ -25,12 +25,7 @@ where
     [(); P::ELEMENTS]:,
 {
     fn mul_assign(&mut self, rhs: Self) {
-        let mut s = [0u8; P::ELEMENTS];
-        for (i, e) in s.iter_mut().zip(rhs.square.0.into_iter()) {
-            *i = self.square[(e - 1) as usize];
-        }
-
-        *self = Square::<P>::from_array(s).to_perm()
+        *self = *self * rhs
     }
 }
 
