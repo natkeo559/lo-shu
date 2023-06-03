@@ -1,4 +1,4 @@
-use crate::{Check, OrderFour, OrderThree, Params, Permutation};
+use crate::{OrderFour, OrderThree, Params, Permutation};
 use std::{
     marker::PhantomData,
     sync::{atomic::AtomicBool, atomic::Ordering::Relaxed, mpsc::Sender, Arc},
@@ -38,7 +38,7 @@ macro_rules! impl_worker_for_tmgr {
                 found: Arc<AtomicBool>,
             ) {
                 for (count, n) in (start..$p::PERMUTATIONS).step_by(self.threads).enumerate() {
-                    if let Some(sol) = Permutation::<$p>::kth(n).check() {
+                    if let Some(sol) = Permutation::<$p>::kth(n).check_v() {
                         found.store(self.one_stop, Relaxed);
                         match sender.send(sol) {
                             Ok(_) => {}

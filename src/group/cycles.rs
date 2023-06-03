@@ -104,7 +104,7 @@ where
 
 #[cfg(test)]
 mod test_ops {
-    use crate::{Check, Cycles, OrderFour, OrderThree, Params, Permutation, Square};
+    use crate::{Cycles, OrderFour, OrderThree, Params, Permutation, Square};
     use rayon::prelude::*;
 
     #[test]
@@ -143,7 +143,7 @@ mod test_ops {
     fn cycle_tests() {
         let b = (0..OrderThree::PERMUTATIONS)
             .into_par_iter()
-            .filter_map(|k| Permutation::<OrderThree>::kth(k).check())
+            .filter_map(|k| Permutation::<OrderThree>::kth(k).check_v())
             .collect::<Vec<_>>();
 
         for i in b {

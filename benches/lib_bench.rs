@@ -2,38 +2,73 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{Check, Group, OrderThree, Params, Permutation};
+use lo_shu::{Group, OrderThree, Params, Permutation};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use std::{collections::HashSet, time::Duration};
 
-fn solve_order_three_linear() {
+fn iter_solve_3() {
     let b: HashSet<usize> = (0..OrderThree::PERMUTATIONS)
-        .into_par_iter()
-        .filter_map(|k| Permutation::<OrderThree>::kth(k).check())
+        .into_iter()
+        .filter_map(|k| Permutation::<OrderThree>::kth(k).check_v())
         .map(|i| i.index)
         .collect();
 
     assert!(b.len() == 8)
 }
 
-fn order_three_dihedral() {
+fn par_iter_solve_3() {
+    let b: HashSet<usize> = (0..OrderThree::PERMUTATIONS)
+        .into_par_iter()
+        .filter_map(|k| Permutation::<OrderThree>::kth(k).check_v())
+        .map(|i| i.index)
+        .collect();
+
+    assert!(b.len() == 8)
+}
+
+fn iter_dihedral_solve_3() {
+    let mut result = HashSet::new();
+    for k in 0..OrderThree::PERMUTATIONS {
+        if let Some(p) = Permutation::<OrderThree>::kth(k).check_v() {
+            result.clone_from(&p.generate_d());
+            break;
+        }
+    }
+
+    assert!(result.len() == 8)
+}
+
+fn par_iter_dihedral_solve_3() {
     let a = (0..OrderThree::PERMUTATIONS)
         .into_par_iter()
-        .find_map_first(|i| Permutation::<OrderThree>::kth(i).check())
+        .find_map_first(|i| Permutation::<OrderThree>::kth(i).check_v())
         .unwrap()
         .generate_d();
 
     assert!(a.len() == 8)
 }
 
-pub fn order_three_bench(c: &mut Criterion) {
-    let mut group = c.benchmark_group("order_three");
+pub fn solve_order_three_bench(c: &mut Criterion) {
+    let mut group = c.benchmark_group("order_three_solve");
+    group.sample_size(800);
+    group.noise_threshold(0.03);
+    group.measurement_time(Duration::new(20, 0));
+    group.bench_function("iter", |b| b.iter(black_box(iter_solve_3)));
+    group.bench_function("par_iter", |b| b.iter(black_box(par_iter_solve_3)));
+    group.finish();
+
+    let mut group = c.benchmark_group("order_three_solve_dihedral");
+    group.bench_function("iter", |b| b.iter(black_box(iter_dihedral_solve_3)));
+    group.bench_function("par_iter", |b| b.iter(black_box(par_iter_dihedral_solve_3)));
+
+    group.finish();
+}
+
+pub fn kth_bench(c: &mut Criterion) {
+    let mut group = c.benchmark_group("kth");
     group.sample_size(2500);
     group.noise_threshold(0.03);
-    group.measurement_time(Duration::new(15, 0));
-
-    group.bench_function("solve_linear", |b| b.iter(solve_order_three_linear));
-    group.bench_function("solve_dihedral", |b| b.iter(order_three_dihedral));
+    group.measurement_time(Duration::new(20, 0));
 
     group.bench_function("kth", |b| {
         b.iter(|| Permutation::<OrderThree>::kth(black_box(1000)))
@@ -42,5 +77,5 @@ pub fn order_three_bench(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, order_three_bench);
+criterion_group!(benches, solve_order_three_bench, kth_bench);
 criterion_main!(benches);

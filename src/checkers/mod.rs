@@ -1,5 +1,5 @@
-mod check;
-mod check_compressed;
+mod scalar;
+mod vectorized;
 
-pub use check::*;
-pub use check_compressed::*;
+pub use scalar::*;
+pub use vectorized::*;

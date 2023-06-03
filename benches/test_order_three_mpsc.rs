@@ -3,7 +3,7 @@
 
 use std::{collections::HashSet, sync::mpsc, thread};
 
-use lo_shu::{Check, Group, OrderThree, Params, Permutation};
+use lo_shu::{Group, OrderThree, Params, Permutation};
 
 fn message_solver() {
     let (sx, rx) = mpsc::channel();
@@ -26,7 +26,7 @@ fn message_solver() {
 
 fn compute(start: usize, sender: mpsc::Sender<HashSet<usize>>) {
     for n in (start..OrderThree::PERMUTATIONS).step_by(16) {
-        if let Some(sol) = Permutation::<OrderThree>::kth(n).check() {
+        if let Some(sol) = Permutation::<OrderThree>::kth(n).check_v() {
             match sender.send(sol.generate_d_indexes()) {
                 Ok(_) => {}
                 Err(_) => println!(
