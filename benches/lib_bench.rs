@@ -55,11 +55,28 @@ pub fn solve_order_three_bench(c: &mut Criterion) {
     group.measurement_time(Duration::new(20, 0));
     group.bench_function("iter", |b| b.iter(black_box(iter_solve_3)));
     group.bench_function("par_iter", |b| b.iter(black_box(par_iter_solve_3)));
-    group.finish();
 
+    group.finish();
+}
+
+pub fn solve_order_three_d_bench(c: &mut Criterion) {
     let mut group = c.benchmark_group("order_three_solve_dihedral");
+    group.sample_size(800);
+    group.noise_threshold(0.03);
+    group.measurement_time(Duration::new(20, 0));
     group.bench_function("iter", |b| b.iter(black_box(iter_dihedral_solve_3)));
     group.bench_function("par_iter", |b| b.iter(black_box(par_iter_dihedral_solve_3)));
+
+    group.finish();
+}
+
+pub fn solve_order_three_par_bench(c: &mut Criterion) {
+    let mut group = c.benchmark_group("order_three_solve_dihedral");
+    group.sample_size(800);
+    group.noise_threshold(0.03);
+    group.measurement_time(Duration::new(20, 0));
+    group.bench_function("default", |b| b.iter(black_box(par_iter_solve_3)));
+    group.bench_function("dihedral", |b| b.iter(black_box(par_iter_dihedral_solve_3)));
 
     group.finish();
 }

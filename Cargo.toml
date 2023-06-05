@@ -29,13 +29,13 @@ name = "test_order_three_mpsc"
 harness = false
 
 [[bench]]
-name = "core_compress"
+name = "pack"
 harness = false
 
 [[bench]]
-name = "core_check_compressed"
+name = "compress"
 harness = false
 
 [[bench]]
-name = "checkers"
+name = "check"
 harness = false

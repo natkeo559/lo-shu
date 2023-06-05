@@ -3,29 +3,19 @@ use crate::{
 };
 use std::simd::*;
 
-pub trait CheckCompressed<P: Params>
-where
-    [(); P::ELEMENTS]:,
-{
-    /// Checks if Permutation of element type T, order N is magic.
-    ///
-    /// # Note
-    ///
-    /// Checking a CompressedPermutation containing multiple valid Permutations may yield incorrect results. it is assumed that a CompressedPermutaion only contains one valid Permutaion.
-    ///
-    /// # Safety
-    ///
-    /// Use of `get_unchecked` is unsafe. For a safe abstraction, use `get` to return references to Square elements.
-    unsafe fn check_unsafe(&self) -> Option<usize>;
-
-    /// Checks if Permutation of element type T, order N is magic.
-    fn check(&self) -> Option<usize>;
-}
-
 macro_rules! impl_compressed_checkers {
     ($t:ty, $l:literal, $func:ident) => {
-        impl CheckCompressed<OrderThree> for CompressedPermutation<$t, $l, OrderThree> {
-            unsafe fn check_unsafe(&self) -> Option<usize> {
+        impl CompressedPermutation<$t, $l, OrderThree> {
+            /// Checks if Permutation of element type T, order N is magic.
+            ///
+            /// # Note
+            ///
+            /// Checking a CompressedPermutation containing multiple valid Permutations may yield incorrect results. it is assumed that a CompressedPermutaion only contains one valid Permutaion.
+            ///
+            /// # Safety
+            ///
+            /// Use of `get_unchecked` is unsafe. For a safe abstraction, use `get` to return references to Square elements.
+            pub unsafe fn check_v_unsafe(&self) -> Option<usize> {
                 const VMASK: Simd<u8, 8_usize> =
                     Simd::from_array([OrderThree::MAGIC_SUM as u8; OrderThree::CONSTRAINT_VECTORS]);
                 const MASK: Simd<$t, 8_usize> =
@@ -91,7 +81,8 @@ macro_rules! impl_compressed_checkers {
                 None
             }
 
-            fn check(&self) -> Option<usize> {
+            /// Checks if Permutation of element type T, order N is magic.
+            pub fn check_v(&self) -> Option<usize> {
                 const VMASK: Simd<u8, 8_usize> =
                     Simd::from_array([OrderThree::MAGIC_SUM as u8; OrderThree::CONSTRAINT_VECTORS]);
                 static MASK: Simd<$t, 8_usize> =
@@ -174,7 +165,7 @@ mod test_check {
     fn check_compressed_2x() {
         let p = Permutation::<OrderThree>::permutation_range(69073, 69075);
         let b = CompressedPermutation::<u8, 2, OrderThree>::compress_two_from_p_iter(p);
-        let c = unsafe { b.check_unsafe() };
+        let c = unsafe { b.check_v_unsafe() };
         assert_eq!(Some(69074), c)
     }
 
@@ -182,7 +173,7 @@ mod test_check {
     fn check_compressed_4x() {
         let p = Permutation::<OrderThree>::permutation_range(69073, 69077);
         let b = CompressedPermutation::<u16, 4, OrderThree>::compress_four_from_p_iter(p);
-        let c = unsafe { b.check_unsafe() };
+        let c = unsafe { b.check_v_unsafe() };
         assert_eq!(Some(69074), c)
     }
 
@@ -190,7 +181,7 @@ mod test_check {
     fn check_compressed_8x() {
         let p = Permutation::<OrderThree>::permutation_range(69073, 69081);
         let b = CompressedPermutation::<u32, 8, OrderThree>::compress_eight_from_p_iter(p);
-        let c = unsafe { b.check_unsafe() };
+        let c = unsafe { b.check_v_unsafe() };
         assert_eq!(Some(69074), c)
     }
 
@@ -198,7 +189,7 @@ mod test_check {
     fn check_compressed_16x() {
         let p = Permutation::<OrderThree>::permutation_range(69073, 69089);
         let b = CompressedPermutation::<u64, 16, OrderThree>::compress_sixteen_from_p_iter(p);
-        let c = unsafe { b.check_unsafe() };
+        let c = unsafe { b.check_v_unsafe() };
         assert_eq!(Some(69074), c)
     }
 }

@@ -69,5 +69,11 @@ pub fn check_unsafe_s_v_bench(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, check_v_bench, check_s_bench, check_safe_s_v_bench, check_unsafe_s_v_bench);
+criterion_group!(
+    benches,
+    check_v_bench,
+    check_s_bench,
+    check_safe_s_v_bench,
+    check_unsafe_s_v_bench
+);
 criterion_main!(benches);
