@@ -71,7 +71,7 @@ pub fn solve_order_three_d_bench(c: &mut Criterion) {
 }
 
 pub fn solve_order_three_par_bench(c: &mut Criterion) {
-    let mut group = c.benchmark_group("order_three_solve_dihedral");
+    let mut group = c.benchmark_group("order_three_solve_par_iter");
     group.sample_size(800);
     group.noise_threshold(0.03);
     group.measurement_time(Duration::new(20, 0));
@@ -94,5 +94,11 @@ pub fn kth_bench(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, solve_order_three_bench, kth_bench);
+criterion_group!(
+    benches,
+    solve_order_three_bench,
+    solve_order_three_d_bench,
+    solve_order_three_par_bench,
+    kth_bench
+);
 criterion_main!(benches);

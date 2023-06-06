@@ -3,11 +3,13 @@
 #![feature(generic_const_exprs)]
 
 pub mod checkers;
+pub mod constructive;
 pub mod core;
 pub mod group;
 pub mod order;
 
 pub use crate::checkers::*;
+pub use crate::constructive::*;
 pub use crate::core::*;
 pub use crate::group::*;
 pub use crate::order::*;

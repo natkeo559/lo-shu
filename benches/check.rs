@@ -34,8 +34,8 @@ pub fn check_v_bench(c: &mut Criterion) {
     group.sample_size(10000);
     group.noise_threshold(0.03);
     group.measurement_time(Duration::new(10, 0));
-    group.bench_function("unsafe", |b| b.iter(|| black_box(check_unsafe_vector())));
-    group.bench_function("safe", |b| b.iter(|| black_box(check_safe_vector())));
+    group.bench_function("unsafe", |b| b.iter(black_box(check_unsafe_vector)));
+    group.bench_function("safe", |b| b.iter(black_box(check_safe_vector)));
     group.finish();
 }
 
@@ -44,8 +44,8 @@ pub fn check_s_bench(c: &mut Criterion) {
     group.sample_size(10000);
     group.noise_threshold(0.03);
     group.measurement_time(Duration::new(10, 0));
-    group.bench_function("unsafe", |b| b.iter(|| black_box(check_unsafe_scalar())));
-    group.bench_function("safe", |b| b.iter(|| black_box(check_safe_scalar())));
+    group.bench_function("unsafe", |b| b.iter(black_box(check_unsafe_scalar)));
+    group.bench_function("safe", |b| b.iter(black_box(check_safe_scalar)));
     group.finish();
 }
 
@@ -54,8 +54,8 @@ pub fn check_safe_s_v_bench(c: &mut Criterion) {
     group.sample_size(10000);
     group.noise_threshold(0.03);
     group.measurement_time(Duration::new(10, 0));
-    group.bench_function("scalar", |b| b.iter(|| black_box(check_safe_scalar())));
-    group.bench_function("vector", |b| b.iter(|| black_box(check_safe_vector())));
+    group.bench_function("scalar", |b| b.iter(black_box(check_safe_scalar)));
+    group.bench_function("vector", |b| b.iter(black_box(check_safe_vector)));
     group.finish();
 }
 
@@ -64,8 +64,8 @@ pub fn check_unsafe_s_v_bench(c: &mut Criterion) {
     group.sample_size(10000);
     group.noise_threshold(0.03);
     group.measurement_time(Duration::new(10, 0));
-    group.bench_function("scalar", |b| b.iter(|| black_box(check_unsafe_scalar())));
-    group.bench_function("vector", |b| b.iter(|| black_box(check_unsafe_vector())));
+    group.bench_function("scalar", |b| b.iter(black_box(check_unsafe_scalar)));
+    group.bench_function("vector", |b| b.iter(black_box(check_unsafe_vector)));
     group.finish();
 }
 
