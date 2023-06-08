@@ -3,7 +3,7 @@
 
 use std::{collections::HashSet, sync::mpsc, thread};
 
-use lo_shu::{Group, OrderThree, Params, Permutation};
+use lo_shu::{CheckVector, Group, OrderThree, Params, Permutation};
 
 fn message_solver() {
     let (sx, rx) = mpsc::channel();

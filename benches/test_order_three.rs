@@ -1,7 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{ThreadManager, Worker};
+use lo_shu::{CheckVector, ThreadManager, Worker};
 use std::collections::HashSet;
 use std::{
     sync::{

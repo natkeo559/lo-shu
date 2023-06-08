@@ -2,7 +2,7 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{CompressedPermutation, OrderThree, Params, Permutation};
+use lo_shu::{CheckVector, CompressedPermutation, OrderThree, Params, Permutation};
 use std::{collections::HashSet, time::Duration};
 
 fn check_compressed_2x() {

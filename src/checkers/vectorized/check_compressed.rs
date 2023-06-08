@@ -1,11 +1,13 @@
 use crate::{
-    unpack_u4x16, unpack_u4x2, unpack_u4x4, unpack_u4x8, CompressedPermutation, OrderThree, Params,
+    unpack_u4x16, unpack_u4x2, unpack_u4x4, unpack_u4x8, CheckVector, CompressedPermutation,
+    OrderThree, Params,
 };
 use std::simd::*;
 
 macro_rules! impl_compressed_checkers {
     ($t:ty, $l:literal, $func:ident) => {
-        impl CompressedPermutation<$t, $l, OrderThree> {
+        impl CheckVector for CompressedPermutation<$t, $l, OrderThree> {
+            type Output = usize;
             /// Checks if Permutation of element type T, order N is magic.
             ///
             /// # Note
@@ -15,7 +17,7 @@ macro_rules! impl_compressed_checkers {
             /// # Safety
             ///
             /// Use of `get_unchecked` is unsafe. For a safe abstraction, use `get` to return references to Square elements.
-            pub unsafe fn check_v_unsafe(&self) -> Option<usize> {
+            unsafe fn check_v_unsafe(&self) -> Option<usize> {
                 const VMASK: Simd<u8, 8_usize> =
                     Simd::from_array([OrderThree::MAGIC_SUM as u8; OrderThree::CONSTRAINT_VECTORS]);
                 const MASK: Simd<$t, 8_usize> =
@@ -82,7 +84,7 @@ macro_rules! impl_compressed_checkers {
             }
 
             /// Checks if Permutation of element type T, order N is magic.
-            pub fn check_v(&self) -> Option<usize> {
+            fn check_v(&self) -> Option<usize> {
                 const VMASK: Simd<u8, 8_usize> =
                     Simd::from_array([OrderThree::MAGIC_SUM as u8; OrderThree::CONSTRAINT_VECTORS]);
                 static MASK: Simd<$t, 8_usize> =
