@@ -5,7 +5,7 @@ pub struct Construction<P: Params>
 where
     [(); P::ELEMENTS]:,
 {
-    square: Square<P>,
+    pub square: Square<P>,
 }
 
 impl<P: Params + Copy> Construction<P>
@@ -47,7 +47,7 @@ where
 
 #[cfg(test)]
 mod test_construction {
-    use crate::OrderThree;
+    use crate::{CheckVector, OrderThree};
 
     use super::*;
 
@@ -65,5 +65,14 @@ mod test_construction {
         let a = Construction::<OrderThree>::new();
         let b = a.siamese(1);
         println!("{}", b.square)
+    }
+
+    #[test]
+    fn test_valid_siamese() {
+        for i in 0..OrderThree::ELEMENTS {
+            if let Some(a) = Construction::<OrderThree>::new().siamese(i).check_v() {
+                println!("{}", a.square)
+            };
+        }
     }
 }

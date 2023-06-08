@@ -1,4 +1,4 @@
-use crate::{OrderFour, OrderThree, Params, Permutation, Square};
+use crate::{Construction, OrderFour, OrderThree, Params, Permutation, Square};
 pub trait CheckScalar {
     type Output;
 
@@ -182,6 +182,58 @@ impl CheckScalar for Permutation<OrderThree> {
 }
 
 impl CheckScalar for Permutation<OrderFour> {
+    type Output = Self;
+
+    #[inline(always)]
+    unsafe fn check_s_unsafe(&self) -> Option<Self::Output> {
+        let p = *self;
+
+        if p.square.check_s_unsafe().is_some() {
+            return Some(p);
+        }
+
+        None
+    }
+
+    #[inline(always)]
+    fn check_s(&self) -> Option<Self::Output> {
+        let p = *self;
+
+        if p.square.check_s().is_some() {
+            return Some(p);
+        }
+
+        None
+    }
+}
+
+impl CheckScalar for Construction<OrderThree> {
+    type Output = Self;
+
+    #[inline(always)]
+    unsafe fn check_s_unsafe(&self) -> Option<Self::Output> {
+        let p = *self;
+
+        if p.square.check_s_unsafe().is_some() {
+            return Some(p);
+        }
+
+        None
+    }
+
+    #[inline(always)]
+    fn check_s(&self) -> Option<Self::Output> {
+        let p = *self;
+
+        if p.square.check_s().is_some() {
+            return Some(p);
+        }
+
+        None
+    }
+}
+
+impl CheckScalar for Construction<OrderFour> {
     type Output = Self;
 
     #[inline(always)]
