@@ -133,7 +133,7 @@ impl CheckVector for Square<OrderFour> {
     #[inline(always)]
     unsafe fn check_v_unsafe(&self) -> Option<Self> {
         const VMASK: Simd<u8, 8_usize> =
-            Simd::from_slice(&[OrderThree::MAGIC_SUM as u8; OrderThree::CONSTRAINT_VECTORS]);
+            Simd::from_slice(&[OrderFour::MAGIC_SUM as u8; OrderFour::CONSTRAINT_VECTORS]);
 
         let vals: [Simd<u8, 8_usize>; 2] = [
             Simd::from_slice(&[
@@ -241,7 +241,7 @@ impl CheckVector for Square<OrderFour> {
     #[inline(always)]
     fn check_v(&self) -> Option<Self> {
         const VMASK: Simd<u8, 8_usize> =
-            Simd::from_slice(&[OrderThree::MAGIC_SUM as u8; OrderThree::CONSTRAINT_VECTORS]);
+            Simd::from_slice(&[OrderFour::MAGIC_SUM as u8; OrderFour::CONSTRAINT_VECTORS]);
 
         let vals: [Simd<u8, 8_usize>; 2] = [
             Simd::from_slice(&[
@@ -445,9 +445,9 @@ impl CheckVector for Construction<OrderFour> {
 
         if p.square.check_v().is_some() {
             return Some(p);
+        } else {
+            None
         }
-
-        None
     }
 }
 
@@ -460,6 +460,14 @@ mod check_tests {
         let a = Permutation::<OrderThree>::kth(69074);
         let r = unsafe { a.check_v_unsafe() };
         assert_eq!(Some(Permutation::<OrderThree>::kth(69074)), r);
+
+        let a = Permutation::<OrderFour>::kth(80867885530);
+
+        println!("{}", a.square);
+
+        let r = a.check_v();
+        assert_eq!(Some(Permutation::<OrderFour>::kth(80867885530)), r);
+        
     }
 
     #[test]
