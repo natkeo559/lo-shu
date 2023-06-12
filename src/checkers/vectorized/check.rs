@@ -355,10 +355,10 @@ impl CheckVector for Permutation<OrderThree> {
         let p = *self;
 
         if p.square.check_v_unsafe().is_some() {
-            return Some(p);
+            Some(p)
+        } else {
+            None
         }
-
-        None
     }
 
     #[inline(always)]
@@ -366,10 +366,10 @@ impl CheckVector for Permutation<OrderThree> {
         let p = *self;
 
         if p.square.check_v().is_some() {
-            return Some(p);
+            Some(p)
+        } else {
+            None
         }
-
-        None
     }
 }
 
@@ -381,10 +381,10 @@ impl CheckVector for Permutation<OrderFour> {
         let p = *self;
 
         if p.square.check_v_unsafe().is_some() {
-            return Some(p);
+            Some(p)
+        } else {
+            None
         }
-
-        None
     }
 
     #[inline(always)]
@@ -392,10 +392,10 @@ impl CheckVector for Permutation<OrderFour> {
         let p = *self;
 
         if p.square.check_v().is_some() {
-            return Some(p);
+            Some(p)
+        } else {
+            None
         }
-
-        None
     }
 }
 
@@ -407,10 +407,10 @@ impl CheckVector for Construction<OrderThree> {
         let p = *self;
 
         if p.square.check_v_unsafe().is_some() {
-            return Some(p);
+            Some(p)
+        } else {
+            None
         }
-
-        None
     }
 
     #[inline(always)]
@@ -418,10 +418,10 @@ impl CheckVector for Construction<OrderThree> {
         let p = *self;
 
         if p.square.check_v().is_some() {
-            return Some(p);
+            Some(p)
+        } else {
+            None
         }
-
-        None
     }
 }
 
@@ -433,10 +433,10 @@ impl CheckVector for Construction<OrderFour> {
         let p = *self;
 
         if p.square.check_v_unsafe().is_some() {
-            return Some(p);
+            Some(p)
+        } else {
+            None
         }
-
-        None
     }
 
     #[inline(always)]
@@ -444,7 +444,7 @@ impl CheckVector for Construction<OrderFour> {
         let p = *self;
 
         if p.square.check_v().is_some() {
-            return Some(p);
+            Some(p)
         } else {
             None
         }
@@ -467,7 +467,6 @@ mod check_tests {
 
         let r = a.check_v();
         assert_eq!(Some(Permutation::<OrderFour>::kth(80867885530)), r);
-        
     }
 
     #[test]
