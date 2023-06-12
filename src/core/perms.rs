@@ -86,6 +86,10 @@ where
     pub fn permutation_range(start: usize, stop: usize) -> impl Iterator<Item = Self> {
         (start..stop).map(|i| Self::kth(i))
     }
+
+    pub fn indexes(arr: &[usize]) -> impl Iterator<Item = Self> + '_ {
+        arr.iter().map(|k| Self::kth(*k))
+    }
 }
 
 impl<P: Params> Hash for Permutation<P>
