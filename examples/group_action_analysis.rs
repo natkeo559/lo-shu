@@ -101,7 +101,7 @@ fn main() {
     // Let each thread manage their own local sets, which are collected later to prevent data races
     // and shared memory contention.
     //
-    // Rejection set constains unique actions that do NOT result in a magic square when applied
+    // Rejection set contains unique actions that do NOT result in a magic square when applied
     // to any other magic square. For example, if a magic square `a` and action `b` resulted in a magic square
     // then apply `b` to all other magic squares. If `b` fails to produce a magic square, reject it - insert it
     // into the rejection set. Think of this as "failure by counter-example".
