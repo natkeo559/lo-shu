@@ -1,9 +1,9 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use std::{collections::HashSet, sync::mpsc, thread};
+use std::{collections::BTreeSet, sync::mpsc, thread};
 
-use lo_shu::{CheckVector, Group, OrderThree, Params, Permutation};
+use lo_shu::{CheckVector, OrderThree, Params, Permutation};
 
 fn message_solver() {
     let (sx, rx) = mpsc::channel();
@@ -24,7 +24,7 @@ fn message_solver() {
     }
 }
 
-fn compute(start: usize, sender: mpsc::Sender<HashSet<usize>>) {
+fn compute(start: usize, sender: mpsc::Sender<BTreeSet<usize>>) {
     for n in (start..OrderThree::PERMUTATIONS).step_by(16) {
         if let Some(sol) = Permutation::<OrderThree>::kth(n).check_v() {
             match sender.send(sol.generate_d_indexes()) {

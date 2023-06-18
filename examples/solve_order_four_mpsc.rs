@@ -21,7 +21,7 @@ pub fn message_solver(t: usize) {
         let found = f.clone();
         let tm = ThreadManager::new(t, 512, false);
         thread::spawn(move || {
-            tm.channel_check(i + 1481069343150, sender, found);
+            tm.channel_check(i, sender, found);
         });
     }
     loop {

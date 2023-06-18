@@ -1,28 +1,15 @@
 use crate::{Params, Permutation};
-use std::collections::HashSet;
+use std::collections::{HashSet, BTreeSet};
 
-pub trait Group
+impl<P: Params + Copy> Permutation<P>
 where
-    Self: Sized,
+    [(); P::ELEMENTS]:,
 {
     /// Generate the dihedral group for a Square or Permutation
     ///
     /// # Note:
     /// Because this function uses a HashSet, the result will contain non-trivial ordering
-    fn generate_d(&self) -> HashSet<Self>;
-
-    /// Generate the dihedral group for a Square or Permutation. The resulting HashSet will only contain the indexes of the associated Permutations.
-    ///
-    /// # Note:
-    /// Because this function uses a HashSet, the result will contain non-trivial ordering
-    fn generate_d_indexes(&self) -> HashSet<usize>;
-}
-
-impl<P: Params + Copy> Group for Permutation<P>
-where
-    [(); P::ELEMENTS]:,
-{
-    fn generate_d(&self) -> HashSet<Permutation<P>> {
+    pub fn generate_d(&self) -> HashSet<Permutation<P>> {
         let mut set = HashSet::new();
         let a = *self;
         let r = Self::identity().square.rotate_90().to_perm();
@@ -40,8 +27,12 @@ where
         set
     }
 
-    fn generate_d_indexes(&self) -> HashSet<usize> {
-        let mut set = HashSet::new();
+    /// Generate the dihedral group for a Square or Permutation. The resulting HashSet will only contain the indexes of the associated Permutations.
+    ///
+    /// # Note:
+    /// Because this function uses a HashSet, the result will contain non-trivial ordering
+    pub fn generate_d_indexes(&self) -> BTreeSet<usize> {
+        let mut set = BTreeSet::new();
         let a = *self;
         let r = Self::identity().square.rotate_90().to_perm();
         let s = Self::identity().square.reflect_x().to_perm();
@@ -80,7 +71,7 @@ mod test_group {
     fn test_generate_d_indexes_3() {
         let a = Permutation::<OrderThree>::identity();
         let b = a.generate_d_indexes();
-        let mut c = HashSet::new();
+        let mut c = BTreeSet::new();
         c.insert(a.index);
 
         assert_eq!(8, b.len());
@@ -102,7 +93,7 @@ mod test_group {
     fn test_generate_d_indexes_4() {
         let a = Permutation::<OrderFour>::identity();
         let b = a.generate_d_indexes();
-        let mut c = HashSet::new();
+        let mut c = BTreeSet::new();
         c.insert(a.index);
 
         assert_eq!(8, b.len());

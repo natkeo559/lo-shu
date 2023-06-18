@@ -2,7 +2,7 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{Group, OrderThree, Permutation};
+use lo_shu::{OrderThree, Permutation};
 use lo_shu::{ThreadManager, Worker};
 use std::{
     sync::{

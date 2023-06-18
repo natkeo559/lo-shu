@@ -2,7 +2,7 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{CheckVector, Group, OrderThree, Params, Permutation};
+use lo_shu::{CheckVector, OrderThree, Params, Permutation};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use std::{collections::HashSet, time::Duration};
 

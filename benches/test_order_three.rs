@@ -12,7 +12,7 @@ use std::{
     thread,
 };
 
-use lo_shu::{Group, OrderFour, OrderThree, Params, Permutation};
+use lo_shu::{OrderFour, OrderThree, Params, Permutation};
 use rayon::prelude::*;
 
 fn order_three_linear() -> HashSet<Permutation<OrderThree>> {
