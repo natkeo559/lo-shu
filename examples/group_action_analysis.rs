@@ -43,10 +43,7 @@ fn main() {
     let mut unique_set = BTreeSet::new();
     for s in magic_squares.iter() {
         if unique_set
-            .intersection(
-                &Permutation::<OrderFour>::kth(*s)
-                    .generate_d_indexes(),
-            )
+            .intersection(&Permutation::<OrderFour>::kth(*s).generate_d_indexes())
             .map(|i| *i)
             .collect::<BTreeSet<usize>>()
             .is_empty()
@@ -96,7 +93,7 @@ fn main() {
     // For s in the set of rotations and reflections of a magic square, if s operated on by an action
     // is a magic square, insert the square along with it's rotations/reflections into the set of
     // all magic squares. This process may produce magic squares that aren't obtained simply by rotating
-    // and reflecting. 
+    // and reflecting.
     //
     // Let each thread manage their own local sets, which are collected later to prevent data races
     // and shared memory contention.
@@ -116,17 +113,21 @@ fn main() {
             let action = Permutation::<OrderFour>::kth(a);
 
             magic.extend(square.generate_d_indexes());
-            magic.extend(square
-                .generate_d()
-                .into_iter()
-                .filter_map(|s| {
-                    if let Some(m) = (s * action).check_v() {
-                        Some(m.generate_d_indexes())
-                    } else {
-                        reject.insert(action.index);
-                        None
-                    }
-                }).flatten().collect::<BTreeSet<usize>>());
+            magic.extend(
+                square
+                    .generate_d()
+                    .into_iter()
+                    .filter_map(|s| {
+                        if let Some(m) = (s * action).check_v() {
+                            Some(m.generate_d_indexes())
+                        } else {
+                            reject.insert(action.index);
+                            None
+                        }
+                    })
+                    .flatten()
+                    .collect::<BTreeSet<usize>>(),
+            );
             (magic, reject)
         })
         .unzip();
@@ -163,6 +164,25 @@ fn main() {
         let mut outfile = File::create("examples/collected/orderfour/G.txt").unwrap();
         for i in g.iter() {
             write!(outfile, "{}\n", i).unwrap();
+        }
+    }
+}
+
+#[cfg(test)]
+mod debugging {
+    use super::*;
+
+    #[test]
+    #[ignore = "Debugging"]
+    fn dbg_g() {
+        let g = read_to_string("examples/collected/orderfour/G.txt")
+            .expect("Could not find input file")
+            .lines()
+            .map(|line| line.trim().parse::<usize>().unwrap())
+            .collect::<BTreeSet<usize>>();
+
+        for i in g.into_iter().map(|i| Permutation::<OrderFour>::kth(i)) {
+            println!("{}", i)
         }
     }
 }
