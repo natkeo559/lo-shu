@@ -1,5 +1,5 @@
 use crate::{Params, Permutation};
-use std::collections::{HashSet, BTreeSet};
+use std::collections::{BTreeSet, HashSet};
 
 impl<P: Params + Copy> Permutation<P>
 where
