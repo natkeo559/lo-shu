@@ -4,39 +4,30 @@ impl<P: Params + Copy> Square<P>
 where
     [(); P::ELEMENTS]:,
 {
+    
+    //  Time Complexity:
+    //  Best = Average = Worst = O(n^2)
+    //  Space Complexity:
+    //  Best = Average = Worst = O(1)
     pub fn to_perm(&mut self) -> Permutation<P> {
-        let n = P::ELEMENTS;
-
-        let mut result = 0usize;
-        let mut j = 0;
-        while j < n {
-            let mut i = 1;
-            let mut factor = 1;
-            while i < n - j {
-                factor *= i;
-                i += 1;
-            }
-            i = 0;
-            let mut index = self[j] as usize;
-            while i < j {
-                if self[i] < self[j] {
-                    index -= 1;
+        let mut index = 0;
+        let mut position = 2;
+        let mut factor = 1;
+        for p in (0..=P::ELEMENTS - 2).rev() {
+            let mut succ = 0;
+            for q in p + 1..P::ELEMENTS {
+                if self[p] > self[q] {
+                    succ += 1;
                 }
-                i += 1;
             }
-            result += index * factor;
-            j += 1;
+            index += succ * factor;
+            factor *= position;
+            position += 1;
         }
-
-        let err = match P::ORDER {
-            3 => 46234,
-            4 => 1401602636314,
-            _ => panic!(),
-        };
 
         Permutation {
             square: *self,
-            index: result - err,
+            index,
         }
     }
 

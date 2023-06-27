@@ -33,9 +33,13 @@ fn main() {
     let mut magic_squares = read_to_string("examples/collected/orderfour/Census.txt")
         .expect("Could not find input file")
         .lines()
-        .take(447)
+        .take(1100)
         .map(|line| line.trim().parse::<usize>().unwrap())
         .collect::<BTreeSet<usize>>();
+
+    // for i in [87357715922,8099169412855,8228242280293] {
+    //     magic_squares.insert(i);
+    // }
 
     println!("Input Size: {}", magic_squares.len());
 
@@ -86,6 +90,7 @@ fn main() {
         }
     });
 
+    println!("Actions: {}", unique_actions.len());
     println!("Extending...");
 
     // For every element in the cartesian product of magic squares and unique actions,
@@ -160,12 +165,12 @@ fn main() {
         }
     }
 
-    if !g.is_empty() {
-        let mut outfile = File::create("examples/collected/orderfour/G.txt").unwrap();
-        for i in g.iter() {
-            write!(outfile, "{}\n", i).unwrap();
-        }
-    }
+    // if !g.is_empty() {
+    //     let mut outfile = File::create("examples/collected/orderfour/G.txt").unwrap();
+    //     for i in g.iter() {
+    //         write!(outfile, "{}\n", i).unwrap();
+    //     }
+    // }
 }
 
 #[cfg(test)]
@@ -182,7 +187,7 @@ mod debugging {
             .collect::<BTreeSet<usize>>();
 
         for i in g.into_iter().map(|i| Permutation::<OrderFour>::kth(i)) {
-            println!("{}", i)
+            println!("{}", i.cyclic_notation().order())
         }
     }
 }

@@ -1,7 +1,7 @@
 use crate::{Params, Square};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Construction<P: Params>
+pub struct Construction<P: Params + Copy>
 where
     [(); P::ELEMENTS]:,
 {

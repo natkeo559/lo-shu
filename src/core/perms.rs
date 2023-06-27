@@ -88,7 +88,7 @@ where
     }
 
     pub fn indexes(arr: &[usize]) -> impl Iterator<Item = Self> + '_ {
-        arr.iter().map(|k| Self::kth(*k))
+        arr.iter().map(|&k| Self::kth(k))
     }
 }
 
@@ -139,19 +139,6 @@ mod test_perms {
         let a = Permutation::<OrderThree>::identity();
         assert_eq!(result, a);
         println!("{}", a)
-    }
-
-    #[test]
-    fn trya() {
-        let k = 10;
-        let a = (1..=5)
-            .map(|b| (1..b).fold(1, |a, b| a * b))
-            .filter(|a| k / a != 0)
-            .enumerate();
-
-        for i in a {
-            println!("{:?}", i);
-        }
     }
 
     #[test]

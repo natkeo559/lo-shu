@@ -1,4 +1,5 @@
 use crate::{Params, Permutation, Square};
+use std::mem::swap;
 use std::{collections::HashMap, fmt, marker::PhantomData};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -8,11 +9,32 @@ pub struct Cycles<P: Params> {
 }
 
 impl<P: Params + Copy> Cycles<P> {
-    pub fn new() -> Self {
-        Self {
-            k: vec![],
-            phantom: PhantomData,
+    fn gcd(mut a: usize, mut b: usize) -> usize {
+        if a == b {
+            return a;
         }
+        if b > a {
+            swap(&mut a, &mut b);
+        }
+        while b > 0 {
+            let tmp = a;
+            a = b;
+            b = tmp % b;
+        }
+        a
+    }
+
+    fn lcm(a: usize, b: usize) -> usize {
+        a * (b / Self::gcd(a, b))
+    }
+
+    pub fn order(&self) -> usize {
+        let lens = self.cycle_lengths();
+        lens.into_iter().fold(1, |a, b| Self::lcm(a, b))
+    }
+
+    pub fn weight(&self) -> usize {
+        self.k.len()
     }
 
     pub fn from_vecs(vecs: Vec<Vec<usize>>) -> Self {
@@ -44,17 +66,15 @@ impl<P: Params + Copy> Cycles<P> {
 
         Square::<P>::from_array(s).to_perm()
     }
+
+    pub fn cycle_lengths(&self) -> Vec<usize> {
+        self.k.iter().map(|c| c.len()).collect()
+    }
 }
 
 impl<P: Params> fmt::Display for Cycles<P> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{:?}", self.k)
-    }
-}
-
-impl<P: Params + Copy> Default for Cycles<P> {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -68,7 +88,7 @@ where
             .collect();
         let b = (1..=P::ELEMENTS).zip((self.square.0).into_iter().map(|a| a as usize));
 
-        let mut all = Cycles::<P>::new();
+        let mut all = vec![];
         let mut cycle = vec![];
         let mut taken = vec![];
 
@@ -98,7 +118,10 @@ where
             }
         }
 
-        all
+        Cycles {
+            k: all,
+            phantom: PhantomData,
+        }
     }
 }
 
@@ -154,14 +177,15 @@ mod test_ops {
     #[test]
     fn test_into_perm() {
         let a = Permutation::<OrderThree>::kth(50000);
-        println!("{:?}", a);
-
         let b = a.cyclic_notation();
-        println!("{}", b);
-
         let c = b.clone().into_permutation();
-        println!("{:?}", c);
 
         assert_eq!(a, c)
+    }
+
+    #[test]
+    fn test_order() {
+        let a = Permutation::<OrderThree>::kth(310011);
+        assert_eq!(a.cyclic_notation().order(), 15)
     }
 }

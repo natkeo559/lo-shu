@@ -17,6 +17,10 @@ name = "lib_bench"
 harness = false
 
 [[bench]]
+name = "order_three_solve_iters"
+harness = false
+
+[[bench]]
 name = "mpsc_bench"
 harness = false
 
