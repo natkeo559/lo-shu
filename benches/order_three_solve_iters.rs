@@ -63,7 +63,7 @@ fn wide_simd_3() {
         let mut elems_1 = [0; 64];
         let mut elems_2 = [0; 64];
 
-        for n in (0..i.len()) {
+        for n in 0..i.len() {
             elems_0[0 + (8 * n)] = i[n][0];
             elems_0[1 + (8 * n)] = i[n][1];
             elems_0[2 + (8 * n)] = i[n][2];
@@ -117,7 +117,8 @@ fn wide_simd_threaded_3() {
         .array_chunks::<8>();
     const VMASK: Simd<u8, 8> = u8x8::from_slice(&[15; 8]);
 
-    let result: Vec<_> = perm_arr.par_bridge()
+    let result: Vec<_> = perm_arr
+        .par_bridge()
         .filter_map(|i| {
             let mut elems_0 = [0; 64];
             let mut elems_1 = [0; 64];

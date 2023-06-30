@@ -4,7 +4,6 @@ impl<P: Params + Copy> Square<P>
 where
     [(); P::ELEMENTS]:,
 {
-    
     //  Time Complexity:
     //  Best = Average = Worst = O(n^2)
     //  Space Complexity:
