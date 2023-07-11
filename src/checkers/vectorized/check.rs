@@ -453,10 +453,15 @@ impl CheckVector for Construction<OrderFour> {
     }
 }
 
-impl<P: Params + Copy> Construction<P> where [(); P::ELEMENTS]:{
-    
-
-    pub fn check_n_v(&self) -> Option<Construction<P>>{
+impl<P: Params + Copy> Construction<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    #[inline(always)]
+    pub fn check_n_v<const B: usize>(&self) -> Option<Construction<P>>
+    where
+        LaneCount<B>: SupportedLaneCount,
+    {
         let (r, c): (Vec<u8>, Vec<u8>) = (0..P::ELEMENTS)
             .map(|e| e / P::ORDER)
             .zip((0usize..P::ELEMENTS).map(|s| s % P::ORDER))
@@ -464,18 +469,23 @@ impl<P: Params + Copy> Construction<P> where [(); P::ELEMENTS]:{
             .unzip();
         let rows = r.chunks_exact(P::ORDER).collect_vec();
         let cols = c.chunks_exact(P::ORDER).collect_vec();
-        let t1: Vec<u8> = (0..P::ORDER).map(|a| self.square[a * (P::ORDER + 1)]).collect();
-        let t2: Vec<u8> = (0..P::ORDER).map(|a| self.square[(a + 1) * (P::ORDER - 1)]).collect();
+        let t1: Vec<u8> = (0..P::ORDER)
+            .map(|a| self.square[a * (P::ORDER + 1)])
+            .collect();
+        let t2: Vec<u8> = (0..P::ORDER)
+            .map(|a| self.square[(a + 1) * (P::ORDER - 1)])
+            .collect();
 
-        let mut bytes: usize = 2usize.pow(((P::ORDER as f64).log10() / (2_f64).log10()).ceil() as u32);
-        if bytes < 8 {
-            bytes = 8;
-        }
-        let pad = bytes.abs_diff(P::CONSTRAINT_VECTORS);
+        let pad = if P::CONSTRAINT_VECTORS.is_power_of_two() {
+            0
+        } else {
+            B.abs_diff(P::CONSTRAINT_VECTORS)
+        };
+
         let mut buffs = vec![];
-        for _ in 0..P::ORDER{
-            buffs.push(Vec::<u8>::with_capacity(bytes))
-        } 
+        for _ in 0..P::ORDER {
+            buffs.push(Vec::<u8>::with_capacity(B))
+        }
 
         for i in 0..P::ORDER {
             for j in rows[i] {
@@ -487,8 +497,10 @@ impl<P: Params + Copy> Construction<P> where [(); P::ELEMENTS]:{
             buffs[i].push(t1[i]);
             buffs[i].push(t2[i]);
 
-            for _ in 0..pad{
-                buffs[i].push(0)
+            if pad != 0 {
+                for _ in 0..pad {
+                    buffs[i].push(0)
+                }
             }
         }
 
@@ -496,65 +508,24 @@ impl<P: Params + Copy> Construction<P> where [(); P::ELEMENTS]:{
         for _ in 0..P::CONSTRAINT_VECTORS {
             r_vec.push(P::MAGIC_SUM as u8)
         }
-        for _ in 0..pad {
-            r_vec.push(0)
-        }
 
-        match bytes {
-            8 => {
-                let sumv: Simd<u8, 8> = Simd::from_slice(&r_vec[..]);
-                let mut fv: Simd<u8, 8> = Simd::from_slice(buffs.iter().by_ref().next().unwrap()); 
-                for i in buffs.into_iter().skip(1) {
-                    fv += Simd::from_slice(&i[..])
-                }
-                if fv == sumv {
-                    Some(*self)
-                } else {
-                    None
-                }
-            },
-            16 => {
-                let sumv: Simd<u8, 16> = Simd::from_slice(&r_vec[..]);
-                let mut fv: Simd<u8, 16> = Simd::from_slice(buffs.iter().by_ref().next().unwrap()); 
-                for i in buffs.into_iter().skip(1) {
-                    fv += Simd::from_slice(&i[..])
-                }
-                if fv == sumv {
-                    Some(*self)
-                } else {
-                    None
-                }
-            },
-            32 => {
-                let sumv: Simd<u8, 32> = Simd::from_slice(&r_vec[..]);
-                let mut fv: Simd<u8, 32> = Simd::from_slice(buffs.iter().by_ref().next().unwrap()); 
-                for i in buffs.into_iter().skip(1) {
-                    fv += Simd::from_slice(&i[..])
-                }
-                if fv == sumv {
-                    Some(*self)
-                } else {
-                    None
-                }
-            },
-            64 => {
-                let sumv: Simd<u8, 32> = Simd::from_slice(&r_vec[..]);
-                let mut fv: Simd<u8, 32> = Simd::from_slice(buffs.iter().by_ref().next().unwrap()); 
-                for i in buffs.into_iter().skip(1) {
-                    fv += Simd::from_slice(&i[..])
-                }
-                if fv == sumv {
-                    Some(*self)
-                } else {
-                    None
-                }
-            },
-            a => panic!("Could not pick SIMD size! {a}")
+        if pad != 0 {
+            for _ in 0..pad {
+                r_vec.push(0)
+            }
         }
-        
+        let fv = buffs
+            .into_iter()
+            .fold(Simd::splat(0), |a, n| a + Simd::from_slice(&n[..B]));
 
+        let sumv: Simd<u8, B> = Simd::from_slice(r_vec.as_slice());
+        if fv == sumv {
+            Some(*self)
+        } else {
+            None
+        }
     }
-} 
+}
 
 #[cfg(test)]
 mod check_tests {
