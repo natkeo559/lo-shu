@@ -14,7 +14,7 @@ where
 {
     pub fn zeros() -> Self {
         Construction {
-            square: Square([0; P::ELEMENTS])
+            square: Square([0; P::ELEMENTS]),
         }
     }
 
@@ -25,9 +25,8 @@ where
         }
 
         Self {
-            square: Square(arr)
+            square: Square(arr),
         }
-
     }
 
     pub fn siamese(seed_idx: usize) -> Self {
@@ -38,13 +37,18 @@ where
         let mut next_pos = (seed_idx / P::ORDER, seed_idx % P::ORDER);
 
         for i in 1..=P::ELEMENTS as u8 {
-
             c.square[(next_pos.0 * P::ORDER) + next_pos.1] = i;
 
-            next_pos = ((next_pos.0 + (P::ORDER - 1)) % P::ORDER, (next_pos.1 + 1) % P::ORDER);
+            next_pos = (
+                (next_pos.0 + (P::ORDER - 1)) % P::ORDER,
+                (next_pos.1 + 1) % P::ORDER,
+            );
 
             if c.square[next_pos.0 * P::ORDER + next_pos.1] != 0 {
-                next_pos = ((next_pos.0 + 2) % P::ORDER, (next_pos.1 + (P::ORDER - 1)) % P::ORDER);
+                next_pos = (
+                    (next_pos.0 + 2) % P::ORDER,
+                    (next_pos.1 + (P::ORDER - 1)) % P::ORDER,
+                );
             }
         }
 
@@ -63,7 +67,7 @@ where
 
 #[cfg(test)]
 mod test_construction {
-    use crate::{CheckVector, OrderThree, OrderFive};
+    use crate::{CheckVector, OrderFive, OrderThree};
 
     use super::*;
 
@@ -108,8 +112,9 @@ mod test_construction {
         let mut sols = vec![];
         for i in 0..OrderFive::ELEMENTS {
             let a = Construction::<OrderFive>::siamese(i);
-            if a.check_n_v().is_some() {
+            if a.check_n_v::<16>().is_some() {
                 sols.push(a);
+                println!("{}", i);
                 println!("{}\n", a.square)
             };
         }

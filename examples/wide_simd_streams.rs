@@ -7,6 +7,7 @@ use lo_shu::{OrderThree, Params, Permutation};
 use rayon::prelude::{ParallelBridge, ParallelIterator};
 use std::simd::{u8x64, u8x8, Simd};
 
+#[inline]
 fn main() {
     let perm_arr = (0..OrderThree::PERMUTATIONS)
         .map(|k| Permutation::<OrderThree>::kth(k).square.0)

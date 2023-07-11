@@ -1,9 +1,10 @@
 use crate::{Construction, Params};
 use rand::{self, seq::SliceRandom};
 
-
-
-impl<P: Params + Copy> Construction<P> where [(); P::ELEMENTS]:{
+impl<P: Params + Copy> Construction<P>
+where
+    [(); P::ELEMENTS]:,
+{
     pub fn shuffle(&mut self) -> &mut Self {
         let mut rng = rand::thread_rng();
         self.square.0.shuffle(&mut rng);
