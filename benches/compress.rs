@@ -93,13 +93,13 @@ pub fn check_compressed_bench(c: &mut Criterion) {
 
     group.measurement_time(Duration::new(10, 0));
 
-    group.bench_function("2x", |b| b.iter(|| black_box(check_compressed_2x())));
+    group.bench_function("2x", |b| b.iter(black_box(check_compressed_2x)));
 
-    group.bench_function("4x", |b| b.iter(|| black_box(check_compressed_4x())));
+    group.bench_function("4x", |b| b.iter(black_box(check_compressed_4x)));
 
-    group.bench_function("8x", |b| b.iter(|| black_box(check_compressed_8x())));
+    group.bench_function("8x", |b| b.iter(black_box(check_compressed_8x)));
 
-    group.bench_function("16x", |b| b.iter(|| black_box(check_compressed_16x())));
+    group.bench_function("16x", |b| b.iter(black_box(check_compressed_16x)));
 
     group.finish();
 }
@@ -110,16 +110,16 @@ pub fn solve_compressed_bench(c: &mut Criterion) {
     group.noise_threshold(0.03);
 
     group.measurement_time(Duration::new(20, 0));
-    group.bench_function("2x", |b| b.iter(|| black_box(solve_compressed_2x())));
+    group.bench_function("2x", |b| b.iter(black_box(solve_compressed_2x)));
 
     group.measurement_time(Duration::new(20, 0));
-    group.bench_function("4x", |b| b.iter(|| black_box(solve_compressed_4x())));
+    group.bench_function("4x", |b| b.iter(black_box(solve_compressed_4x)));
 
     group.measurement_time(Duration::new(20, 0));
-    group.bench_function("8x", |b| b.iter(|| black_box(solve_compressed_8x())));
+    group.bench_function("8x", |b| b.iter(black_box(solve_compressed_8x)));
 
     group.measurement_time(Duration::new(20, 0));
-    group.bench_function("16x", |b| b.iter(|| black_box(solve_compressed_16x())));
+    group.bench_function("16x", |b| b.iter(black_box(solve_compressed_16x)));
 
     group.finish();
 }

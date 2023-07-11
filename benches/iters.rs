@@ -51,6 +51,7 @@ fn par_iter_dihedral_solve_3() {
     assert!(a.len() == 8)
 }
 
+#[inline]
 fn wide_simd_3() {
     let perm_arr = (0..OrderThree::PERMUTATIONS)
         .map(|k| Permutation::<OrderThree>::kth(k).square)
@@ -111,6 +112,7 @@ fn wide_simd_3() {
     assert!(valid.len() == 8)
 }
 
+#[inline]
 fn wide_simd_threaded_3() {
     let perm_arr = (0..OrderThree::PERMUTATIONS)
         .map(|k| Permutation::<OrderThree>::kth(k).square)

@@ -2,7 +2,9 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{CheckScalar, CheckVector, OrderThree, Permutation};
+use lo_shu::{
+    CheckScalar, CheckVector, Construction, OrderFive, OrderFour, OrderThree, Permutation,
+};
 use std::time::Duration;
 
 fn check_unsafe_vector() {
@@ -27,6 +29,32 @@ fn check_safe_scalar() {
     let a = Permutation::<OrderThree>::kth(69074);
     let r = a.check_s();
     assert_eq!(Some(Permutation::<OrderThree>::kth(69074)), r);
+}
+
+fn check_generic_five() {
+    let a = Construction::<OrderFive>::siamese(2);
+    let r = a.check_n_v::<16>();
+    assert_eq!(Some(a), r);
+}
+
+fn check_generic_four() {
+    assert_eq!(
+        Permutation::<OrderFour>::kth(80867885530)
+            .check_v()
+            .is_some(),
+        true
+    );
+    let a = Construction {
+        square: Permutation::<OrderFour>::kth(80867885530).square,
+    };
+    let r = a.check_n_v::<16>();
+    assert_eq!(Some(a), r);
+}
+
+fn check_generic_three() {
+    let a = Construction::<OrderThree>::siamese(1);
+    let r = a.check_n_v::<8>();
+    assert_eq!(Some(a), r);
 }
 
 pub fn check_v_bench(c: &mut Criterion) {
@@ -69,11 +97,23 @@ pub fn check_unsafe_s_v_bench(c: &mut Criterion) {
     group.finish();
 }
 
+pub fn check_generic_bench(c: &mut Criterion) {
+    let mut group = c.benchmark_group("check_generic");
+    group.sample_size(10500);
+    group.noise_threshold(0.03);
+    group.measurement_time(Duration::new(20, 0));
+    group.bench_function("order_three", |b| b.iter(black_box(check_generic_three)));
+    group.bench_function("order_four", |b| b.iter(black_box(check_generic_four)));
+    group.bench_function("order_five", |b| b.iter(black_box(check_generic_five)));
+    group.finish();
+}
+
 criterion_group!(
     benches,
-    check_v_bench,
-    check_s_bench,
-    check_safe_s_v_bench,
-    check_unsafe_s_v_bench
+    // check_v_bench,
+    // check_s_bench,
+    // check_safe_s_v_bench,
+    // check_unsafe_s_v_bench,
+    check_generic_bench
 );
 criterion_main!(benches);

@@ -14,23 +14,19 @@ criterion = "0.5.1"
 iai = "0.1.1"
 
 [[bench]]
-name = "lib_bench"
+name = "kth"
 harness = false
 
 [[bench]]
-name = "order_three_solve_iters"
+name = "iters"
 harness = false
 
 [[bench]]
-name = "mpsc_bench"
+name = "threads"
 harness = false
 
 [[bench]]
-name = "test_order_three"
-harness = false
-
-[[bench]]
-name = "test_order_three_mpsc"
+name = "mpsc"
 harness = false
 
 [[bench]]
