@@ -1,4 +1,7 @@
 use crate::{order::Params, Square};
+use rand::distributions::Uniform;
+use rand::prelude::Distribution;
+use rand::seq::SliceRandom;
 use rayon::prelude::*;
 use std::fmt;
 use std::hash::{Hash, Hasher};
@@ -12,7 +15,7 @@ where
     pub index: usize,
 }
 
-impl<P: Params> Permutation<P>
+impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
@@ -77,6 +80,25 @@ where
         self.square[i..].reverse();
         self.index += 1;
         Some(self)
+    }
+
+    pub fn random_index(&self) -> Self {
+        let range = Uniform::new_inclusive(0, P::PERMUTATIONS);
+        let mut rng = rand::thread_rng();
+        let sample = range.sample(&mut rng);
+        Permutation::kth(sample)
+    }
+
+    pub fn random_inplace(&mut self) {
+        let mut rng = rand::thread_rng();
+        self.square.0.shuffle(&mut rng);
+        self.index = self.square.to_perm().index;
+    }
+
+    pub fn rand_index_samples(n: usize) -> Vec<usize> {
+        let range = Uniform::new_inclusive(0, P::PERMUTATIONS);
+        let mut rng = rand::thread_rng();
+        range.sample_iter(&mut rng).take(n).collect()
     }
 
     pub fn par_permutation_range(start: usize, stop: usize) -> impl ParallelIterator<Item = Self> {
