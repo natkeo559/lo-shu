@@ -31,8 +31,8 @@ where
     }
 
     pub fn kth(k: usize) -> Self {
-        let ogk = k;
         let mut n = Self::identity();
+        n.index = k;
         let mut indeces = [0; P::ELEMENTS];
 
         let mut divisor = 1;
@@ -55,7 +55,6 @@ where
                 n.square[i] = temp;
             }
         }
-        n.index = ogk;
         n
     }
 
