@@ -4,14 +4,13 @@ use std::collections::BTreeSet;
 use std::fs::read_to_string;
 use itertools::Itertools;
 use lo_shu::{CheckVector, OrderFour, Permutation};
-use rand::{seq::SliceRandom, thread_rng};
+use rand::distributions::Uniform;
+use rand_distr::Distribution;
 use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
 
-fn group_actions(samples: BTreeSet<usize>) -> (usize, usize) {
-    let mut magic_squares = samples;
-
+fn unique_squares(origin: &BTreeSet<usize>) -> BTreeSet<usize> {
     let mut unique_set = BTreeSet::new();
-    for s in magic_squares.iter() {
+    for s in origin.iter() {
         if unique_set
             .intersection(&Permutation::<OrderFour>::kth(*s).generate_d_indexes())
             .map(|i| *i)
@@ -21,85 +20,82 @@ fn group_actions(samples: BTreeSet<usize>) -> (usize, usize) {
             unique_set.insert(*s);
         }
     }
+    unique_set
+}
 
-    let actions = magic_squares
+fn compute_group_actions(group: &BTreeSet<usize>) -> BTreeSet<usize> {
+    group
         .iter()
-        .cartesian_product(magic_squares.iter())
+        .cartesian_product(group.iter())
         .par_bridge()
         .map(|(&i, &j)| {
             let a = Permutation::<OrderFour>::kth(i);
             let c = Permutation::<OrderFour>::kth(j);
-            (c.inv() * a).inv().index
+
+            (a.inv() * c).index
         })
-        .collect::<BTreeSet<usize>>();
+        .collect::<BTreeSet<usize>>()
+}
 
-    let mut unique_actions = BTreeSet::new();
-    actions.iter().for_each(|&a| {
-        let action = Permutation::<OrderFour>::kth(a);
-        if unique_actions
-            .intersection(&action.generate_d_indexes())
-            .cloned()
-            .collect::<BTreeSet<usize>>()
-            .is_empty()
-        {
-            unique_actions.insert(a);
-        }
-    });
+fn group_actions(samples: BTreeSet<usize>) -> usize {
+    let mut unique_set = unique_squares(&samples);
 
-    let zipped: (BTreeSet<_>, BTreeSet<_>) = magic_squares
+    let actions = compute_group_actions(&unique_set);
+
+    let unique_actions: BTreeSet<usize> = unique_squares(&actions);
+
+    let stacked: BTreeSet<_> = unique_set
         .iter()
         .cartesian_product(unique_actions.iter())
         .par_bridge()
         .map(|(&s, &a)| {
             let mut magic = BTreeSet::new();
-            let mut reject = BTreeSet::new();
             let square = Permutation::<OrderFour>::kth(s);
             let action = Permutation::<OrderFour>::kth(a);
 
-            magic.extend(square.generate_d_indexes());
             magic.extend(
                 square
                     .generate_d()
                     .into_iter()
                     .filter_map(|s| {
                         if let Some(m) = (s * action).check_v() {
-                            Some(m.generate_d_indexes())
+                            Some(m.index)
                         } else {
-                            reject.insert(action.index);
                             None
                         }
                     })
-                    .flatten()
                     .collect::<BTreeSet<usize>>(),
             );
-            (magic, reject)
-        })
-        .unzip();
+            magic
+        }).collect();
 
-    magic_squares.extend(zipped.0.into_par_iter().flatten().collect::<BTreeSet<_>>());
-
-    (magic_squares.len(), unique_actions.len())
+    unique_set.extend(stacked.into_par_iter().flatten().collect::<BTreeSet<_>>());
+    
+    let unique_set = unique_squares(&unique_set);
+    unique_set.len()
 }
 
 fn main() {
-    let a = read_to_string("examples/collected/orderfour/Census.txt")
-        .expect("Could not find input file")
-        .lines()
-        .map(|line| line.trim().parse::<usize>().unwrap())
-        .collect::<Vec<usize>>();
+    let lookup = read_to_string("examples/collected/orderfour/UniqueCensus.txt")
+            .expect("Could not find input file")
+            .lines()
+            .map(|line| line.trim().parse::<usize>().unwrap())
+            .collect::<Vec<usize>>();
 
+    let u = Uniform::new(0usize, 880);
+    let mut rng = rand::thread_rng();
     let mut max = 0;
-    for _ in 0..400 {
-        let sample = a.choose_multiple(&mut thread_rng(), 50);
-        let samples = sample.into_iter().cloned().collect::<BTreeSet<_>>();
-        let (magic, _) = group_actions(samples);
+    for s in 0..10000 {
+        println!("{}", s);
+        let sample = u.sample_iter(&mut rng).take(4)
+            .map(|i|lookup[i]).collect::<BTreeSet<usize>>();
+        let magic = group_actions(sample);
 
         if magic > max {
             max = magic
         }
+        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
     }
 
     println!("{}", max);
-    
-
 }
