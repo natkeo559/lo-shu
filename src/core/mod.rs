@@ -1,10 +1,13 @@
 mod channels;
-mod compress;
 mod perms;
 mod square;
 mod transform;
+mod enumerable;
+mod error;
 
 pub use channels::{ThreadManager, Worker};
-pub use compress::*;
-pub use perms::Permutation;
-pub use square::{GenericSquare, Square};
+pub use perms::*;
+pub use square::*;
+pub use enumerable::*;
+pub use error::*;
+

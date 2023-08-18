@@ -55,11 +55,11 @@ impl<P: Params + Copy> Cycles<P> {
         let mut s = [0; P::ELEMENTS];
         // self.k.reverse();
         for (index, item) in s.iter_mut().enumerate() {
-            *item = (index + 1) as u8;
+            *item = (index + 1) as u32;
             for j in &self.k {
                 if let Some(p) = j.iter().position(|&a| a == (index + 1)) {
                     let next = (p + 1) % j.len();
-                    *item = j[next] as u8;
+                    *item = j[next] as u32;
                 }
             }
         }
@@ -84,9 +84,9 @@ where
 {
     pub fn cyclic_notation(&self) -> Cycles<P> {
         let hb: HashMap<usize, usize> = (1..=P::ELEMENTS)
-            .zip((self.square.0).into_iter().map(|a| a as usize))
+            .zip((self.square.data).into_iter().map(|a| a as usize))
             .collect();
-        let b = (1..=P::ELEMENTS).zip((self.square.0).into_iter().map(|a| a as usize));
+        let b = (1..=P::ELEMENTS).zip((self.square.data).into_iter().map(|a| a as usize));
 
         let mut all = vec![];
         let mut cycle = vec![];
@@ -127,19 +127,19 @@ where
 
 #[cfg(test)]
 mod test_ops {
-    use crate::{CheckVector, Cycles, OrderFour, OrderThree, Params, Permutation, Square};
+    use crate::{CheckVector, Cycles, O4, O3, Permutation, Square};
     use rayon::prelude::*;
 
     #[test]
     fn test_cyclic() {
         let a_s = Cycles::from_vecs(vec![vec![1, 4, 5, 3, 2, 9, 6, 7, 8]]);
-        let a = Square::<OrderThree>::from_array([4, 9, 2, 5, 3, 7, 8, 1, 6])
+        let a = Square::<O3>::from_array([4, 9, 2, 5, 3, 7, 8, 1, 6])
             .to_perm()
             .cyclic_notation();
         assert_eq!(a_s, a);
 
         let b_s = Cycles::from_vecs(vec![vec![1, 4, 3, 2, 9, 6, 7, 8]]);
-        let b = Square::<OrderThree>::from_array([4, 9, 2, 3, 5, 7, 8, 1, 6])
+        let b = Square::<O3>::from_array([4, 9, 2, 3, 5, 7, 8, 1, 6])
             .to_perm()
             .cyclic_notation();
         assert_eq!(b_s, b);
@@ -154,7 +154,7 @@ mod test_ops {
             vec![10, 11],
             vec![13, 16],
         ]);
-        let c = Square::<OrderFour>::from_array([
+        let c = Square::<O4>::from_array([
             4, 14, 15, 1, 9, 7, 6, 12, 5, 11, 10, 8, 16, 2, 3, 13,
         ])
         .to_perm()
@@ -164,9 +164,9 @@ mod test_ops {
 
     #[test]
     fn test_valid_cycles() {
-        let b = (0..OrderThree::PERMUTATIONS)
+        let b = (0..362880)
             .into_par_iter()
-            .filter_map(|k| Permutation::<OrderThree>::kth(k).check_v())
+            .filter_map(|k| Permutation::<O3>::kth(k).check_v())
             .collect::<Vec<_>>();
 
         for i in b {
@@ -176,7 +176,7 @@ mod test_ops {
 
     #[test]
     fn test_into_perm() {
-        let a = Permutation::<OrderThree>::kth(50000);
+        let a = Permutation::<O3>::kth(50000);
         let b = a.cyclic_notation();
         let c = b.clone().into_permutation();
 
@@ -185,7 +185,7 @@ mod test_ops {
 
     #[test]
     fn test_order() {
-        let a = Permutation::<OrderThree>::kth(310011);
+        let a = Permutation::<O3>::kth(310011);
         assert_eq!(a.cyclic_notation().order(), 15)
     }
 }

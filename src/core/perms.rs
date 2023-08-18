@@ -1,8 +1,5 @@
+use crate::ParameterSetError;
 use crate::{order::Params, Square};
-use rand::distributions::Uniform;
-use rand::prelude::Distribution;
-use rand::seq::SliceRandom;
-use rayon::prelude::*;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 
@@ -12,7 +9,6 @@ where
     [(); P::ELEMENTS]:,
 {
     pub square: Square<P>,
-    pub index: usize,
 }
 
 impl<P: Params + Copy> Permutation<P>
@@ -20,42 +16,13 @@ where
     [(); P::ELEMENTS]:,
 {
     pub fn identity() -> Self {
-        let mut arr: [u8; P::ELEMENTS] = [0; P::ELEMENTS];
-        for (elem, val) in arr.iter_mut().zip(1..=P::ELEMENTS as u8) {
+        let mut data: [u32; P::ELEMENTS] = [0; P::ELEMENTS];
+        for (elem, val) in data.iter_mut().zip(1..=P::ELEMENTS as u32) {
             *elem = val;
         }
         Self {
-            square: Square(arr),
-            index: 0,
+            square: Square { data },
         }
-    }
-
-    pub fn kth(k: usize) -> Self {
-        let mut n = Self::identity();
-        n.index = k;
-        let mut indeces = [0; P::ELEMENTS];
-
-        let mut divisor = 1;
-        for place in 1..=P::ELEMENTS {
-            if k / divisor == 0 {
-                break;
-            }
-            indeces[P::ELEMENTS - place] = (k / divisor) % place;
-            divisor *= place;
-        }
-        for (i, item) in indeces.iter().enumerate() {
-            let index = item + i;
-            if index != i {
-                let temp = n.square[index];
-                let mut j = index;
-                while j > i {
-                    n.square[j] = n.square[j - 1];
-                    j -= 1;
-                }
-                n.square[i] = temp;
-            }
-        }
-        n
     }
 
     pub fn next_perm(&mut self) -> Option<&mut Self> {
@@ -77,40 +44,39 @@ where
 
         // Reverse suffix
         self.square[i..].reverse();
-        self.index += 1;
         Some(self)
     }
 
-    pub fn random_index(&self) -> Self {
-        let range = Uniform::new_inclusive(0, P::PERMUTATIONS);
-        let mut rng = rand::thread_rng();
-        let sample = range.sample(&mut rng);
-        Permutation::kth(sample)
-    }
+    // pub fn random_index(&self) -> Self {
+    //     let range = Uniform::new_inclusive(0, P::PERMUTATIONS);
+    //     let mut rng = rand::thread_rng();
+    //     let sample = range.sample(&mut rng);
+    //     Permutation::kth(sample)
+    // }
 
-    pub fn random_inplace(&mut self) {
-        let mut rng = rand::thread_rng();
-        self.square.0.shuffle(&mut rng);
-        self.index = self.square.to_perm().index;
-    }
+    // pub fn random_inplace(&mut self) {
+    //     let mut rng = rand::thread_rng();
+    //     self.square.0.shuffle(&mut rng);
+    //     self.index = self.square.to_perm().index;
+    // }
 
-    pub fn rand_index_samples(n: usize) -> Vec<usize> {
-        let range = Uniform::new_inclusive(0, P::PERMUTATIONS);
-        let mut rng = rand::thread_rng();
-        range.sample_iter(&mut rng).take(n).collect()
-    }
+    // pub fn rand_index_samples(n: usize) -> Vec<usize> {
+    //     let range = Uniform::new_inclusive(0, P::PERMUTATIONS);
+    //     let mut rng = rand::thread_rng();
+    //     range.sample_iter(&mut rng).take(n).collect()
+    // }
 
-    pub fn par_permutation_range(start: usize, stop: usize) -> impl ParallelIterator<Item = Self> {
-        (start..stop).into_par_iter().map(|i| Self::kth(i))
-    }
+    // pub fn par_permutation_range(start: usize, stop: usize) -> impl ParallelIterator<Item = Self> {
+    //     (start..stop).into_par_iter().map(|i| Self::kth(i))
+    // }
 
-    pub fn permutation_range(start: usize, stop: usize) -> impl Iterator<Item = Self> {
-        (start..stop).map(|i| Self::kth(i))
-    }
+    // pub fn permutation_range(start: usize, stop: usize) -> impl Iterator<Item = Self> {
+    //     (start..stop).map(|i| Self::kth(i))
+    // }
 
-    pub fn indexes(arr: &[usize]) -> impl Iterator<Item = Self> + '_ {
-        arr.iter().map(|&k| Self::kth(k))
-    }
+    // pub fn indexes(arr: &[usize]) -> impl Iterator<Item = Self> + '_ {
+    //     arr.iter().map(|&k| Self::kth(k))
+    // }
 }
 
 impl<P: Params> Hash for Permutation<P>
@@ -118,7 +84,7 @@ where
     [(); P::ELEMENTS]:,
 {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.index.hash(state)
+        self.square.hash(state)
     }
 }
 
@@ -127,7 +93,7 @@ where
     [(); P::ELEMENTS]:,
 {
     fn eq(&self, other: &Self) -> bool {
-        self.index == other.index
+        self.square == other.square
     }
 }
 
@@ -138,161 +104,78 @@ where
     [(); P::ELEMENTS]:,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "k: {}", self.index)?;
         writeln!(f, "{}", self.square)?;
 
         Ok(())
     }
 }
 
+impl<P: Params> TryFrom<&[u32]> for Permutation<P> where [(); P::ELEMENTS]: {
+    type Error = ParameterSetError;
+
+    fn try_from(slice: &[u32]) -> Result<Self, Self::Error> {
+        let s = Square::<P>::try_from(slice)?;
+        Ok(Permutation { square: s })
+    }
+}
+
 #[cfg(test)]
 mod test_perms {
-    use rayon::prelude::ParallelIterator;
 
-    use crate::{OrderFour, OrderThree, Params, Permutation, Square};
+    use crate::{O4, O3, Permutation, Square};
 
     #[test]
     fn test_first_3() {
-        let result: Permutation<OrderThree> = Permutation {
-            square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9]),
-            index: 0,
+        let result: Permutation<O3> = Permutation {
+            square: Square { data: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
         };
-        let a = Permutation::<OrderThree>::identity();
+        let a = Permutation::<O3>::identity();
         assert_eq!(result, a);
         println!("{}", a)
     }
 
     #[test]
     fn test_first_4() {
-        let result: Permutation<OrderFour> = Permutation {
-            square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]),
-            index: 0,
+        let result: Permutation<O4> = Permutation {
+            square: Square { data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] } ,
         };
-        let a = Permutation::<OrderFour>::identity();
+        let a = Permutation::<O4>::identity();
         assert_eq!(result, a);
     }
 
     #[test]
     fn test_next_3() {
-        let result: Permutation<OrderThree> = Permutation {
-            square: Square([1, 2, 3, 4, 5, 6, 7, 9, 8]),
-            index: 1,
+        let result: Permutation<O3> = Permutation {
+            square: Square { data: [1, 2, 3, 4, 5, 6, 7, 9, 8] },
         };
-        let mut a = Permutation::<OrderThree>::identity();
+        let mut a = Permutation::<O3>::identity();
         a = *a.next_perm().unwrap();
         assert_eq!(result, a);
     }
 
     #[test]
     fn test_next_4() {
-        let result: Permutation<OrderFour> = Permutation {
-            square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 15]),
-            index: 1,
+        let result: Permutation<O4> = Permutation {
+            square: Square { data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 15] } ,
         };
-        let mut a = Permutation::<OrderFour>::identity();
+        let mut a = Permutation::<O4>::identity();
         a = *a.next_perm().unwrap();
         assert_eq!(result, a);
     }
 
-    #[test]
-    fn test_kth_3() {
-        const MAX: usize = OrderThree::PERMUTATIONS;
+    // #[test]
+    // fn test_perm_iter_3() {
+    //     let a = Permutation::<O3>::permutation_range(0, 8);
+    //     let a_vec = a.collect::<Vec<Permutation<O3>>>();
+    //     assert_eq!(8, a_vec.len());
+    //     assert_eq!(7, a_vec.last().unwrap().index)
+    // }
 
-        let results: [Permutation<OrderThree>; 4] = [
-            Permutation {
-                square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9]),
-                index: 0,
-            },
-            Permutation {
-                square: Square([1, 2, 3, 4, 5, 6, 7, 9, 8]),
-                index: 1,
-            },
-            Permutation {
-                square: Square([9, 8, 7, 6, 5, 4, 3, 1, 2]),
-                index: 362878,
-            },
-            Permutation {
-                square: Square([9, 8, 7, 6, 5, 4, 3, 2, 1]),
-                index: 362879,
-            },
-        ];
-        let a = Permutation::<OrderThree>::kth(0);
-        assert_eq!(results[0], a);
-
-        let a = Permutation::<OrderThree>::kth(1);
-        assert_eq!(results[1], a);
-
-        let a = Permutation::<OrderThree>::kth(MAX - 2);
-        assert_eq!(results[2], a);
-
-        let a = Permutation::<OrderThree>::kth(MAX - 1);
-        assert_eq!(results[3], a);
-    }
-
-    #[test]
-    fn test_kth_4() {
-        const MAX: usize = OrderFour::PERMUTATIONS;
-
-        let results: [Permutation<OrderFour>; 4] = [
-            Permutation {
-                square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]),
-                index: 0,
-            },
-            Permutation {
-                square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 15]),
-                index: 1,
-            },
-            Permutation {
-                square: Square([16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 1, 2]),
-                index: 20922789887998,
-            },
-            Permutation {
-                square: Square([16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]),
-                index: 20922789887999,
-            },
-        ];
-        let a = Permutation::<OrderFour>::kth(0);
-        assert_eq!(results[0], a);
-
-        let a = Permutation::<OrderFour>::kth(1);
-        assert_eq!(results[1], a);
-
-        let a = Permutation::<OrderFour>::kth(MAX - 2);
-        assert_eq!(results[2], a);
-
-        let a = Permutation::<OrderFour>::kth(MAX - 1);
-        assert_eq!(results[3], a);
-    }
-
-    #[test]
-    fn test_par_perm_iter_3() {
-        let a = Permutation::<OrderThree>::par_permutation_range(0, 8);
-        let a_vec = a.collect::<Vec<Permutation<OrderThree>>>();
-        assert_eq!(8, a_vec.len());
-        assert_eq!(7, a_vec.last().unwrap().index)
-    }
-
-    #[test]
-    fn test_par_perm_iter_4() {
-        let a = Permutation::<OrderFour>::par_permutation_range(0, 8);
-        let a_vec = a.collect::<Vec<Permutation<OrderFour>>>();
-        assert_eq!(8, a_vec.len());
-        assert_eq!(7, a_vec.last().unwrap().index)
-    }
-
-    #[test]
-    fn test_perm_iter_3() {
-        let a = Permutation::<OrderThree>::permutation_range(0, 8);
-        let a_vec = a.collect::<Vec<Permutation<OrderThree>>>();
-        assert_eq!(8, a_vec.len());
-        assert_eq!(7, a_vec.last().unwrap().index)
-    }
-
-    #[test]
-    fn test_perm_iter_4() {
-        let a = Permutation::<OrderFour>::permutation_range(0, 8);
-        let a_vec = a.collect::<Vec<Permutation<OrderFour>>>();
-        assert_eq!(8, a_vec.len());
-        assert_eq!(7, a_vec.last().unwrap().index)
-    }
+    // #[test]
+    // fn test_perm_iter_4() {
+    //     let a = Permutation::<O4>::permutation_range(0, 8);
+    //     let a_vec = a.collect::<Vec<Permutation<O4>>>();
+    //     assert_eq!(8, a_vec.len());
+    //     assert_eq!(7, a_vec.last().unwrap().index)
+    // }
 }

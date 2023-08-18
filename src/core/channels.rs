@@ -1,4 +1,4 @@
-use crate::{CheckVector, OrderFour, OrderThree, Params, Permutation};
+use crate::{CheckVector, O4, O3, Params, Permutation};
 use std::{
     marker::PhantomData,
     sync::{atomic::AtomicBool, atomic::Ordering::Relaxed, mpsc::Sender, Arc},
@@ -29,7 +29,7 @@ impl<P: Params> ThreadManager<P> {
 }
 
 macro_rules! impl_worker_for_tmgr {
-    ($p:tt) => {
+    ($p:tt, $u:literal) => {
         impl Worker<$p> for ThreadManager<$p> {
             fn channel_check(
                 &self,
@@ -37,7 +37,7 @@ macro_rules! impl_worker_for_tmgr {
                 sender: Sender<Permutation<$p>>,
                 found: Arc<AtomicBool>,
             ) {
-                for (count, n) in (start..$p::PERMUTATIONS).step_by(self.threads).enumerate() {
+                for (count, n) in (start..$u).step_by(self.threads).enumerate() {
                     if let Some(sol) = Permutation::<$p>::kth(n).check_v() {
                         found.store(self.one_stop, Relaxed);
                         match sender.send(sol) {
@@ -54,5 +54,5 @@ macro_rules! impl_worker_for_tmgr {
     };
 }
 
-impl_worker_for_tmgr!(OrderThree);
-impl_worker_for_tmgr!(OrderFour);
+impl_worker_for_tmgr!(O3, 362880);
+impl_worker_for_tmgr!(O4, 20922789888000);

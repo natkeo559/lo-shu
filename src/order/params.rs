@@ -1,9 +1,27 @@
 pub trait Params {
     const ORDER: usize;
     const ELEMENTS: usize;
-    const MODULUS: usize;
     const MAGIC_SUM: u32;
-    const PERMUTATIONS: usize;
     const CONSTRAINT_VECTORS: usize;
-    const ELEMENT_BITS: usize;
 }
+
+macro_rules! impl_parameter_set {
+    ($order:literal, $name:tt) => {
+        #[derive(Debug, Clone, Copy, PartialEq)]
+        pub struct $name;
+
+        impl Params for $name {
+            const ORDER: usize = $order;
+            const ELEMENTS: usize = Self::ORDER * Self::ORDER;
+            const MAGIC_SUM: u32 =
+                (((Self::ELEMENTS * (Self::ELEMENTS + 1)) / 2) / Self::ORDER) as u32;
+            const CONSTRAINT_VECTORS: usize = Self::ORDER * 2 + 2;
+        }
+    };
+}
+
+impl_parameter_set!(3, O3);
+impl_parameter_set!(4, O4);
+impl_parameter_set!(5, O5);
+impl_parameter_set!(25, O25);
+impl_parameter_set!(301, O301);

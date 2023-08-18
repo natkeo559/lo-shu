@@ -14,18 +14,18 @@ where
 {
     pub fn zeros() -> Self {
         Construction {
-            square: Square([0; P::ELEMENTS]),
+            square: Square { data: [0; P::ELEMENTS] },
         }
     }
 
     pub fn identity() -> Self {
-        let mut arr: [u8; P::ELEMENTS] = [0; P::ELEMENTS];
-        for (elem, val) in arr.iter_mut().zip(1..=P::ELEMENTS as u8) {
+        let mut data: [u32; P::ELEMENTS] = [0; P::ELEMENTS];
+        for (elem, val) in data.iter_mut().zip(1..=P::ELEMENTS as u32) {
             *elem = val;
         }
 
         Self {
-            square: Square(arr),
+            square: Square{ data },
         }
     }
 
@@ -36,7 +36,7 @@ where
 
         let mut next_pos = (seed_idx / P::ORDER, seed_idx % P::ORDER);
 
-        for i in 1..=P::ELEMENTS as u8 {
+        for i in 1..=P::ELEMENTS as u32 {
             c.square[(next_pos.0 * P::ORDER) + next_pos.1] = i;
 
             next_pos = (
@@ -67,13 +67,13 @@ where
 
 #[cfg(test)]
 mod test_construction {
-    use crate::{CheckVector, OrderFive, OrderThree};
+    use crate::{CheckVector, O5, O3};
 
     use super::*;
 
     #[test]
     fn test_new_zeros() {
-        let a = Construction::<OrderThree>::zeros();
+        let a = Construction::<O3>::zeros();
         let b = Construction {
             square: Square([0, 0, 0, 0, 0, 0, 0, 0, 0]),
         };
@@ -82,7 +82,7 @@ mod test_construction {
 
     #[test]
     fn test_new_identity() {
-        let a = Construction::<OrderThree>::identity();
+        let a = Construction::<O3>::identity();
         let b = Construction {
             square: Square([1, 2, 3, 4, 5, 6, 7, 8, 9]),
         };
@@ -91,7 +91,7 @@ mod test_construction {
 
     #[test]
     fn test_siamese() {
-        let a = Construction::<OrderThree>::siamese(1);
+        let a = Construction::<O3>::siamese(1);
         let b = Construction {
             square: Square([8, 1, 6, 3, 5, 7, 4, 9, 2]),
         };
@@ -103,15 +103,15 @@ mod test_construction {
     #[test]
     #[ignore = "debugging"]
     fn test_valid_siamese() {
-        for i in 0..OrderThree::ELEMENTS {
-            if let Some(a) = Construction::<OrderThree>::siamese(i).check_v() {
+        for i in 0..O3::ELEMENTS {
+            if let Some(a) = Construction::<O3>::siamese(i).check_v() {
                 println!("{}", a.square)
             };
         }
 
         let mut sols = vec![];
-        for i in 0..OrderFive::ELEMENTS {
-            let a = Construction::<OrderFive>::siamese(i);
+        for i in 0..O5::ELEMENTS {
+            let a = Construction::<O5>::siamese(i);
             if a.check_n_v::<16>().is_some() {
                 sols.push(a);
                 println!("{}", i);
