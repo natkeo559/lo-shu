@@ -2,34 +2,34 @@
 #![feature(generic_const_exprs)]
 
 use std::{
-    collections::{BTreeSet, HashMap},
+    collections::{BTreeSet, HashMap, HashSet},
     fs::read_to_string,
 };
 
 use itertools::Itertools;
-use lo_shu::{OrderFour, Permutation};
+use lo_shu::{O4, Permutation, Enumerable};
 
 fn main() {
-    let magic_squares = read_to_string("examples/collected/orderfour/Reduced.txt")
+    let magic_squares = read_to_string("examples/collected/O4/Reduced.txt")
         .expect("Could not find input file")
         .lines()
-        .map(|line| line.trim().parse::<usize>().unwrap())
-        .collect::<BTreeSet<usize>>();
+        .map(|line| line.trim().parse::<u64>().unwrap())
+        .collect::<BTreeSet<_>>();
 
-    let mut cycle_map: HashMap<usize, Vec<usize>> = HashMap::new();
+    let mut cycle_map = HashMap::new();
 
     for i in magic_squares {
-        let mut cycles = Permutation::<OrderFour>::kth(i).cyclic_notation();
+        let mut cycles = Permutation::<O4>::kth(i).cyclic_notation();
 
-        let cycle_lens: usize = cycles.order();
+        let cycle_lens = cycles.order();
         if cycle_map.contains_key(&cycle_lens) {
-            let value = cycle_map.get_mut(&cycle_lens).unwrap();
-            value.push(cycles.into_permutation().index)
+            let value: &mut Vec<Permutation<O4>> = cycle_map.get_mut(&cycle_lens).unwrap();
+            value.push(cycles.into_permutation())
         } else {
-            cycle_map.insert(cycle_lens.clone(), vec![cycles.into_permutation().index]);
+            cycle_map.insert(cycle_lens.clone(), vec![cycles.into_permutation()]);
         }
     }
-    let mut sorted = BTreeSet::new();
+    let mut sorted = HashSet::new();
     for i in cycle_map.iter() {
         sorted.insert(i.1.clone());
     }

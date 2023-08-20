@@ -3,56 +3,56 @@
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use lo_shu::{
-    CheckScalar, CheckVector, Construction, OrderFive, OrderFour, OrderThree, Permutation,
+    CheckScalar, CheckVector, Construction, O5, O4, O3, Permutation, Enumerable,
 };
 use std::time::Duration;
 
 fn check_unsafe_vector() {
-    let a = Permutation::<OrderThree>::kth(69074);
+    let a = Permutation::<O3>::kth(69074);
     let r = unsafe { a.check_v_unsafe() };
-    assert_eq!(Some(Permutation::<OrderThree>::kth(69074)), r);
+    assert_eq!(Some(Permutation::<O3>::kth(69074)), r);
 }
 
 fn check_safe_vector() {
-    let a = Permutation::<OrderThree>::kth(69074);
+    let a = Permutation::<O3>::kth(69074);
     let r = a.check_v();
-    assert_eq!(Some(Permutation::<OrderThree>::kth(69074)), r);
+    assert_eq!(Some(Permutation::<O3>::kth(69074)), r);
 }
 
 fn check_unsafe_scalar() {
-    let a = Permutation::<OrderThree>::kth(69074);
+    let a = Permutation::<O3>::kth(69074);
     let r = unsafe { a.check_s_unsafe() };
-    assert_eq!(Some(Permutation::<OrderThree>::kth(69074)), r);
+    assert_eq!(Some(Permutation::<O3>::kth(69074)), r);
 }
 
 fn check_safe_scalar() {
-    let a = Permutation::<OrderThree>::kth(69074);
+    let a = Permutation::<O3>::kth(69074);
     let r = a.check_s();
-    assert_eq!(Some(Permutation::<OrderThree>::kth(69074)), r);
+    assert_eq!(Some(Permutation::<O3>::kth(69074)), r);
 }
 
 fn check_generic_five() {
-    let a = Construction::<OrderFive>::siamese(2);
+    let a = Construction::<O5>::siamese(2);
     let r = a.check_n_v::<16>();
     assert_eq!(Some(a), r);
 }
 
 fn check_generic_four() {
     assert_eq!(
-        Permutation::<OrderFour>::kth(80867885530)
+        Permutation::<O4>::kth(80867885530)
             .check_v()
             .is_some(),
         true
     );
     let a = Construction {
-        square: Permutation::<OrderFour>::kth(80867885530).square,
+        square: Permutation::<O4>::kth(80867885530).square,
     };
     let r = a.check_n_v::<16>();
     assert_eq!(Some(a), r);
 }
 
 fn check_generic_three() {
-    let a = Construction::<OrderThree>::siamese(1);
+    let a = Construction::<O3>::siamese(1);
     let r = a.check_n_v::<8>();
     assert_eq!(Some(a), r);
 }

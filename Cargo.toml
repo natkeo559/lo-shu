@@ -31,13 +31,5 @@ name = "mpsc"
 harness = false
 
 [[bench]]
-name = "pack"
-harness = false
-
-[[bench]]
-name = "compress"
-harness = false
-
-[[bench]]
 name = "check"
 harness = false

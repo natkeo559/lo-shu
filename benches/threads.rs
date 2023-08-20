@@ -7,15 +7,15 @@ use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
 use std::thread;
 
-use lo_shu::{CheckVector, OrderThree, Params, Permutation};
+use lo_shu::{CheckVector, O3, Permutation, Enumerable};
 
 #[inline]
-fn solve_t_v1() -> BTreeSet<usize> {
+fn solve_t_v1() -> BTreeSet<u32> {
     const THREADS: usize = 16;
     const COMPS: usize = 362880 / THREADS;
 
     let results = Arc::new(Mutex::new(BTreeSet::new()));
-    let a = Arc::new(Mutex::new(Permutation::<OrderThree>::identity()));
+    let a = Arc::new(Mutex::new(Permutation::<O3>::identity()));
     let mut handles = vec![];
 
     for _ in 0..THREADS {
@@ -29,7 +29,7 @@ fn solve_t_v1() -> BTreeSet<usize> {
                 match (*perm).next_perm() {
                     Some(p) => match p.check_v() {
                         Some(x) => {
-                            res.insert(x.index);
+                            res.insert(x.clone().index());
                         }
                         None => (),
                     },
@@ -49,7 +49,7 @@ fn solve_t_v1() -> BTreeSet<usize> {
 }
 
 #[inline]
-fn solve_t_v2() -> BTreeSet<usize> {
+fn solve_t_v2() -> BTreeSet<u32> {
     const THREADS: usize = 16;
 
     let results = Arc::new(Mutex::new(BTreeSet::new()));
@@ -58,10 +58,10 @@ fn solve_t_v2() -> BTreeSet<usize> {
     for t in 1..=THREADS {
         let r = results.clone();
         let handle = thread::spawn(move || {
-            let local_res = (t..OrderThree::PERMUTATIONS)
+            let local_res = (t..362880)
                 .step_by(t)
-                .filter_map(|a| Permutation::<OrderThree>::kth(a).check_v())
-                .map(|b| b.index);
+                .filter_map(|a| Permutation::<O3>::kth(a.try_into().unwrap()).check_v())
+                .map(|b| b.clone().index());
             let mut global_res = r.lock().unwrap();
             for i in local_res {
                 global_res.insert(i);

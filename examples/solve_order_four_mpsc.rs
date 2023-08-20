@@ -1,7 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{OrderFour, Permutation};
+use lo_shu::{O4, Permutation, Enumerable};
 use lo_shu::{ThreadManager, Worker};
 use std::{
     sync::{
@@ -17,7 +17,7 @@ pub fn message_solver(t: usize) {
     let (sx, rx) = mpsc::channel();
 
     for i in 0..t {
-        let sender: Sender<Permutation<OrderFour>> = sx.clone();
+        let sender: Sender<Permutation<O4>> = sx.clone();
         let found = f.clone();
         let tm = ThreadManager::new(t, 512, false);
         thread::spawn(move || {
@@ -27,7 +27,7 @@ pub fn message_solver(t: usize) {
     loop {
         match rx.recv() {
             Ok(idxs) => {
-                println!("{}", idxs.index);
+                println!("{}", idxs.clone().index());
             }
             Err(_) => panic!("Worker threads disconnected before solution found!"),
         }

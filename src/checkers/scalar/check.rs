@@ -262,6 +262,7 @@ impl CheckScalar for Construction<O4> {
 #[cfg(test)]
 mod check_tests {
     use super::*;
+    use crate::Enumerable;
 
     #[test]
     fn check_unsafe_scalar() {

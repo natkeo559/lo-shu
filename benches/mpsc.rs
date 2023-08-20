@@ -2,7 +2,7 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{OrderThree, Permutation};
+use lo_shu::{O3, Permutation, Enumerable};
 use lo_shu::{ThreadManager, Worker};
 use std::{
     sync::{
@@ -18,7 +18,7 @@ fn message_solver(t: usize) {
     let (sx, rx) = mpsc::channel();
 
     for i in 0..t {
-        let sender: Sender<Permutation<OrderThree>> = sx.clone();
+        let sender: Sender<Permutation<O3>> = sx.clone();
         let found = f.clone();
         let tm = ThreadManager::new(t, 1, true);
         thread::spawn(move || {
@@ -28,7 +28,7 @@ fn message_solver(t: usize) {
 
     match rx.recv() {
         Ok(idxs) => {
-            assert_eq!(8, idxs.generate_d_indexes().len());
+            assert_eq!(8, idxs.generate_d().into_iter().map(|a| a.clone().index()).len());
         }
         Err(_) => panic!("Worker threads disconnected before solution found!"),
     }

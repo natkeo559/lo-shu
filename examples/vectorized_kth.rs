@@ -13,16 +13,16 @@
 
 use std::simd::{Simd, SimdPartialEq, SimdOrd};
 
-use lo_shu::{Permutation, OrderThree, Params};
+use lo_shu::{Permutation, O3, Params};
 
-pub fn kth(k: usize) -> Permutation<OrderThree> {
+pub fn kth(k: usize) -> Permutation<O3> {
     let mut n = Permutation::identity();
-    let mut indeces = [0; OrderThree::ELEMENTS];
+    let mut indeces = [0; O3::ELEMENTS];
 
     let mut divisor = 1;
-    for place in 1..=OrderThree::ELEMENTS {
+    for place in 1..=O3::ELEMENTS {
         if k / divisor != 0 {
-            indeces[OrderThree::ELEMENTS - place] = (k / divisor) % place;
+            indeces[O3::ELEMENTS - place] = (k / divisor) % place;
             divisor *= place;
         }
     }
@@ -39,18 +39,17 @@ pub fn kth(k: usize) -> Permutation<OrderThree> {
             n.square[i] = temp;
         }
     }
-    n.index = k;
     n
 }
 
 
 fn v_kth(k_v: Vec<usize>) {
-    // let nv = vec![Permutation::<OrderThree>::identity(); 8];
+    // let nv = vec![Permutation::<O3>::identity(); 8];
     let vs = Simd::from_slice(&k_v[..]);
     let mut divisors: Simd<usize, 8> = Simd::splat(1);
     let mut place_div = divisors;
 
-    for place in 1..=OrderThree::ELEMENTS {
+    for place in 1..=O3::ELEMENTS {
         let m_mask = (vs / divisors).simd_ne(Simd::splat(0));
         let m = m_mask.select(divisors, Simd::splat(0));
         place_div = m.simd_max(place_div);

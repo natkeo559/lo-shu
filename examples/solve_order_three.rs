@@ -4,20 +4,20 @@
 use lo_shu::CheckVector;
 use std::collections::HashSet;
 
-use lo_shu::{OrderThree, Params, Permutation};
+use lo_shu::{O3, Permutation, Enumerable};
 use rayon::prelude::*;
 
-fn order_three_linear() -> HashSet<Permutation<OrderThree>> {
-    (0..OrderThree::PERMUTATIONS)
+fn order_three_linear() -> HashSet<Permutation<O3>> {
+    (0..362880)
         .into_par_iter()
-        .filter_map(|k| Permutation::<OrderThree>::kth(k).check_v())
+        .filter_map(|k| Permutation::<O3>::kth(k).check_v())
         .collect()
 }
 
-fn order_three_dihedral() -> HashSet<Permutation<OrderThree>> {
-    (0..OrderThree::PERMUTATIONS)
+fn order_three_dihedral() -> HashSet<Permutation<O3>> {
+    (0..362880)
         .into_par_iter()
-        .find_map_first(|i| Permutation::<OrderThree>::kth(i).check_v())
+        .find_map_first(|i| Permutation::<O3>::kth(i).check_v())
         .unwrap()
         .generate_d()
 }

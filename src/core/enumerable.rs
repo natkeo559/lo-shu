@@ -1,9 +1,15 @@
 use crate::{Params, Permutation, O3, O4, O5};
 
+pub trait Enumerable<P: Params, T> where [(); P::ELEMENTS]: {
+    fn kth(k: T) -> Permutation<P>;
+    fn index(&mut self) -> T;
+
+}
+
 macro_rules! impl_fns_for_enumerable_params {
     ($p:tt, $t:ty) => {
-        impl Permutation<$p> {
-            pub fn kth(k: $t) -> Self {
+        impl Enumerable<$p, $t> for Permutation<$p> {
+            fn kth(k: $t) -> Self {
                 let mut n = Self::identity();
                 let mut indeces = [0; $p::ELEMENTS];
 
@@ -30,7 +36,7 @@ macro_rules! impl_fns_for_enumerable_params {
                 n
             }
 
-            pub fn index(&mut self) -> $t {
+            fn index(&mut self) -> $t {
                 let mut index = 0;
                 let mut position = 2;
                 let mut factor = 1;
@@ -58,7 +64,7 @@ impl_fns_for_enumerable_params!(O5, u128);
 
 #[cfg(test)]
 mod test_enumerable {
-    use crate::{ParameterSetError, Permutation, O3, O4, O5};
+    use crate::{ParameterSetError, Enumerable, Permutation, O3, O4, O5};
 
     #[test]
     fn test_kth_3() -> Result<(), ParameterSetError> {

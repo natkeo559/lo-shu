@@ -127,7 +127,7 @@ where
 
 #[cfg(test)]
 mod test_ops {
-    use crate::{CheckVector, Cycles, O4, O3, Permutation, Square};
+    use crate::{CheckVector, Enumerable, Cycles, O4, O3, Permutation, Square};
     use rayon::prelude::*;
 
     #[test]

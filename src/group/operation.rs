@@ -76,7 +76,7 @@ where
 
 #[cfg(test)]
 mod test_ops {
-    use crate::{O3, Permutation};
+    use crate::{O3, Permutation, Enumerable};
 
     #[test]
     fn test_mul() {

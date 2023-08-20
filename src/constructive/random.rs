@@ -7,22 +7,22 @@ where
 {
     pub fn shuffle(&mut self) -> &mut Self {
         let mut rng = rand::thread_rng();
-        self.square.0.shuffle(&mut rng);
+        self.square.data.shuffle(&mut rng);
         self
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::OrderThree;
+    use crate::O3;
 
     use super::*;
 
     #[test]
     fn test_shuffle() {
-        let mut a = Construction::<OrderThree>::identity();
+        let mut a = Construction::<O3>::identity();
         a.shuffle();
 
-        assert_ne!(a, Construction::<OrderThree>::identity());
+        assert_ne!(a, Construction::<O3>::identity());
     }
 }
