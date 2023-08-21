@@ -1,9 +1,17 @@
 use crate::{Params, Permutation, O3, O4, O5};
 
-pub trait Enumerable<P: Params, T> where [(); P::ELEMENTS]: {
-    fn kth(k: T) -> Permutation<P>;
-    fn index(&mut self) -> T;
+pub trait EnumerableMarker {}
 
+impl EnumerableMarker for O3 {}
+impl EnumerableMarker for O4 {}
+impl EnumerableMarker for O5 {}
+
+pub trait Enumerable<P: Params + EnumerableMarker, T>
+where
+    [(); P::ELEMENTS]:,
+{
+    fn kth(k: T) -> Permutation<P>;
+    fn index(&self) -> T;
 }
 
 macro_rules! impl_fns_for_enumerable_params {
@@ -36,7 +44,7 @@ macro_rules! impl_fns_for_enumerable_params {
                 n
             }
 
-            fn index(&mut self) -> $t {
+            fn index(&self) -> $t {
                 let mut index = 0;
                 let mut position = 2;
                 let mut factor = 1;
@@ -51,7 +59,7 @@ macro_rules! impl_fns_for_enumerable_params {
                     factor *= position;
                     position += 1;
                 }
-        
+
                 index
             }
         }
@@ -64,7 +72,7 @@ impl_fns_for_enumerable_params!(O5, u128);
 
 #[cfg(test)]
 mod test_enumerable {
-    use crate::{ParameterSetError, Enumerable, Permutation, O3, O4, O5};
+    use crate::{Enumerable, ParameterSetError, Permutation, O3, O4, O5};
 
     #[test]
     fn test_kth_3() -> Result<(), ParameterSetError> {
@@ -138,16 +146,20 @@ mod test_enumerable {
     fn test_index_4() -> Result<(), ParameterSetError> {
         let a = Permutation::<O4>::try_from(
             [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].as_slice(),
-        )?.index();
+        )?
+        .index();
         let b = Permutation::<O4>::try_from(
             [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 15].as_slice(),
-        )?.index();
+        )?
+        .index();
         let c = Permutation::<O4>::try_from(
             [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 1, 2].as_slice(),
-        )?.index();
+        )?
+        .index();
         let d = Permutation::<O4>::try_from(
             [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1].as_slice(),
-        )?.index();
+        )?
+        .index();
 
         let a_result = 0;
         let b_result = 1;
@@ -214,28 +226,32 @@ mod test_enumerable {
                 24, 25,
             ]
             .as_slice(),
-        )?.index();
+        )?
+        .index();
         let b = Permutation::<O5>::try_from(
             [
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
                 25, 24,
             ]
             .as_slice(),
-        )?.index();
+        )?
+        .index();
         let c = Permutation::<O5>::try_from(
             [
                 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
                 3, 1, 2,
             ]
             .as_slice(),
-        )?.index();
+        )?
+        .index();
         let d = Permutation::<O5>::try_from(
             [
                 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4,
                 3, 2, 1,
             ]
             .as_slice(),
-        )?.index();
+        )?
+        .index();
 
         let a_result = 0;
         let b_result = 1;

@@ -7,7 +7,7 @@ use std::{
 };
 
 use itertools::Itertools;
-use lo_shu::{O4, Permutation, Enumerable};
+use lo_shu::{Enumerable, Permutation, O4};
 
 fn main() {
     let magic_squares = read_to_string("examples/collected/O4/Reduced.txt")

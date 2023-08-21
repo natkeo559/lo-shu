@@ -1,5 +1,6 @@
-use crate::ParameterSetError;
 use crate::{order::Params, Square};
+use crate::{Enumerable, ParameterSetError, O3, O4, O5};
+use std::cmp::Ordering;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 
@@ -110,7 +111,10 @@ where
     }
 }
 
-impl<P: Params> TryFrom<&[u32]> for Permutation<P> where [(); P::ELEMENTS]: {
+impl<P: Params> TryFrom<&[u32]> for Permutation<P>
+where
+    [(); P::ELEMENTS]:,
+{
     type Error = ParameterSetError;
 
     fn try_from(slice: &[u32]) -> Result<Self, Self::Error> {
@@ -119,15 +123,38 @@ impl<P: Params> TryFrom<&[u32]> for Permutation<P> where [(); P::ELEMENTS]: {
     }
 }
 
+/// Allow set-like types to order Permutations. This only works for Params that
+/// implement Enumerable. Due to Trait bound constraints, the Enumerable Params
+/// are hard-coded via macro.
+//--------------------------------------------
+
+macro_rules! impl_ord_for_enumerable_params {
+    ($p:tt) => {
+        impl Ord for Permutation<$p> {
+            fn cmp(&self, other: &Self) -> Ordering {
+                self.index().cmp(&other.index())
+            }
+        }
+    };
+}
+
+impl_ord_for_enumerable_params!(O3);
+impl_ord_for_enumerable_params!(O4);
+impl_ord_for_enumerable_params!(O5);
+
+//--------------------------------------------
+
 #[cfg(test)]
 mod test_perms {
 
-    use crate::{O4, O3, Permutation, Square};
+    use crate::{Permutation, Square, O3, O4};
 
     #[test]
     fn test_first_3() {
         let result: Permutation<O3> = Permutation {
-            square: Square { data: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+            square: Square {
+                data: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            },
         };
         let a = Permutation::<O3>::identity();
         assert_eq!(result, a);
@@ -137,7 +164,9 @@ mod test_perms {
     #[test]
     fn test_first_4() {
         let result: Permutation<O4> = Permutation {
-            square: Square { data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] } ,
+            square: Square {
+                data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+            },
         };
         let a = Permutation::<O4>::identity();
         assert_eq!(result, a);
@@ -146,7 +175,9 @@ mod test_perms {
     #[test]
     fn test_next_3() {
         let result: Permutation<O3> = Permutation {
-            square: Square { data: [1, 2, 3, 4, 5, 6, 7, 9, 8] },
+            square: Square {
+                data: [1, 2, 3, 4, 5, 6, 7, 9, 8],
+            },
         };
         let mut a = Permutation::<O3>::identity();
         a = *a.next_perm().unwrap();
@@ -156,7 +187,9 @@ mod test_perms {
     #[test]
     fn test_next_4() {
         let result: Permutation<O4> = Permutation {
-            square: Square { data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 15] } ,
+            square: Square {
+                data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 15],
+            },
         };
         let mut a = Permutation::<O4>::identity();
         a = *a.next_perm().unwrap();

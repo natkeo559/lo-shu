@@ -11,7 +11,10 @@ where
 
     fn mul(self, rhs: Self) -> Self {
         let mut set = [0; P::ELEMENTS];
-        for (set_x, rhs_x) in set.iter_mut().zip(rhs.square.data.into_iter().map(|x| x - 1)) {
+        for (set_x, rhs_x) in set
+            .iter_mut()
+            .zip(rhs.square.data.into_iter().map(|x| x - 1))
+        {
             *set_x = self.square[rhs_x as usize];
         }
 
@@ -76,7 +79,7 @@ where
 
 #[cfg(test)]
 mod test_ops {
-    use crate::{O3, Permutation, Enumerable};
+    use crate::{Enumerable, Permutation, O3};
 
     #[test]
     fn test_mul() {

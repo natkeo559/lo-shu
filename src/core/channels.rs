@@ -1,4 +1,4 @@
-use crate::{CheckVector, O3, Params, Permutation, Enumerable, O4};
+use crate::{CheckVector, Enumerable, Params, Permutation, O3, O4};
 use std::{
     marker::PhantomData,
     sync::{atomic::AtomicBool, atomic::Ordering::Relaxed, mpsc::Sender, Arc},

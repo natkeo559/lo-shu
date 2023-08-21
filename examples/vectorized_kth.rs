@@ -3,17 +3,14 @@
 #![feature(portable_simd)]
 #![feature(iter_array_chunks)]
 
-
-
-
 // pub fn kth(k: usize) -> Self {
 //     let ogk = k;
 //     let mut n = Self::identity();
 //     let mut indeces = [0; P::ELEMENTS];
 
-use std::simd::{Simd, SimdPartialEq, SimdOrd};
+use std::simd::{Simd, SimdOrd, SimdPartialEq};
 
-use lo_shu::{Permutation, O3, Params};
+use lo_shu::{Params, Permutation, O3};
 
 pub fn kth(k: usize) -> Permutation<O3> {
     let mut n = Permutation::identity();
@@ -42,7 +39,6 @@ pub fn kth(k: usize) -> Permutation<O3> {
     n
 }
 
-
 fn v_kth(k_v: Vec<usize>) {
     // let nv = vec![Permutation::<O3>::identity(); 8];
     let vs = Simd::from_slice(&k_v[..]);
@@ -55,9 +51,6 @@ fn v_kth(k_v: Vec<usize>) {
         place_div = m.simd_max(place_div);
         divisors *= Simd::splat(place);
     }
-
-
-
 }
 
 fn main() {

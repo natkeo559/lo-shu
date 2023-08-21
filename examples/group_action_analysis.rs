@@ -1,7 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{CheckVector, O4, Permutation, Enumerable};
+use lo_shu::{CheckVector, Enumerable, Permutation, O4};
 use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
 
 use itertools::Itertools;
@@ -70,7 +70,10 @@ fn main() {
     // for i in [87357715922,8099169412855,8228242280293] {
     //     magic_squares.insert(i);
     // }
-    let magic_squares = file.into_iter().map(|a| Permutation::<O4>::kth(a)).collect::<HashSet<_>>();
+    let magic_squares = file
+        .into_iter()
+        .map(|a| Permutation::<O4>::kth(a))
+        .collect::<HashSet<_>>();
 
     println!("Input Size: {}", magic_squares.len());
 
@@ -113,14 +116,13 @@ fn main() {
             let mut reject = BTreeSet::new();
 
             magic.extend(
-                s
-                    .generate_d()
+                s.generate_d()
                     .into_iter()
                     .filter_map(|s| {
                         if let Some(m) = (s * a).check_v() {
-                            Some(m.clone().index())
+                            Some(m.index())
                         } else {
-                            reject.insert(a.clone().index());
+                            reject.insert(a.index());
                             None
                         }
                     })
@@ -131,9 +133,21 @@ fn main() {
         .unzip();
 
     // Unpack the zipped data into its respective set.
-    unique_set.extend(zipped.0.into_par_iter().flatten().map(|a| Permutation::<O4>::kth(a)).collect::<HashSet<_>>());
-    let reject = zipped.1.into_par_iter().flatten().map(|a| Permutation::<O4>::kth(a)).collect();
-    
+    unique_set.extend(
+        zipped
+            .0
+            .into_par_iter()
+            .flatten()
+            .map(|a| Permutation::<O4>::kth(a))
+            .collect::<HashSet<_>>(),
+    );
+    let reject = zipped
+        .1
+        .into_par_iter()
+        .flatten()
+        .map(|a| Permutation::<O4>::kth(a))
+        .collect();
+
     let unique_set = unique_squares(&unique_set);
     println!("|M| = {}", unique_set.len());
     println!("|A| = {}", unique_actions.len());
@@ -174,19 +188,19 @@ mod debugging {
     #[test]
     #[ignore = "Debugging"]
     fn dbg_g() {
-        let g = read_to_string("examples/collected/O4/G.txt")
+        let g = read_to_string("examples/collected/orderfour/G.txt")
             .expect("Could not find input file")
             .lines()
-            .map(|line| line.trim().parse::<usize>().unwrap())
-            .collect::<BTreeSet<usize>>();
+            .map(|line| line.trim().parse::<u64>().unwrap())
+            .collect::<BTreeSet<_>>();
 
-        let s = read_to_string("examples/collected/O4/Census.txt")
+        let s = read_to_string("examples/collected/orderfour/Census.txt")
             .expect("Could not find input file")
             .lines()
-            .map(|line| line.trim().parse::<usize>().unwrap())
-            .collect::<BTreeSet<usize>>();
+            .map(|line| line.trim().parse::<u64>().unwrap())
+            .collect::<BTreeSet<_>>();
 
-        for j in g.into_iter().map(|j| Permutation::<O4>::kth(j)){
+        for j in g.into_iter().map(|j| Permutation::<O4>::kth(j)) {
             println!("Action: \n{}", j);
             println!("Order: {}", j.cyclic_notation().order());
             let mut passed = 0;

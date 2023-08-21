@@ -1,4 +1,4 @@
-use crate::{Construction, O4, O3, Params, Permutation, Square};
+use crate::{Construction, Params, Permutation, Square, O3, O4};
 pub trait CheckScalar {
     type Output;
 

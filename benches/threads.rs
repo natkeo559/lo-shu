@@ -2,12 +2,12 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use std::time::Duration;
 use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
 use std::thread;
+use std::time::Duration;
 
-use lo_shu::{CheckVector, O3, Permutation, Enumerable};
+use lo_shu::{CheckVector, Enumerable, Permutation, O3};
 
 #[inline]
 fn solve_t_v1() -> BTreeSet<u32> {

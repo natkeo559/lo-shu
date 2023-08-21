@@ -127,7 +127,7 @@ where
 
 #[cfg(test)]
 mod test_ops {
-    use crate::{CheckVector, Enumerable, Cycles, O4, O3, Permutation, Square};
+    use crate::{CheckVector, Cycles, Enumerable, Permutation, Square, O3, O4};
     use rayon::prelude::*;
 
     #[test]
@@ -154,11 +154,9 @@ mod test_ops {
             vec![10, 11],
             vec![13, 16],
         ]);
-        let c = Square::<O4>::from_array([
-            4, 14, 15, 1, 9, 7, 6, 12, 5, 11, 10, 8, 16, 2, 3, 13,
-        ])
-        .to_perm()
-        .cyclic_notation();
+        let c = Square::<O4>::from_array([4, 14, 15, 1, 9, 7, 6, 12, 5, 11, 10, 8, 16, 2, 3, 13])
+            .to_perm()
+            .cyclic_notation();
         assert_eq!(c_s, c);
     }
 

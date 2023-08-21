@@ -52,13 +52,18 @@ where
 
 #[cfg(test)]
 mod test_transform {
-    use crate::{O4, O3, Permutation, Square};
+    use crate::{Permutation, Square, O3, O4};
 
     #[test]
     fn test_rotate_90_3() {
         let mut a = Permutation::<O3>::identity().square;
         let b = a.rotate_90();
-        assert_eq!(Square { data: [3, 6, 9, 2, 5, 8, 1, 4, 7] }, b);
+        assert_eq!(
+            Square {
+                data: [3, 6, 9, 2, 5, 8, 1, 4, 7]
+            },
+            b
+        );
     }
 
     #[test]
@@ -66,7 +71,9 @@ mod test_transform {
         let mut a = Permutation::<O4>::identity().square;
         let b = a.rotate_90();
         assert_eq!(
-            Square { data: [4, 8, 12, 16, 3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13] } ,
+            Square {
+                data: [4, 8, 12, 16, 3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13]
+            },
             b
         );
     }
@@ -75,7 +82,12 @@ mod test_transform {
     fn test_reflect_x() {
         let mut a = Permutation::<O3>::identity().square;
         let b = a.reflect_x();
-        assert_eq!(Square { data: [3, 2, 1, 6, 5, 4, 9, 8, 7] }, b);
+        assert_eq!(
+            Square {
+                data: [3, 2, 1, 6, 5, 4, 9, 8, 7]
+            },
+            b
+        );
     }
 
     #[test]
@@ -83,7 +95,9 @@ mod test_transform {
         let mut a = Permutation::<O4>::identity().square;
         let b = a.reflect_x();
         assert_eq!(
-            Square { data: [4, 3, 2, 1, 8, 7, 6, 5, 12, 11, 10, 9, 16, 15, 14, 13] },
+            Square {
+                data: [4, 3, 2, 1, 8, 7, 6, 5, 12, 11, 10, 9, 16, 15, 14, 13]
+            },
             b
         );
     }

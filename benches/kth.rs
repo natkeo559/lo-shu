@@ -2,7 +2,7 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
-use lo_shu::{O3, Permutation, Enumerable};
+use lo_shu::{Enumerable, Permutation, O3};
 use std::time::Duration;
 
 fn next_k(n: usize) {

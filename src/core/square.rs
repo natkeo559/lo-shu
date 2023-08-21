@@ -3,13 +3,15 @@ use std::hash::{Hash, Hasher};
 
 use itertools::Itertools;
 
-use crate::ParameterSetError;
 use crate::order::Params;
+use crate::ParameterSetError;
 
 #[derive(Clone, Copy, Debug, PartialOrd)]
 pub struct Square<P: Params>
-where [(); P::ELEMENTS]: {
-    pub data: [u32; P::ELEMENTS]
+where
+    [(); P::ELEMENTS]:,
+{
+    pub data: [u32; P::ELEMENTS],
 }
 
 impl<P: Params> Square<P>
@@ -45,28 +47,30 @@ where
 
     ///Creates a Square from an array.
     pub fn from_array(data: [u32; P::ELEMENTS]) -> Self {
-        Self{ data }
+        Self { data }
     }
 }
 
-impl<P: Params> TryFrom<&[u32]> for Square<P> where [(); P::ELEMENTS]: {
+impl<P: Params> TryFrom<&[u32]> for Square<P>
+where
+    [(); P::ELEMENTS]:,
+{
     type Error = ParameterSetError;
 
-    fn try_from(item: &[u32]) -> Result<Self, Self::Error> where [(); P::ELEMENTS]: {
-        let err = ParameterSetError::ElementCount(
-            "Item length does not match P::ELEMENTS!".to_string(),
-        );
+    fn try_from(item: &[u32]) -> Result<Self, Self::Error>
+    where
+        [(); P::ELEMENTS]:,
+    {
+        let err =
+            ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
 
         match item.len() == P::ELEMENTS {
             true => {
-                let data: Result<[u32; P::ELEMENTS], std::array::TryFromSliceError> = item.try_into();
+                let data: Result<[u32; P::ELEMENTS], std::array::TryFromSliceError> =
+                    item.try_into();
                 match data {
-                    Ok(data) => { 
-                        Ok(Self {
-                            data,
-                        })
-                    },
-                    Err(_) => Err(err)
+                    Ok(data) => Ok(Self { data }),
+                    Err(_) => Err(err),
                 }
             }
             false => Err(err),
@@ -135,7 +139,7 @@ where
 
 #[cfg(test)]
 mod test_square {
-    use crate::{O4, O3};
+    use crate::{O3, O4};
 
     use super::*;
 
@@ -143,19 +147,24 @@ mod test_square {
     fn test_square_from_array_3() {
         let a = Square::<O3>::from_array([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
-        assert_eq!(Square { data: [1, 2, 3, 4, 5, 6, 7, 8, 9] }, a);
+        assert_eq!(
+            Square {
+                data: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            },
+            a
+        );
         assert_eq!(9, a.len());
         assert_eq!(5, a[4]);
     }
 
     #[test]
     fn test_square_from_array_4() {
-        let a = Square::<O4>::from_array([
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-        ]);
+        let a = Square::<O4>::from_array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
 
         assert_eq!(
-            Square { data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] },
+            Square {
+                data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+            },
             a
         );
         assert_eq!(16, a.len());

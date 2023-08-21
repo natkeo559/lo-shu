@@ -5,7 +5,7 @@ use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
 use std::thread;
 
-use lo_shu::{CheckVector, O3, Permutation, Enumerable};
+use lo_shu::{CheckVector, Enumerable, Permutation, O3};
 
 #[inline]
 fn solve_t_v1() -> BTreeSet<u32> {

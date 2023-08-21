@@ -2,9 +2,7 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{
-    CheckScalar, CheckVector, Construction, O5, O4, O3, Permutation, Enumerable,
-};
+use lo_shu::{CheckScalar, CheckVector, Construction, Enumerable, Permutation, O3, O4, O5};
 use std::time::Duration;
 
 fn check_unsafe_vector() {
@@ -39,9 +37,7 @@ fn check_generic_five() {
 
 fn check_generic_four() {
     assert_eq!(
-        Permutation::<O4>::kth(80867885530)
-            .check_v()
-            .is_some(),
+        Permutation::<O4>::kth(80867885530).check_v().is_some(),
         true
     );
     let a = Construction {

@@ -1,8 +1,9 @@
-use std::simd::{Simd, simd_swizzle, SimdUint, SimdPartialOrd, Which::{First, Second}, SupportedLaneCount, LaneCount};
+use crate::{Construction, Params, Permutation, Square, O3, O4};
 use itertools::Itertools;
-use crate::{Params, O3, Square, Permutation, Construction, O4};
-
-
+use std::simd::{
+    simd_swizzle, LaneCount, Simd, SimdPartialOrd, SimdUint, SupportedLaneCount,
+    Which::{First, Second},
+};
 
 pub trait CheckVector {
     type Output;

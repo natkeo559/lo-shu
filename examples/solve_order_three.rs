@@ -4,7 +4,7 @@
 use lo_shu::CheckVector;
 use std::collections::HashSet;
 
-use lo_shu::{O3, Permutation, Enumerable};
+use lo_shu::{Enumerable, Permutation, O3};
 use rayon::prelude::*;
 
 fn order_three_linear() -> HashSet<Permutation<O3>> {

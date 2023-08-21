@@ -2,7 +2,7 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{O3, Permutation, Enumerable};
+use lo_shu::{Enumerable, Permutation, O3};
 use lo_shu::{ThreadManager, Worker};
 use std::{
     sync::{
@@ -28,7 +28,13 @@ fn message_solver(t: usize) {
 
     match rx.recv() {
         Ok(idxs) => {
-            assert_eq!(8, idxs.generate_d().into_iter().map(|a| a.clone().index()).len());
+            assert_eq!(
+                8,
+                idxs.generate_d()
+                    .into_iter()
+                    .map(|a| a.clone().index())
+                    .len()
+            );
         }
         Err(_) => panic!("Worker threads disconnected before solution found!"),
     }

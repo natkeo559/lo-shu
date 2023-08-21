@@ -7,7 +7,7 @@ pub trait Params {
 
 macro_rules! impl_parameter_set {
     ($order:literal, $name:tt) => {
-        #[derive(Debug, Clone, Copy, PartialEq)]
+        #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
         pub struct $name;
 
         impl Params for $name {

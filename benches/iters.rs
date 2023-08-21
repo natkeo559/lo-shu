@@ -4,7 +4,7 @@
 #![feature(iter_array_chunks)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{CheckVector, O3, Permutation, Enumerable};
+use lo_shu::{CheckVector, Enumerable, Permutation, O3};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use std::{collections::HashSet, time::Duration};
 

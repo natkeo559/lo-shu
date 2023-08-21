@@ -14,7 +14,9 @@ where
 {
     pub fn zeros() -> Self {
         Construction {
-            square: Square { data: [0; P::ELEMENTS] },
+            square: Square {
+                data: [0; P::ELEMENTS],
+            },
         }
     }
 
@@ -25,7 +27,7 @@ where
         }
 
         Self {
-            square: Square{ data },
+            square: Square { data },
         }
     }
 
@@ -67,7 +69,7 @@ where
 
 #[cfg(test)]
 mod test_construction {
-    use crate::{CheckVector, O5, O3};
+    use crate::{CheckVector, O3, O5};
 
     use super::*;
 
@@ -75,7 +77,9 @@ mod test_construction {
     fn test_new_zeros() {
         let a = Construction::<O3>::zeros();
         let b = Construction {
-            square: Square { data: [0, 0, 0, 0, 0, 0, 0, 0, 0] },
+            square: Square {
+                data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            },
         };
         assert_eq!(a, b);
     }
@@ -84,7 +88,9 @@ mod test_construction {
     fn test_new_identity() {
         let a = Construction::<O3>::identity();
         let b = Construction {
-            square: Square { data: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+            square: Square {
+                data: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            },
         };
         assert_eq!(a, b);
     }
@@ -93,7 +99,9 @@ mod test_construction {
     fn test_siamese() {
         let a = Construction::<O3>::siamese(1);
         let b = Construction {
-            square: Square { data: [8, 1, 6, 3, 5, 7, 4, 9, 2] },
+            square: Square {
+                data: [8, 1, 6, 3, 5, 7, 4, 9, 2],
+            },
         };
 
         assert_eq!(a, b);

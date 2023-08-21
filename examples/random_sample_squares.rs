@@ -1,12 +1,12 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
-use std::collections::{BTreeSet, HashSet};
-use std::fs::read_to_string;
 use itertools::Itertools;
-use lo_shu::{CheckVector, O4, Permutation, Enumerable};
+use lo_shu::{CheckVector, Enumerable, Permutation, O4};
 use rand::distributions::Uniform;
 use rand_distr::Distribution;
 use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
+use std::collections::{BTreeSet, HashSet};
+use std::fs::read_to_string;
 
 fn unique_squares(origin: &HashSet<Permutation<O4>>) -> HashSet<Permutation<O4>> {
     let mut unique_set = HashSet::new();
@@ -52,8 +52,7 @@ fn group_actions(samples: HashSet<Permutation<O4>>) -> usize {
             let mut magic = BTreeSet::new();
 
             magic.extend(
-                s
-                    .generate_d()
+                s.generate_d()
                     .into_iter()
                     .filter_map(|s| {
                         if let Some(m) = (s * a).check_v() {
@@ -65,28 +64,38 @@ fn group_actions(samples: HashSet<Permutation<O4>>) -> usize {
                     .collect::<BTreeSet<u64>>(),
             );
             magic
-        }).flatten().collect::<BTreeSet<_>>();
+        })
+        .flatten()
+        .collect::<BTreeSet<_>>();
 
-    unique_set.extend(stacked.into_par_iter().map(|a| Permutation::<O4>::kth(a)).collect::<HashSet<_>>());
-    
+    unique_set.extend(
+        stacked
+            .into_par_iter()
+            .map(|a| Permutation::<O4>::kth(a))
+            .collect::<HashSet<_>>(),
+    );
+
     let unique_set = unique_squares(&unique_set);
     unique_set.len()
 }
 
 fn main() {
     let lookup = read_to_string("examples/collected/O4/UniqueCensus.txt")
-            .expect("Could not find input file")
-            .lines()
-            .map(|line| line.trim().parse::<u64>().unwrap())
-            .collect::<Vec<_>>();
+        .expect("Could not find input file")
+        .lines()
+        .map(|line| line.trim().parse::<u64>().unwrap())
+        .collect::<Vec<_>>();
 
     let u = Uniform::new(0usize, 880);
     let mut rng = rand::thread_rng();
     let mut max = 0;
     for s in 0..10000 {
         println!("{}", s);
-        let sample = u.sample_iter(&mut rng).take(4)
-            .map(|i| Permutation::<O4>::kth(lookup[i])).collect::<HashSet<_>>();
+        let sample = u
+            .sample_iter(&mut rng)
+            .take(4)
+            .map(|i| Permutation::<O4>::kth(lookup[i]))
+            .collect::<HashSet<_>>();
         let magic = group_actions(sample);
 
         if magic > max {

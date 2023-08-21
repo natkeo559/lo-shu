@@ -1,7 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{O4, Permutation, Enumerable};
+use lo_shu::{Enumerable, Permutation, O4};
 use lo_shu::{ThreadManager, Worker};
 use std::{
     sync::{
