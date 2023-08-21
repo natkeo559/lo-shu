@@ -2,10 +2,10 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use std::time::Duration;
 use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
 use std::thread;
+use std::time::Duration;
 
 use lo_shu::{CheckVector, OrderThree, Params, Permutation};
 

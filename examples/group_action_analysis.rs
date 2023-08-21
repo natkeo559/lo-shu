@@ -136,7 +136,7 @@ fn main() {
     // Unpack the zipped data into its respective set.
     unique_set.extend(zipped.0.into_par_iter().flatten().collect::<BTreeSet<_>>());
     let reject = zipped.1.into_par_iter().flatten().collect::<BTreeSet<_>>();
-    
+
     let unique_set = unique_squares(&unique_set);
     println!("|M| = {}", unique_set.len());
     println!("|A| = {}", unique_actions.len());
@@ -189,7 +189,7 @@ mod debugging {
             .map(|line| line.trim().parse::<usize>().unwrap())
             .collect::<BTreeSet<usize>>();
 
-        for j in g.into_iter().map(|j| Permutation::<OrderFour>::kth(j)){
+        for j in g.into_iter().map(|j| Permutation::<OrderFour>::kth(j)) {
             println!("Action: \n{}", j);
             println!("Order: {}", j.cyclic_notation().order());
             let mut passed = 0;
