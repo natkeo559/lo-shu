@@ -9,6 +9,8 @@ lazy_static = "1.4.0"
 rand = "0.8.5"
 rand_distr = "0.4.3"
 rayon = "1.7.0"
+serde = "1.0.185"
+serde_json = "1.0.105"
 
 [dev-dependencies]
 criterion = "0.5.1"
