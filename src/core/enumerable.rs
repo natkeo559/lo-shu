@@ -76,7 +76,7 @@ mod test_enumerable {
 
     #[test]
     fn test_kth_3() -> Result<(), ParameterSetError> {
-        let a_result = Permutation::<O3>::try_from([1u32, 2, 3, 4, 5, 6, 7, 8, 9].as_slice())?;
+        let a_result = Permutation::<O3>::try_from([1, 2, 3, 4, 5, 6, 7, 8, 9].as_slice())?;
         let b_result = Permutation::<O3>::try_from([1, 2, 3, 4, 5, 6, 7, 9, 8].as_slice())?;
         let c_result = Permutation::<O3>::try_from([9, 8, 7, 6, 5, 4, 3, 1, 2].as_slice())?;
         let d_result = Permutation::<O3>::try_from([9, 8, 7, 6, 5, 4, 3, 2, 1].as_slice())?;
