@@ -6,7 +6,6 @@ use rand::distributions::Uniform;
 use rand_distr::Distribution;
 use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
 use std::collections::{BTreeSet, HashSet};
-use std::fs::read_to_string;
 
 fn unique_squares(origin: &HashSet<Permutation<O4>>) -> HashSet<Permutation<O4>> {
     let mut unique_set = HashSet::new();
