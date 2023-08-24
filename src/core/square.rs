@@ -6,6 +6,8 @@ use itertools::Itertools;
 use crate::order::Params;
 use crate::ParameterSetError;
 
+use core::array::try_from_fn;
+
 #[derive(Clone, Copy, Debug, PartialOrd)]
 pub struct Square<P: Params>
 where
@@ -137,6 +139,51 @@ where
     }
 }
 
+struct SquareDataVisitor<const N: usize>;
+
+impl<'de, const N: usize> serde::de::Visitor<'de> for SquareDataVisitor<N> {
+    type Value = [u32; N];
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(formatter, "a sequence of {} u32", N)
+    }
+
+    fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::SeqAccess<'de>,
+    {
+        try_from_fn(|i| {
+            seq.next_element()?
+                .ok_or_else(|| serde::de::Error::invalid_length(i, &self))
+        })
+    }
+}
+
+impl<P: Params> serde::Serialize for Square<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.data.serialize(serializer)
+    }
+}
+
+impl<'de, P: Params> serde::Deserialize<'de> for Square<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let data = deserializer.deserialize_seq(SquareDataVisitor)?;
+        Ok(Self { data })
+    }
+}
+
 #[cfg(test)]
 mod test_square {
     use crate::{O3, O4};
@@ -153,8 +200,6 @@ mod test_square {
             },
             a
         );
-        assert_eq!(9, a.len());
-        assert_eq!(5, a[4]);
     }
 
     #[test]
@@ -167,7 +212,20 @@ mod test_square {
             },
             a
         );
-        assert_eq!(16, a.len());
-        assert_eq!(5, a[4]);
+    }
+
+    #[test]
+    fn test_serde() -> Result<(), serde_json::Error> {
+        let square = Square::<O3>::from_array([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        let expected = Square {
+            data: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        };
+        let str = serde_json::to_string(&square)?;
+        let deser_square: Square<O3> = serde_json::from_str(&str)?;
+
+        assert_eq!(str, "[1,2,3,4,5,6,7,8,9]");
+        assert_eq!(deser_square, expected);
+
+        Ok(())
     }
 }
