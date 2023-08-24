@@ -26,7 +26,7 @@ impl Reader {
     {
         let mut outfile = File::create(path).unwrap();
         for i in data {
-            write!(outfile, "{}\n", i).unwrap();
+            writeln!(outfile, "{}", i).unwrap();
         }
     }
 }
