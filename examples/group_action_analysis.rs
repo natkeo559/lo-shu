@@ -1,15 +1,13 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
+use lo_shu::{read_serial, write_serial};
 use lo_shu::{CheckVector, Enumerable, Permutation, O4};
 use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
 
 use itertools::Itertools;
 use std::collections::BTreeSet;
 use std::collections::HashSet;
-use std::fs::read_to_string;
-use std::fs::File;
-use std::io::Write;
 use std::time::Instant;
 
 fn unique_squares(origin: &HashSet<Permutation<O4>>) -> HashSet<Permutation<O4>> {
@@ -53,23 +51,15 @@ fn main() {
     // Ordinarily, data from these files comes directly from mpsc threads into the analysis functions.
     // To simplify the flow of data, result from mpsc were cached into Part.txt
     //
-    // Part.txt will contain unordered and possibly duplicate (rare) elements due to data races associated with
-    // message passing and shared memory contention.
+    // Part.txt will contain unordered elements due to data races associated with
+    // multi-threaded message passing and shared memory contention.
     //
     // Census.txt contains all ordered magic squares as a result from the computations performed on Part.txt
     //
-    // As more elements are taken, the computation time increases exponentially. To generate all magic squares
+    // As more elements are taken, the computation time increases. To generate all magic squares
     // from Part.txt, take at least 445 elements. For Census.txt, take at least 447 elements.
-    let file = read_to_string("examples/collected/O4/Reduced.txt")
-        .expect("Could not find input file")
-        .lines()
-        .take(50)
-        .map(|line| line.trim().parse::<u64>().unwrap())
-        .collect::<HashSet<_>>();
+    let file: HashSet<u64> = read_serial("examples/collected/orderfour/Reduced.txt").unwrap();
 
-    // for i in [87357715922,8099169412855,8228242280293] {
-    //     magic_squares.insert(i);
-    // }
     let magic_squares = file
         .into_iter()
         .map(|a| Permutation::<O4>::kth(a))
@@ -167,17 +157,22 @@ fn main() {
 
     // Write files containing a census of order 4 magic squares (not unique) and actions in G (unique)
     if unique_set.len() == 880 {
-        let mut outfile = File::create("examples/collected/O4/UniqueCensus.txt").unwrap();
-        for i in unique_set.iter() {
-            write!(outfile, "{}\n", i).unwrap();
-        }
+        write_serial(
+            unique_set
+                .into_iter()
+                .map(|i| i.index())
+                .collect::<BTreeSet<_>>(),
+            "examples/collected/orderfour/UniqueCensus.txt",
+        )
+        .unwrap();
     }
 
-    if !g.is_empty() {
-        let mut outfile = File::create("examples/collected/O4/G.txt").unwrap();
-        for i in g.iter() {
-            write!(outfile, "{}\n", i).unwrap();
-        }
+    if g.len() > 3 {
+        write_serial(
+            g.into_iter().map(|i| i.index()).collect::<BTreeSet<_>>(),
+            "examples/collected/orderfour/G.txt",
+        )
+        .unwrap();
     }
 }
 
@@ -188,17 +183,9 @@ mod debugging {
     #[test]
     #[ignore = "Debugging"]
     fn dbg_g() {
-        let g = read_to_string("examples/collected/orderfour/G.txt")
-            .expect("Could not find input file")
-            .lines()
-            .map(|line| line.trim().parse::<u64>().unwrap())
-            .collect::<BTreeSet<_>>();
+        let g: BTreeSet<u64> = read_serial("examples/collected/orderfour/G.txt").unwrap();
 
-        let s = read_to_string("examples/collected/orderfour/Census.txt")
-            .expect("Could not find input file")
-            .lines()
-            .map(|line| line.trim().parse::<u64>().unwrap())
-            .collect::<BTreeSet<_>>();
+        let s: BTreeSet<u64> = read_serial("examples/collected/orderfour/Census.txt").unwrap();
 
         for j in g.into_iter().map(|j| Permutation::<O4>::kth(j)) {
             println!("Action: \n{}", j);

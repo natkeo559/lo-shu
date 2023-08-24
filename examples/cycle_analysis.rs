@@ -1,20 +1,13 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use std::{
-    collections::{BTreeSet, HashMap, HashSet},
-    fs::read_to_string,
-};
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 use itertools::Itertools;
-use lo_shu::{Enumerable, Permutation, O4};
+use lo_shu::{Enumerable, Permutation, O4, read_serial, read_file, write_serial};
 
 fn main() {
-    let magic_squares = read_to_string("examples/collected/O4/Reduced.txt")
-        .expect("Could not find input file")
-        .lines()
-        .map(|line| line.trim().parse::<u64>().unwrap())
-        .collect::<BTreeSet<_>>();
+    let magic_squares: BTreeSet<u64> = read_serial("examples/collected/orderfour/Reduced.txt").unwrap();
 
     let mut cycle_map = HashMap::new();
 

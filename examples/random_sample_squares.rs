@@ -1,7 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 use itertools::Itertools;
-use lo_shu::{CheckVector, Enumerable, Permutation, O4};
+use lo_shu::{CheckVector, Enumerable, Permutation, O4, read_serial};
 use rand::distributions::Uniform;
 use rand_distr::Distribution;
 use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
@@ -80,11 +80,7 @@ fn group_actions(samples: HashSet<Permutation<O4>>) -> usize {
 }
 
 fn main() {
-    let lookup = read_to_string("examples/collected/O4/UniqueCensus.txt")
-        .expect("Could not find input file")
-        .lines()
-        .map(|line| line.trim().parse::<u64>().unwrap())
-        .collect::<Vec<_>>();
+    let lookup: Vec<u64> = read_serial("examples/collected/orderfour/UniqueCensus.txt").unwrap();
 
     let u = Uniform::new(0usize, 880);
     let mut rng = rand::thread_rng();
