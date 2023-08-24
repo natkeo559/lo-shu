@@ -4,7 +4,7 @@
 use std::collections::{BTreeSet, HashMap, HashSet};
 
 use itertools::Itertools;
-use lo_shu::{read_file, read_serial, write_serial, Enumerable, Permutation, O4};
+use lo_shu::{read_serial, Enumerable, Permutation, O4};
 
 fn main() {
     let magic_squares: BTreeSet<u64> =
