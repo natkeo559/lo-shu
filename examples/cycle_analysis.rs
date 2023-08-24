@@ -4,10 +4,11 @@
 use std::collections::{BTreeSet, HashMap, HashSet};
 
 use itertools::Itertools;
-use lo_shu::{Enumerable, Permutation, O4, read_serial, read_file, write_serial};
+use lo_shu::{read_file, read_serial, write_serial, Enumerable, Permutation, O4};
 
 fn main() {
-    let magic_squares: BTreeSet<u64> = read_serial("examples/collected/orderfour/Reduced.txt").unwrap();
+    let magic_squares: BTreeSet<u64> =
+        read_serial("examples/collected/orderfour/Reduced.txt").unwrap();
 
     let mut cycle_map = HashMap::new();
 

@@ -1,7 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 use itertools::Itertools;
-use lo_shu::{CheckVector, Enumerable, Permutation, O4, read_serial};
+use lo_shu::{read_serial, CheckVector, Enumerable, Permutation, O4};
 use rand::distributions::Uniform;
 use rand_distr::Distribution;
 use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
