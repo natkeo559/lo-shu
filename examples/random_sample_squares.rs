@@ -27,12 +27,7 @@ fn compute_group_actions(group: &HashSet<Permutation<O4>>) -> HashSet<Permutatio
         .iter()
         .cartesian_product(group.iter())
         .par_bridge()
-        .map(|(&a, &c)| {
-            // Factored action "b" from a * b = c
-            // b = (c.inv * a).inv
-            // Collect these into a set.
-            a.inv() * c
-        })
+        .map(|(&a, &c)| a.inv() * c)
         .collect::<HashSet<_>>()
 }
 
@@ -88,7 +83,7 @@ fn main() {
         println!("{}", s);
         let sample = u
             .sample_iter(&mut rng)
-            .take(4)
+            .take(48)
             .map(|i| Permutation::<O4>::kth(lookup[i]))
             .collect::<HashSet<_>>();
         let magic = group_actions(sample);
