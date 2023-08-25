@@ -29,7 +29,7 @@ fn main() {
 
     let magic_squares = file
         .into_iter()
-        // ========================================================================================= //
+        // ===================================================================================== //
         // As more elements are taken, the computation time increases.                           //
         // To generate all magic squares from an input file, take:                               //
         //     Part.txt:            >= 440                                                       //
