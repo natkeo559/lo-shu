@@ -1,4 +1,4 @@
-use crate::{Construction, Params, Permutation, Square, O3, O4, VecSquare};
+use crate::{Construction, Params, Permutation, Square, VecSquare, O3, O4};
 use itertools::Itertools;
 use std::simd::{
     simd_swizzle, LaneCount, Simd, SimdPartialOrd, SimdUint, SupportedLaneCount,
@@ -791,7 +791,12 @@ where
         let (r, c): (Vec<u32>, Vec<u32>) = (0..P::ELEMENTS)
             .map(|e| e / P::ORDER)
             .zip((0usize..P::ELEMENTS).map(|s| s % P::ORDER))
-            .map(|(i, a)| (self.square.data[i * P::ORDER + a], self.square.data[a * P::ORDER + i]))
+            .map(|(i, a)| {
+                (
+                    self.square.data[i * P::ORDER + a],
+                    self.square.data[a * P::ORDER + i],
+                )
+            })
             .unzip();
         let rows = r.chunks_exact(P::ORDER).collect_vec();
         let cols = c.chunks_exact(P::ORDER).collect_vec();

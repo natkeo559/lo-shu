@@ -2,7 +2,9 @@
 #![feature(generic_const_exprs)]
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{CheckScalar, CheckVector, Construction, Enumerable, Permutation, O3, O4, O5};
+use lo_shu::{
+    CheckScalar, CheckVector, Construction, Enumerable, ParameterSetError, Permutation, O3, O4, O5,
+};
 use std::time::Duration;
 
 fn check_unsafe_vector() {
@@ -35,17 +37,18 @@ fn check_generic_five() {
     assert_eq!(Some(a), r);
 }
 
-// fn check_generic_four() {
-//     assert_eq!(
-//         Permutation::<O4>::kth(80867885530).check_v().is_some(),
-//         true
-//     );
-//     let a = Construction {
-//         square: Permutation::<O4>::kth(80867885530).square,
-//     };
-//     let r = a.check_n_v::<16>();
-//     assert_eq!(Some(a), r);
-// }
+fn check_generic_four() -> Result<(), ParameterSetError> {
+    assert_eq!(
+        Permutation::<O4>::kth(80867885530).check_v().is_some(),
+        true
+    );
+
+    let c = Construction::try_from(Permutation::<O4>::kth(80867885530))?;
+    let r = c.check_n_v::<16>();
+    assert_eq!(Some(c), r);
+
+    Ok(())
+}
 
 fn check_generic_three() {
     let a = Construction::<O3>::siamese(1);
@@ -99,7 +102,7 @@ pub fn check_generic_bench(c: &mut Criterion) {
     group.noise_threshold(0.03);
     group.measurement_time(Duration::new(20, 0));
     group.bench_function("order_three", |b| b.iter(black_box(check_generic_three)));
-    // group.bench_function("order_four", |b| b.iter(black_box(check_generic_four)));
+    group.bench_function("order_four", |b| b.iter(black_box(check_generic_four)));
     group.bench_function("order_five", |b| b.iter(black_box(check_generic_five)));
     group.finish();
 }

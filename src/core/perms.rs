@@ -127,7 +127,7 @@ where
 /// Allow set-like types to order Permutations. This only works for Params that
 /// implement Enumerable. Due to trait bound constraints, the Enumerable Params
 /// are hard-coded via macro.
-//--------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 macro_rules! impl_ord_for_enumerable_params {
     ($p:tt) => {
@@ -143,7 +143,7 @@ impl_ord_for_enumerable_params!(O3);
 impl_ord_for_enumerable_params!(O4);
 impl_ord_for_enumerable_params!(O5);
 
-//--------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 struct SquareDataVisitor<const N: usize>;
 

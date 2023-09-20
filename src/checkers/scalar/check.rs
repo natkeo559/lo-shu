@@ -1,4 +1,4 @@
-use crate::{Construction, Params, Permutation, Square, O3, O4, VecSquare};
+use crate::{Construction, Params, Permutation, Square, VecSquare, O3, O4};
 pub trait CheckScalar {
     type Output;
 
@@ -297,109 +297,45 @@ impl CheckScalar for VecSquare<O4> {
     }
 }
 
-impl CheckScalar for Permutation<O3> {
-    type Output = Self;
+/// Reduce code duplication
+//-------------------------------------------------------------------------------------------------
 
-    #[inline(always)]
-    unsafe fn check_s_unsafe(&self) -> Option<Self::Output> {
-        let p = *self;
+macro_rules! impl_check_scalar_for_type_with_param {
+    ($type:tt, $param:tt) => {
+        impl CheckScalar for $type<$param> {
+            type Output = Self;
 
-        if p.square.check_s_unsafe().is_some() {
-            return Some(p);
+            #[inline(always)]
+            unsafe fn check_s_unsafe(&self) -> Option<Self::Output> {
+                let p = self.clone();
+
+                if p.square.check_s_unsafe().is_some() {
+                    return Some(p);
+                }
+
+                None
+            }
+
+            #[inline(always)]
+            fn check_s(&self) -> Option<Self::Output> {
+                let p = self.clone();
+
+                if p.square.check_s().is_some() {
+                    return Some(p);
+                }
+
+                None
+            }
         }
-
-        None
-    }
-
-    #[inline(always)]
-    fn check_s(&self) -> Option<Self::Output> {
-        let p = *self;
-
-        if p.square.check_s().is_some() {
-            return Some(p);
-        }
-
-        None
-    }
+    };
 }
 
-impl CheckScalar for Permutation<O4> {
-    type Output = Self;
+impl_check_scalar_for_type_with_param!(Permutation, O3);
+impl_check_scalar_for_type_with_param!(Permutation, O4);
+impl_check_scalar_for_type_with_param!(Construction, O3);
+impl_check_scalar_for_type_with_param!(Construction, O4);
 
-    #[inline(always)]
-    unsafe fn check_s_unsafe(&self) -> Option<Self::Output> {
-        let p = *self;
-
-        if p.square.check_s_unsafe().is_some() {
-            return Some(p);
-        }
-
-        None
-    }
-
-    #[inline(always)]
-    fn check_s(&self) -> Option<Self::Output> {
-        let p = *self;
-
-        if p.square.check_s().is_some() {
-            return Some(p);
-        }
-
-        None
-    }
-}
-
-impl CheckScalar for Construction<O3> {
-    type Output = Self;
-
-    #[inline(always)]
-    unsafe fn check_s_unsafe(&self) -> Option<Self::Output> {
-        let p = self.clone();
-
-        if p.square.check_s_unsafe().is_some() {
-            return Some(p);
-        }
-
-        None
-    }
-
-    #[inline(always)]
-    fn check_s(&self) -> Option<Self::Output> {
-        let p = self.clone();
-
-        if p.square.check_s().is_some() {
-            return Some(p);
-        }
-
-        None
-    }
-}
-
-impl CheckScalar for Construction<O4> {
-    type Output = Self;
-
-    #[inline(always)]
-    unsafe fn check_s_unsafe(&self) -> Option<Self::Output> {
-        let p = self.clone();
-
-        if p.square.check_s_unsafe().is_some() {
-            return Some(p);
-        }
-
-        None
-    }
-
-    #[inline(always)]
-    fn check_s(&self) -> Option<Self::Output> {
-        let p = self.clone();
-
-        if p.square.check_s().is_some() {
-            return Some(p);
-        }
-
-        None
-    }
-}
+//-------------------------------------------------------------------------------------------------
 
 #[cfg(test)]
 mod check_tests {

@@ -1,38 +1,128 @@
-use std::{marker::PhantomData, hash::{Hash, Hasher}};
 use core::fmt;
 use itertools::Itertools;
+use std::{
+    hash::{Hash, Hasher},
+    marker::PhantomData,
+};
 
-use crate::Params;
+use crate::{ParameterSetError, Params, Permutation};
 
 #[derive(Debug, Clone, PartialOrd)]
 pub struct VecSquare<P: Params> {
     pub data: Vec<u32>,
-    phantom: PhantomData<P>
+    phantom: PhantomData<P>,
 }
 
 impl<P: Params> VecSquare<P> {
     pub fn new() -> Self {
-        Self { data: Vec::with_capacity(P::ELEMENTS), phantom: PhantomData }
+        Self {
+            data: Vec::with_capacity(P::ELEMENTS),
+            phantom: PhantomData,
+        }
     }
 
     pub fn fill(value: u32) -> Self {
         let data: Vec<u32> = (0..P::ELEMENTS).map(|_| value).collect();
-        Self { data, phantom: PhantomData }
+        Self {
+            data,
+            phantom: PhantomData,
+        }
     }
 
     pub fn identity() -> Self {
         let data = (1..=P::ELEMENTS as u32).collect();
-        Self { data, phantom: PhantomData }
+        Self {
+            data,
+            phantom: PhantomData,
+        }
     }
 
-    pub fn from_vec(data: Vec<u32>) -> Self{
-        Self { data, phantom: PhantomData}
+    pub fn from_vec(data: Vec<u32>) -> Self {
+        Self {
+            data,
+            phantom: PhantomData,
+        }
     }
 }
 
 impl<P: Params> Default for VecSquare<P> {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl<P: Params> TryFrom<&[u32]> for VecSquare<P> {
+    type Error = ParameterSetError;
+
+    fn try_from(item: &[u32]) -> Result<Self, Self::Error> {
+        let err =
+            ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
+
+        match item.len() == P::ELEMENTS {
+            true => {
+                let data: Result<Vec<u32>, std::convert::Infallible> = item.try_into();
+                match data {
+                    Ok(data) => Ok(Self {
+                        data,
+                        phantom: PhantomData,
+                    }),
+                    Err(_) => Err(err),
+                }
+            }
+            false => Err(err),
+        }
+    }
+}
+
+impl<P: Params> TryFrom<&[u32]> for Construction<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    type Error = ParameterSetError;
+
+    fn try_from(item: &[u32]) -> Result<Self, Self::Error>
+    where
+        [(); P::ELEMENTS]:,
+    {
+        let err =
+            ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
+
+        match item.len() == P::ELEMENTS {
+            true => {
+                let data = VecSquare::<P>::try_from(item);
+                match data {
+                    Ok(data) => Ok(Self { square: data }),
+                    Err(_) => Err(err),
+                }
+            }
+            false => Err(err),
+        }
+    }
+}
+
+impl<P: Params> TryFrom<Permutation<P>> for Construction<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    type Error = ParameterSetError;
+
+    fn try_from(item: Permutation<P>) -> Result<Self, Self::Error>
+    where
+        [(); P::ELEMENTS]:,
+    {
+        let err =
+            ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
+
+        match item.square.len() == P::ELEMENTS {
+            true => {
+                let data = VecSquare::<P>::try_from(item.square.data.as_slice());
+                match data {
+                    Ok(data) => Ok(Self { square: data }),
+                    Err(_) => Err(err),
+                }
+            }
+            false => Err(err),
+        }
     }
 }
 
@@ -114,15 +204,24 @@ where
 
 #[cfg(test)]
 mod test_construction {
-    use crate::{CheckVector, O3, O5, O25};
+    use crate::{CheckVector, O25, O3, O4};
 
     use super::*;
 
     #[test]
-    fn test_new_zeros() {
+    fn test_new_zeros_3() {
         let a = Construction::<O3>::zeros();
         let b = Construction {
-            square: VecSquare::from_vec(vec![0, 0, 0, 0, 0, 0, 0, 0, 0])
+            square: VecSquare::from_vec(vec![0, 0, 0, 0, 0, 0, 0, 0, 0]),
+        };
+        assert_eq!(a, b);
+    }
+
+    #[test]
+    fn test_new_zeros_5() {
+        let a = Construction::<O4>::zeros();
+        let b = Construction {
+            square: VecSquare::from_vec(vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
         };
         assert_eq!(a, b);
     }
@@ -131,34 +230,22 @@ mod test_construction {
     fn test_new_identity() {
         let a = Construction::<O3>::identity();
         let b = Construction {
-            square: VecSquare::from_vec(vec![1, 2, 3, 4, 5, 6, 7, 8, 9])
+            square: VecSquare::from_vec(vec![1, 2, 3, 4, 5, 6, 7, 8, 9]),
         };
         assert_eq!(a, b);
     }
 
     #[test]
-    fn test_siamese() {
-        let a = Construction::<O3>::siamese(1);
-        let b = Construction {
-            square: VecSquare::from_vec(vec![8, 1, 6, 3, 5, 7, 4, 9, 2])
+    fn test_siamese_3() -> Result<(), ParameterSetError> {
+        let case = Construction::<O3>::siamese(1);
+        let expected = Construction {
+            square: VecSquare::try_from([8, 1, 6, 3, 5, 7, 4, 9, 2].as_slice())?,
         };
 
-        assert_eq!(a, b);
-        assert!(a.check_v().is_some())
-    }
+        assert_eq!(case, expected);
+        assert!(case.check_v().is_some());
 
-    #[test]
-    fn test_siamese2() {
-        let a = Construction::<O3>::siamese(1);
-        let b = Construction {
-            square: VecSquare {
-                data: vec![8, 1, 6, 3, 5, 7, 4, 9, 2],
-                phantom: PhantomData
-            },
-        };
-
-        assert_eq!(a, b);
-        assert!(a.check_v().is_some())
+        Ok(())
     }
 
     #[test]
@@ -172,12 +259,12 @@ mod test_construction {
         let mut sols = vec![];
         for i in 0..O25::ELEMENTS {
             let a = Construction::<O25>::siamese(i);
-            if a.check_n_v::<32>().is_some() {
+            if a.check_n_v::<16>().is_some() {
                 sols.push(a.clone());
                 // println!("{}", i);
                 // println!("{}\n", a.square)
             };
         }
-        println!("\n\n\n\n\n{}\n\n\n\n", sols.len())
+        println!("{}", sols.len())
     }
 }
