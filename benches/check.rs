@@ -35,17 +35,17 @@ fn check_generic_five() {
     assert_eq!(Some(a), r);
 }
 
-fn check_generic_four() {
-    assert_eq!(
-        Permutation::<O4>::kth(80867885530).check_v().is_some(),
-        true
-    );
-    let a = Construction {
-        square: Permutation::<O4>::kth(80867885530).square,
-    };
-    let r = a.check_n_v::<16>();
-    assert_eq!(Some(a), r);
-}
+// fn check_generic_four() {
+//     assert_eq!(
+//         Permutation::<O4>::kth(80867885530).check_v().is_some(),
+//         true
+//     );
+//     let a = Construction {
+//         square: Permutation::<O4>::kth(80867885530).square,
+//     };
+//     let r = a.check_n_v::<16>();
+//     assert_eq!(Some(a), r);
+// }
 
 fn check_generic_three() {
     let a = Construction::<O3>::siamese(1);
@@ -99,17 +99,17 @@ pub fn check_generic_bench(c: &mut Criterion) {
     group.noise_threshold(0.03);
     group.measurement_time(Duration::new(20, 0));
     group.bench_function("order_three", |b| b.iter(black_box(check_generic_three)));
-    group.bench_function("order_four", |b| b.iter(black_box(check_generic_four)));
+    // group.bench_function("order_four", |b| b.iter(black_box(check_generic_four)));
     group.bench_function("order_five", |b| b.iter(black_box(check_generic_five)));
     group.finish();
 }
 
 criterion_group!(
     benches,
-    // check_v_bench,
-    // check_s_bench,
-    // check_safe_s_v_bench,
-    // check_unsafe_s_v_bench,
+    check_v_bench,
+    check_s_bench,
+    check_safe_s_v_bench,
+    check_unsafe_s_v_bench,
     check_generic_bench
 );
 criterion_main!(benches);
