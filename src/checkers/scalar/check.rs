@@ -112,7 +112,7 @@ impl CheckScalar for VecSquare<O3> {
 
     #[inline(always)]
     fn check_s(&self) -> Option<Self::Output> {
-        let a: u32 = *self.data.get(0).unwrap();
+        let a: u32 = *self.data.first().unwrap();
         let b: u32 = *self.data.get(1).unwrap();
         let c: u32 = *self.data.get(2).unwrap();
         let d: u32 = *self.data.get(3).unwrap();
@@ -261,7 +261,7 @@ impl CheckScalar for VecSquare<O4> {
 
     #[inline(always)]
     fn check_s(&self) -> Option<Self> {
-        let a: u32 = *self.data.get(0).unwrap();
+        let a: u32 = *self.data.first().unwrap();
         let b: u32 = *self.data.get(1).unwrap();
         let c: u32 = *self.data.get(2).unwrap();
         let d: u32 = *self.data.get(3).unwrap();
@@ -308,7 +308,7 @@ where
         assert!(chunks.remainder().is_empty());
 
         if chunks.len() == 1 {
-            return match chunks.next()?.into_iter().sum::<u32>() == P::MAGIC_SUM {
+            return match chunks.next()?.iter().sum::<u32>() == P::MAGIC_SUM {
                 true => Some(()),
                 false => None,
             };
@@ -352,7 +352,7 @@ where
         Self::sum_constraint_vectors(&t1)?;
         Self::sum_constraint_vectors(&t2)?;
 
-        return Some(self.clone());
+        Some(self.clone())
     }
 }
 

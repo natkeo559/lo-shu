@@ -569,7 +569,7 @@ impl CheckVector for VecSquare<O4> {
 
         let vals: [Simd<u32, 8_usize>; 2] = [
             Simd::from_slice(&[
-                *self.data.get(0).unwrap(),
+                *self.data.first().unwrap(),
                 *self.data.get(1).unwrap(),
                 *self.data.get(2).unwrap(),
                 *self.data.get(3).unwrap(),
