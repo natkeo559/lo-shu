@@ -204,7 +204,7 @@ where
 
 #[cfg(test)]
 mod test_construction {
-    use crate::{CheckVector, O25, O3, O4};
+    use crate::{CheckVector, O25, O3, O4, O5};
 
     use super::*;
 
@@ -249,22 +249,36 @@ mod test_construction {
     }
 
     #[test]
+    fn test_valid_siamese_5() -> Result<(), ParameterSetError> {
+        let a = Construction::<O5>::siamese(2);
+        let a_result = a.check_n_s();
+
+        assert_eq!(Some(a), a_result);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_valid_siamese_25() -> Result<(), ParameterSetError> {
+        let a = Construction::<O25>::siamese(12);
+        let a_result = a.check_n_s();
+
+        assert_eq!(Some(a), a_result);
+
+        Ok(())
+    }
+
+    #[test]
     #[ignore = "debugging"]
     fn test_valid_siamese() {
-        for i in 0..O3::ELEMENTS {
-            if let Some(a) = Construction::<O3>::siamese(i).check_v() {
-                println!("{}", a.square)
+        let mut sols = 0;
+        for i in 0..O5::ELEMENTS {
+            let a = Construction::<O5>::siamese(i);
+            if a.check_n_s().is_some() {
+                sols += 1;
+                println!("{}", i);
             };
         }
-        let mut sols = vec![];
-        for i in 0..O25::ELEMENTS {
-            let a = Construction::<O25>::siamese(i);
-            if a.check_n_v::<16>().is_some() {
-                sols.push(a.clone());
-                // println!("{}", i);
-                // println!("{}\n", a.square)
-            };
-        }
-        println!("{}", sols.len())
+        println!("{}", sols)
     }
 }

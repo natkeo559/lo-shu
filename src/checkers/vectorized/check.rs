@@ -671,113 +671,45 @@ impl CheckVector for VecSquare<O4> {
     }
 }
 
-impl CheckVector for Permutation<O3> {
-    type Output = Self;
+/// Reduce code duplication
+//-------------------------------------------------------------------------------------------------
 
-    #[inline(always)]
-    unsafe fn check_v_unsafe(&self) -> Option<Self::Output> {
-        let mut result = Permutation::identity();
-        result.square.data = self.square.data;
+macro_rules! impl_check_vector_for_type_with_param {
+    ($type:tt, $param:tt) => {
+        impl CheckVector for $type<$param> {
+            type Output = Self;
 
-        if result.square.check_v_unsafe().is_some() {
-            Some(result)
-        } else {
-            None
+            #[inline(always)]
+            unsafe fn check_v_unsafe(&self) -> Option<Self::Output> {
+                let p = self.clone();
+
+                if p.square.check_v_unsafe().is_some() {
+                    return Some(p);
+                }
+
+                None
+            }
+
+            #[inline(always)]
+            fn check_v(&self) -> Option<Self::Output> {
+                let p = self.clone();
+
+                if p.square.check_v().is_some() {
+                    return Some(p);
+                }
+
+                None
+            }
         }
-    }
-
-    #[inline(always)]
-    fn check_v(&self) -> Option<Self::Output> {
-        let mut result = Permutation::identity();
-        result.square.data = self.square.data;
-
-        if result.square.check_v().is_some() {
-            Some(result)
-        } else {
-            None
-        }
-    }
+    };
 }
 
-impl CheckVector for Permutation<O4> {
-    type Output = Self;
+impl_check_vector_for_type_with_param!(Permutation, O3);
+impl_check_vector_for_type_with_param!(Permutation, O4);
+impl_check_vector_for_type_with_param!(Construction, O3);
+impl_check_vector_for_type_with_param!(Construction, O4);
 
-    #[inline(always)]
-    unsafe fn check_v_unsafe(&self) -> Option<Self::Output> {
-        let mut result = Permutation::identity();
-        result.square.data = self.square.data;
-
-        if result.square.check_v_unsafe().is_some() {
-            Some(result)
-        } else {
-            None
-        }
-    }
-
-    #[inline(always)]
-    fn check_v(&self) -> Option<Self::Output> {
-        let mut result = Permutation::identity();
-        result.square.data = self.square.data;
-
-        if result.square.check_v().is_some() {
-            Some(result)
-        } else {
-            None
-        }
-    }
-}
-
-impl CheckVector for Construction<O3> {
-    type Output = Self;
-
-    #[inline(always)]
-    unsafe fn check_v_unsafe(&self) -> Option<Self::Output> {
-        let p = self.clone();
-
-        if p.square.check_v_unsafe().is_some() {
-            Some(p)
-        } else {
-            None
-        }
-    }
-
-    #[inline(always)]
-    fn check_v(&self) -> Option<Self::Output> {
-        let p = self.clone();
-
-        if p.square.check_v().is_some() {
-            Some(p)
-        } else {
-            None
-        }
-    }
-}
-
-impl CheckVector for Construction<O4> {
-    type Output = Self;
-
-    #[inline(always)]
-    unsafe fn check_v_unsafe(&self) -> Option<Self::Output> {
-        let p = self.clone();
-
-        if p.square.check_v_unsafe().is_some() {
-            Some(p)
-        } else {
-            None
-        }
-    }
-
-    #[inline(always)]
-    fn check_v(&self) -> Option<Self::Output> {
-        let p = self.clone();
-
-        if p.square.check_v().is_some() {
-            Some(p)
-        } else {
-            None
-        }
-    }
-}
+//-------------------------------------------------------------------------------------------------
 
 impl<P: Params + Copy> Construction<P>
 where
@@ -813,7 +745,7 @@ where
             B.abs_diff(P::CONSTRAINT_VECTORS)
         };
 
-        let mut buffs = vec![];
+        let mut buffs = Vec::with_capacity(P::ORDER);
         for _ in 0..P::ORDER {
             buffs.push(Vec::<u32>::with_capacity(B))
         }
@@ -861,19 +793,33 @@ where
 #[cfg(test)]
 mod test_check {
     use super::*;
-    use crate::Enumerable;
+    use crate::{Enumerable, ParameterSetError};
 
     #[test]
-    fn test_safe_3() {
+    fn test_safe_3() -> Result<(), ParameterSetError> {
         let a = Permutation::<O3>::kth(69074);
         let a_result = a.check_v();
+
+        let b: Construction<O3> = Construction::try_from(a)?;
+        let b_result = b.check_v();
+
         assert_eq!(Some(a), a_result);
+        assert_eq!(Some(b), b_result);
+
+        Ok(())
     }
 
     #[test]
-    fn test_unsafe_3() {
+    fn test_unsafe_3() -> Result<(), ParameterSetError> {
         let a = Permutation::<O3>::kth(69074);
         let a_result = unsafe { a.check_v_unsafe() };
+
+        let b: Construction<O3> = Construction::try_from(a)?;
+        let b_result = unsafe { b.check_v_unsafe() };
+
         assert_eq!(Some(a), a_result);
+        assert_eq!(Some(b), b_result);
+
+        Ok(())
     }
 }

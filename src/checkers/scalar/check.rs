@@ -297,6 +297,65 @@ impl CheckScalar for VecSquare<O4> {
     }
 }
 
+impl<P: Params + Copy> Construction<P>
+where
+    [(); P::ELEMENTS]:,
+    [(); P::ORDER]:,
+{
+    #[inline(always)]
+    fn sum_constraint_vectors(values: &[u32]) -> Option<()> {
+        let mut chunks = values.chunks_exact(P::ORDER);
+        assert!(chunks.remainder().is_empty());
+
+        if chunks.len() == 1 {
+            return match chunks.next()?.into_iter().sum::<u32>() == P::MAGIC_SUM {
+                true => Some(()),
+                false => None,
+            };
+        }
+
+        let sums = chunks.fold([0; P::ORDER], |mut acc, chunk| {
+            for i in 0..P::ORDER {
+                acc[i] += chunk[i];
+            }
+            acc
+        });
+
+        match sums.into_iter().all(|sum| sum == P::MAGIC_SUM) {
+            true => Some(()),
+            false => None,
+        }
+    }
+
+    #[inline(always)]
+    pub fn check_n_s(&self) -> Option<Construction<P>> {
+        let (r, c): (Vec<u32>, Vec<u32>) = (0..P::ELEMENTS)
+            .map(|e| e / P::ORDER)
+            .zip((0usize..P::ELEMENTS).map(|s| s % P::ORDER))
+            .map(|(i, a)| {
+                (
+                    self.square.data[i * P::ORDER + a],
+                    self.square.data[a * P::ORDER + i],
+                )
+            })
+            .unzip();
+        let t1: Vec<u32> = (0..P::ORDER)
+            .map(|a| self.square.data[a * (P::ORDER + 1)])
+            .collect();
+
+        let t2: Vec<u32> = (0..P::ORDER)
+            .map(|a| self.square.data[(a + 1) * (P::ORDER - 1)])
+            .collect();
+
+        Self::sum_constraint_vectors(&r)?;
+        Self::sum_constraint_vectors(&c)?;
+        Self::sum_constraint_vectors(&t1)?;
+        Self::sum_constraint_vectors(&t2)?;
+
+        return Some(self.clone());
+    }
+}
+
 /// Reduce code duplication
 //-------------------------------------------------------------------------------------------------
 
@@ -340,19 +399,63 @@ impl_check_scalar_for_type_with_param!(Construction, O4);
 #[cfg(test)]
 mod check_tests {
     use super::*;
-    use crate::Enumerable;
+    use crate::{Enumerable, ParameterSetError};
 
     #[test]
-    fn check_unsafe_scalar() {
+    fn test_safe_3() -> Result<(), ParameterSetError> {
         let a = Permutation::<O3>::kth(69074);
-        let r = unsafe { a.check_s_unsafe() };
-        assert_eq!(Some(Permutation::<O3>::kth(69074)), r);
+        let a_result = a.check_s();
+
+        let b: Construction<O3> = Construction::try_from(a)?;
+        let b_result = b.check_s();
+
+        assert_eq!(Some(a), a_result);
+        assert_eq!(Some(b), b_result);
+
+        Ok(())
     }
 
     #[test]
-    fn check_safe_scalar() {
+    fn test_unsafe_3() -> Result<(), ParameterSetError> {
         let a = Permutation::<O3>::kth(69074);
-        let r = a.check_s();
-        assert_eq!(Some(Permutation::<O3>::kth(69074)), r);
+        let a_result = unsafe { a.check_s_unsafe() };
+
+        let b: Construction<O3> = Construction::try_from(a)?;
+        let b_result = unsafe { b.check_s_unsafe() };
+
+        assert_eq!(Some(a), a_result);
+        assert_eq!(Some(b), b_result);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_check_n_s_3() -> Result<(), ParameterSetError> {
+        let a1 = Permutation::<O3>::kth(69074);
+        let a2 = Permutation::<O3>::kth(69075);
+        let b1 = Construction::try_from(a1)?;
+        let b2 = Construction::try_from(a2)?;
+        let b1_result = b1.check_n_s();
+        let b2_result = b2.check_n_s();
+
+        assert_eq!(Some(b1), b1_result);
+        assert_eq!(None, b2_result);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_check_n_s_4() -> Result<(), ParameterSetError> {
+        let a1 = Permutation::<O4>::kth(80867885530);
+        let a2 = Permutation::<O4>::kth(80867885531);
+        let b1 = Construction::try_from(a1)?;
+        let b2 = Construction::try_from(a2)?;
+        let b1_result = b1.check_n_s();
+        let b2_result = b2.check_n_s();
+
+        assert_eq!(Some(b1), b1_result);
+        assert_eq!(None, b2_result);
+
+        Ok(())
     }
 }
