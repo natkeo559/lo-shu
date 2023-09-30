@@ -25,3 +25,4 @@ impl_parameter_set!(4, O4);
 impl_parameter_set!(5, O5);
 impl_parameter_set!(25, O25);
 impl_parameter_set!(301, O301);
+impl_parameter_set!(301, O1001);

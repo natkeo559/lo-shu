@@ -1,5 +1,5 @@
 use crate::{order::Params, Square};
-use crate::{Enumerable, ParameterSetError, O3, O4, O5};
+use crate::{Construction, Enumerable, EnumerableMarker, ParameterSetError, O3, O4, O5};
 use std::array::try_from_fn;
 use std::cmp::Ordering;
 use std::fmt;
@@ -121,6 +121,19 @@ where
     fn try_from(slice: &[u32]) -> Result<Self, Self::Error> {
         let s = Square::<P>::try_from(slice)?;
         Ok(Permutation { square: s })
+    }
+}
+
+impl<P: Params + EnumerableMarker> TryFrom<Construction<P>> for Permutation<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    type Error = ParameterSetError;
+
+    fn try_from(c: Construction<P>) -> Result<Self, Self::Error> {
+        let vs = c.square.data.as_slice();
+        let s = Square::<P>::try_from(vs)?;
+        Ok(Self { square: s })
     }
 }
 

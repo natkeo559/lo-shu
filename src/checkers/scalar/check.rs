@@ -297,64 +297,79 @@ impl CheckScalar for VecSquare<O4> {
     }
 }
 
-impl<P: Params + Copy> Construction<P>
+#[inline(always)]
+fn sum_constraint_vectors<P: Params>(values: &[u32]) -> Option<()>
 where
-    [(); P::ELEMENTS]:,
     [(); P::ORDER]:,
 {
-    #[inline(always)]
-    fn sum_constraint_vectors(values: &[u32]) -> Option<()> {
-        let mut chunks = values.chunks_exact(P::ORDER);
-        assert!(chunks.remainder().is_empty());
+    let mut chunks = values.chunks_exact(P::ORDER);
+    assert!(chunks.remainder().is_empty());
 
-        if chunks.len() == 1 {
-            return match chunks.next()?.iter().sum::<u32>() == P::MAGIC_SUM {
-                true => Some(()),
-                false => None,
-            };
-        }
-
-        let sums = chunks.fold([0; P::ORDER], |mut acc, chunk| {
-            for i in 0..P::ORDER {
-                acc[i] += chunk[i];
-            }
-            acc
-        });
-
-        match sums.into_iter().all(|sum| sum == P::MAGIC_SUM) {
+    if chunks.len() == 1 {
+        return match chunks.next()?.iter().sum::<u32>() == P::MAGIC_SUM {
             true => Some(()),
             false => None,
-        }
+        };
     }
 
-    #[inline(always)]
-    pub fn check_n_s(&self) -> Option<Construction<P>> {
-        let (r, c): (Vec<u32>, Vec<u32>) = (0..P::ELEMENTS)
-            .map(|e| e / P::ORDER)
-            .zip((0usize..P::ELEMENTS).map(|s| s % P::ORDER))
-            .map(|(i, a)| {
-                (
-                    self.square.data[i * P::ORDER + a],
-                    self.square.data[a * P::ORDER + i],
-                )
-            })
-            .unzip();
-        let t1: Vec<u32> = (0..P::ORDER)
-            .map(|a| self.square.data[a * (P::ORDER + 1)])
-            .collect();
+    let sums = chunks.fold([0; P::ORDER], |mut acc, chunk| {
+        for i in 0..P::ORDER {
+            acc[i] += chunk[i];
+        }
+        acc
+    });
 
-        let t2: Vec<u32> = (0..P::ORDER)
-            .map(|a| self.square.data[(a + 1) * (P::ORDER - 1)])
-            .collect();
-
-        Self::sum_constraint_vectors(&r)?;
-        Self::sum_constraint_vectors(&c)?;
-        Self::sum_constraint_vectors(&t1)?;
-        Self::sum_constraint_vectors(&t2)?;
-
-        Some(self.clone())
+    match sums.into_iter().all(|sum| sum == P::MAGIC_SUM) {
+        true => Some(()),
+        false => None,
     }
 }
+
+/// Reduce code duplication
+//-------------------------------------------------------------------------------------------------
+
+macro_rules! impl_generic_scalar_checker_for_type {
+    ($type:tt) => {
+        impl<P: Params + Copy> $type<P>
+        where
+            [(); P::ELEMENTS]:,
+            [(); P::ORDER]:,
+        {
+            #[inline(always)]
+            pub fn check_n_s(&self) -> Option<$type<P>> {
+                let (r, c): (Vec<u32>, Vec<u32>) = (0..P::ELEMENTS)
+                    .map(|e| e / P::ORDER)
+                    .zip((0usize..P::ELEMENTS).map(|s| s % P::ORDER))
+                    .map(|(i, a)| {
+                        (
+                            self.square.data[i * P::ORDER + a],
+                            self.square.data[a * P::ORDER + i],
+                        )
+                    })
+                    .unzip();
+                let t1: Vec<u32> = (0..P::ORDER)
+                    .map(|a| self.square.data[a * (P::ORDER + 1)])
+                    .collect();
+
+                let t2: Vec<u32> = (0..P::ORDER)
+                    .map(|a| self.square.data[(a + 1) * (P::ORDER - 1)])
+                    .collect();
+
+                sum_constraint_vectors(&r)?;
+                sum_constraint_vectors(&c)?;
+                sum_constraint_vectors(&t1)?;
+                sum_constraint_vectors(&t2)?;
+
+                Some(self.clone())
+            }
+        }
+    };
+}
+
+impl_generic_scalar_checker_for_type!(Construction);
+impl_generic_scalar_checker_for_type!(Permutation);
+
+//-------------------------------------------------------------------------------------------------
 
 /// Reduce code duplication
 //-------------------------------------------------------------------------------------------------
@@ -403,28 +418,38 @@ mod check_tests {
 
     #[test]
     fn test_safe_3() -> Result<(), ParameterSetError> {
-        let a = Permutation::<O3>::kth(69074);
-        let a_result = a.check_s();
+        let a1 = Permutation::<O3>::kth(69074);
+        let a2 = Permutation::<O3>::kth(69075);
+        let b1 = Construction::try_from(a1)?;
+        let b2 = Construction::try_from(a2)?;
+        let a1_result = a1.check_s();
+        let a2_result = a2.check_s();
+        let b1_result = b1.check_s();
+        let b2_result = b2.check_s();
 
-        let b: Construction<O3> = Construction::try_from(a)?;
-        let b_result = b.check_s();
-
-        assert_eq!(Some(a), a_result);
-        assert_eq!(Some(b), b_result);
+        assert_eq!(Some(a1), a1_result);
+        assert_eq!(None, a2_result);
+        assert_eq!(Some(b1), b1_result);
+        assert_eq!(None, b2_result);
 
         Ok(())
     }
 
     #[test]
     fn test_unsafe_3() -> Result<(), ParameterSetError> {
-        let a = Permutation::<O3>::kth(69074);
-        let a_result = unsafe { a.check_s_unsafe() };
+        let a1 = Permutation::<O3>::kth(69074);
+        let a2 = Permutation::<O3>::kth(69075);
+        let b1 = Construction::try_from(a1)?;
+        let b2 = Construction::try_from(a2)?;
+        let a1_result = unsafe { a1.check_s_unsafe() };
+        let a2_result = unsafe { a2.check_s_unsafe() };
+        let b1_result = unsafe { b1.check_s_unsafe() };
+        let b2_result = unsafe { b2.check_s_unsafe() };
 
-        let b: Construction<O3> = Construction::try_from(a)?;
-        let b_result = unsafe { b.check_s_unsafe() };
-
-        assert_eq!(Some(a), a_result);
-        assert_eq!(Some(b), b_result);
+        assert_eq!(Some(a1), a1_result);
+        assert_eq!(None, a2_result);
+        assert_eq!(Some(b1), b1_result);
+        assert_eq!(None, b2_result);
 
         Ok(())
     }
@@ -435,9 +460,13 @@ mod check_tests {
         let a2 = Permutation::<O3>::kth(69075);
         let b1 = Construction::try_from(a1)?;
         let b2 = Construction::try_from(a2)?;
+        let a1_result = a1.check_n_s();
+        let a2_result = a2.check_n_s();
         let b1_result = b1.check_n_s();
         let b2_result = b2.check_n_s();
 
+        assert_eq!(Some(a1), a1_result);
+        assert_eq!(None, a2_result);
         assert_eq!(Some(b1), b1_result);
         assert_eq!(None, b2_result);
 
@@ -450,9 +479,13 @@ mod check_tests {
         let a2 = Permutation::<O4>::kth(80867885531);
         let b1 = Construction::try_from(a1)?;
         let b2 = Construction::try_from(a2)?;
+        let a1_result = a1.check_n_s();
+        let a2_result = a2.check_n_s();
         let b1_result = b1.check_n_s();
         let b2_result = b2.check_n_s();
 
+        assert_eq!(Some(a1), a1_result);
+        assert_eq!(None, a2_result);
         assert_eq!(Some(b1), b1_result);
         assert_eq!(None, b2_result);
 

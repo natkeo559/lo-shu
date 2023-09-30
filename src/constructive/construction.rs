@@ -74,58 +74,6 @@ impl<P: Params> TryFrom<&[u32]> for VecSquare<P> {
     }
 }
 
-impl<P: Params> TryFrom<&[u32]> for Construction<P>
-where
-    [(); P::ELEMENTS]:,
-{
-    type Error = ParameterSetError;
-
-    fn try_from(item: &[u32]) -> Result<Self, Self::Error>
-    where
-        [(); P::ELEMENTS]:,
-    {
-        let err =
-            ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
-
-        match item.len() == P::ELEMENTS {
-            true => {
-                let data = VecSquare::<P>::try_from(item);
-                match data {
-                    Ok(data) => Ok(Self { square: data }),
-                    Err(_) => Err(err),
-                }
-            }
-            false => Err(err),
-        }
-    }
-}
-
-impl<P: Params> TryFrom<Permutation<P>> for Construction<P>
-where
-    [(); P::ELEMENTS]:,
-{
-    type Error = ParameterSetError;
-
-    fn try_from(item: Permutation<P>) -> Result<Self, Self::Error>
-    where
-        [(); P::ELEMENTS]:,
-    {
-        let err =
-            ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
-
-        match item.square.len() == P::ELEMENTS {
-            true => {
-                let data = VecSquare::<P>::try_from(item.square.data.as_slice());
-                match data {
-                    Ok(data) => Ok(Self { square: data }),
-                    Err(_) => Err(err),
-                }
-            }
-            false => Err(err),
-        }
-    }
-}
-
 impl<P: Params> fmt::Display for VecSquare<P> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut a = self.data.iter();
@@ -202,9 +150,61 @@ where
     }
 }
 
+impl<P: Params> TryFrom<&[u32]> for Construction<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    type Error = ParameterSetError;
+
+    fn try_from(item: &[u32]) -> Result<Self, Self::Error>
+    where
+        [(); P::ELEMENTS]:,
+    {
+        let err =
+            ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
+
+        match item.len() == P::ELEMENTS {
+            true => {
+                let data = VecSquare::<P>::try_from(item);
+                match data {
+                    Ok(data) => Ok(Self { square: data }),
+                    Err(_) => Err(err),
+                }
+            }
+            false => Err(err),
+        }
+    }
+}
+
+impl<P: Params> TryFrom<Permutation<P>> for Construction<P>
+where
+    [(); P::ELEMENTS]:,
+{
+    type Error = ParameterSetError;
+
+    fn try_from(item: Permutation<P>) -> Result<Self, Self::Error>
+    where
+        [(); P::ELEMENTS]:,
+    {
+        let err =
+            ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
+
+        match item.square.len() == P::ELEMENTS {
+            true => {
+                let data = VecSquare::<P>::try_from(item.square.data.as_slice());
+                match data {
+                    Ok(data) => Ok(Self { square: data }),
+                    Err(_) => Err(err),
+                }
+            }
+            false => Err(err),
+        }
+    }
+}
+
 #[cfg(test)]
 mod test_construction {
-    use crate::{CheckVector, O25, O3, O4, O5};
+    use crate::{CheckVector, Enumerable, O25, O3, O4, O5};
 
     use super::*;
 
@@ -270,15 +270,18 @@ mod test_construction {
 
     #[test]
     #[ignore = "debugging"]
-    fn test_valid_siamese() {
+    fn test_valid_siamese() -> Result<(), ParameterSetError> {
         let mut sols = 0;
         for i in 0..O5::ELEMENTS {
             let a = Construction::<O5>::siamese(i);
             if a.check_n_s().is_some() {
+                let index = Permutation::try_from(a)?.index();
                 sols += 1;
-                println!("{}", i);
+                println!("{}", index);
             };
         }
-        println!("{}", sols)
+        println!("{}", sols);
+
+        Ok(())
     }
 }
