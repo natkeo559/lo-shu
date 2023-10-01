@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-itertools = "0.10.5"
+crossbeam-channel = "0.5.8"
 lazy_static = "1.4.0"
 rand = "0.8.5"
 rand_distr = "0.4.3"
@@ -30,6 +30,10 @@ harness = false
 
 [[bench]]
 name = "mpsc"
+harness = false
+
+[[bench]]
+name = "crossbeam"
 harness = false
 
 [[bench]]
