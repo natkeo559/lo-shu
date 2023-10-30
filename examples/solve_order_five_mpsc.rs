@@ -1,7 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{Enumerable, Permutation, O4};
+use lo_shu::{Enumerable, Permutation, O5};
 use lo_shu::{ThreadManager, Worker};
 use std::{
     sync::{
@@ -17,11 +17,11 @@ pub fn message_solver(t: u128) {
     let (sx, rx) = mpsc::channel();
 
     for i in 0..t {
-        let sender: Sender<Permutation<O4>> = sx.clone();
+        let sender: Sender<Permutation<O5>> = sx.clone();
         let found = f.clone();
-        let tm = ThreadManager::new(t, 512, false);
+        let tm = ThreadManager::new(t, 1000, false);
         thread::spawn(move || {
-            tm.channel_check(i, sender, found);
+            tm.channel_check(i + 11143722628235392868039900, sender, found);
         });
     }
     loop {

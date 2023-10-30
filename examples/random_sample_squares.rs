@@ -74,7 +74,7 @@ fn group_actions(samples: HashSet<Permutation<O4>>) -> usize {
 }
 
 fn main() {
-    let lookup: Vec<u64> = read_serial("examples/collected/orderfour/UniqueCensus.txt").unwrap();
+    let lookup: Vec<u64> = read_serial("examples/collected/orderfour/Reduced.txt").unwrap();
 
     let u = Uniform::new(0usize, 880);
     let mut rng = rand::thread_rng();

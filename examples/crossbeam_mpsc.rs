@@ -1,11 +1,9 @@
-
 use std::thread;
 
 use crossbeam_channel::{self, unbounded};
-use lo_shu::{Permutation, Enumerable, O3};
+use lo_shu::{Enumerable, Permutation, O3};
 
-
-fn main(){
+fn main() {
     let (s, r) = unbounded();
 
     for i in 0..16 {
@@ -22,7 +20,6 @@ fn main(){
         });
     }
 
-
     let mut count = 0;
     loop {
         match r.recv() {
@@ -37,7 +34,7 @@ fn main(){
         }
 
         if count == 8 {
-            break
+            break;
         }
     }
 }

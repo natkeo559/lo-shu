@@ -13,7 +13,7 @@ use std::{
     thread,
 };
 
-fn message_solver(t: usize) {
+fn message_solver(t: u128) {
     let f = Arc::new(AtomicBool::new(false));
     let (sx, rx) = mpsc::channel();
 

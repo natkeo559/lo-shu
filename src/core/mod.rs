@@ -6,7 +6,7 @@ mod perms;
 mod square;
 mod transform;
 
-pub use channels::{ThreadManager, Worker};
+pub use channels::*;
 pub use enumerable::*;
 pub use error::*;
 pub use file::*;

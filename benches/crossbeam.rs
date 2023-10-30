@@ -1,10 +1,10 @@
 use std::thread;
 
-use crossbeam_channel::unbounded;
-use lo_shu::{Permutation, O3, Enumerable};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use crossbeam_channel::unbounded;
+use lo_shu::{Enumerable, Permutation, O3};
 
-fn crossbeam_solver_o3(t: usize){
+fn crossbeam_solver_o3(t: usize) {
     let (s, r) = unbounded();
 
     for i in 0..t {
@@ -21,20 +21,17 @@ fn crossbeam_solver_o3(t: usize){
         });
     }
 
-
     let mut sols = Vec::with_capacity(8);
     loop {
         match r.recv() {
-            Ok(p) => {
-                sols.push(p)
-            }
+            Ok(p) => sols.push(p),
             Err(_) => {
                 println!("ERR recv")
             }
         }
 
         if sols.len() == 1 {
-            break
+            break;
         }
     }
 }
@@ -64,4 +61,3 @@ pub fn crossbeam_bench(c: &mut Criterion) {
 
 criterion_group!(benches, crossbeam_bench);
 criterion_main!(benches);
-

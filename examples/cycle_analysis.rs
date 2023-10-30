@@ -8,7 +8,7 @@ use lo_shu::{read_serial, Enumerable, Permutation, O4};
 
 fn main() {
     let magic_squares: BTreeSet<u64> =
-        read_serial("examples/collected/orderfour/Reduced.txt").unwrap();
+        read_serial("examples/collected/orderfour/UniqueCensus.txt").unwrap();
 
     let mut cycle_map = HashMap::new();
 
