@@ -1,10 +1,13 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use std::{sync::mpsc::{self, Sender}, thread};
+use std::{
+    sync::mpsc::{self, Sender},
+    thread,
+};
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{O3, IndexConst, Permutation, Enumerable};
+use lo_shu::{Enumerable, IndexConst, Permutation, O3};
 
 pub fn from_builder(t: usize) -> Result<(), anyhow::Error> {
     let (sx, rx) = mpsc::channel();
@@ -15,7 +18,7 @@ pub fn from_builder(t: usize) -> Result<(), anyhow::Error> {
             for n in (i as u32..O3::MAX_INDEX).step_by(t) {
                 if let Some(sol) = Permutation::<O3>::kth(n).check_n_s() {
                     match sender.send(sol) {
-                        Ok(_) => {},
+                        Ok(_) => {}
                         Err(_) => {}
                     }
                 }
@@ -29,9 +32,7 @@ pub fn from_builder(t: usize) -> Result<(), anyhow::Error> {
     let mut recv_iter = rx.iter();
     for _ in 0..8 {
         match recv_iter.next() {
-            Some(idxs) => {
-                res.push(idxs)
-            }
+            Some(idxs) => res.push(idxs),
             None => break,
         }
     }
@@ -42,7 +43,7 @@ pub fn from_builder(t: usize) -> Result<(), anyhow::Error> {
 
 pub fn mpsc_bench(c: &mut Criterion) {
     let mut group = c.benchmark_group("mpsc");
-    
+
     let input = [
         (1, "order_three_1"),
         (2, "order_three_2"),

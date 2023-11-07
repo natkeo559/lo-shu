@@ -486,7 +486,7 @@ macro_rules! impl_message_solver_builder {
                         for n in (i as $t..self.upper_bound).step_by(self.threads) {
                             if let Some(sol) = Permutation::<$p>::kth(n + self.start).check_n_s() {
                                 match sender.send(sol) {
-                                    Ok(_) => {},
+                                    Ok(_) => {}
                                     Err(_) => {}
                                 }
                             }
@@ -607,7 +607,7 @@ impl_message_solver_builder!(O5, u128);
 mod channels_tests {
     // use super::*;
 
-    use crate::{MessageSolver, O3, IndexConst};
+    use crate::{IndexConst, MessageSolver, O3};
 
     #[test]
     fn test_builder() -> Result<(), anyhow::Error> {

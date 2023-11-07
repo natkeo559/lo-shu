@@ -1,7 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{MessageSolver, O5, IndexConst};
+use lo_shu::{IndexConst, MessageSolver, O5};
 
 #[inline]
 pub fn from_builder() -> Result<(), anyhow::Error> {
