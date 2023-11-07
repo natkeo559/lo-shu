@@ -6,6 +6,22 @@ impl EnumerableMarker for O3 {}
 impl EnumerableMarker for O4 {}
 impl EnumerableMarker for O5 {}
 
+pub trait IndexConst<T> {
+    const MAX_INDEX: T;
+}
+
+macro_rules! impl_consts_for_enumerable_params {
+    ($p:tt, $t:ty, $l:literal) => {
+        impl IndexConst<$t> for $p {
+            const MAX_INDEX: $t = $l;
+        }
+    };
+}
+
+impl_consts_for_enumerable_params!(O3, u32, 362880);
+impl_consts_for_enumerable_params!(O4, u64, 20922789888000);
+impl_consts_for_enumerable_params!(O5, u128, 15511210043330985984000000);
+
 pub trait Enumerable<P: Params + EnumerableMarker, T>
 where
     [(); P::ELEMENTS]:,
@@ -72,7 +88,14 @@ impl_fns_for_enumerable_params!(O5, u128);
 
 #[cfg(test)]
 mod test_enumerable {
-    use crate::{Enumerable, ParameterSetError, Permutation, O3, O4, O5};
+    use crate::{Enumerable, IndexConst, ParameterSetError, Permutation, O3, O4, O5};
+
+    #[test]
+    fn test_constants() {
+        assert_eq!(O3::MAX_INDEX, 362880);
+        assert_eq!(O4::MAX_INDEX, 20922789888000);
+        assert_eq!(O5::MAX_INDEX, 15511210043330985984000000);
+    }
 
     #[test]
     fn test_kth_3() -> Result<(), ParameterSetError> {
