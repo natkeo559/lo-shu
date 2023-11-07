@@ -7,7 +7,7 @@ fn main() {
     loop {
         if let Some(valid) = p.shuffle().check_n_s() {
             println!("{}", valid.square);
-            break
+            break;
         } else {
             checked += 1;
             println!("{}", checked);
