@@ -1,50 +1,48 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use lo_shu::{Enumerable, Permutation, O3};
-use lo_shu::{ThreadManager, Worker};
-use std::{
-    sync::{
-        atomic::AtomicBool,
-        mpsc::{self, Sender},
-        Arc,
-    },
-    thread,
-};
+use std::{sync::mpsc::{self, Sender}, thread};
 
-fn message_solver(t: u128) {
-    let f = Arc::new(AtomicBool::new(false));
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use lo_shu::{O3, IndexConst, Permutation, Enumerable};
+
+pub fn from_builder(t: usize) -> Result<(), anyhow::Error> {
     let (sx, rx) = mpsc::channel();
 
     for i in 0..t {
         let sender: Sender<Permutation<O3>> = sx.clone();
-        let found = f.clone();
-        let tm = ThreadManager::new(t, 1, true);
         thread::spawn(move || {
-            tm.channel_check(i, sender, found);
+            for n in (i as u32..O3::MAX_INDEX).step_by(t) {
+                if let Some(sol) = Permutation::<O3>::kth(n).check_n_s() {
+                    match sender.send(sol) {
+                        Ok(_) => {},
+                        Err(_) => {}
+                    }
+                }
+            }
+            return;
         });
     }
 
-    match rx.recv() {
-        Ok(idxs) => {
-            assert_eq!(
-                8,
-                idxs.generate_d()
-                    .into_iter()
-                    .map(|a| a.clone().index())
-                    .len()
-            );
+    drop(sx);
+    let mut res = vec![];
+    let mut recv_iter = rx.iter();
+    for _ in 0..8 {
+        match recv_iter.next() {
+            Some(idxs) => {
+                res.push(idxs)
+            }
+            None => break,
         }
-        Err(_) => panic!("Worker threads disconnected before solution found!"),
     }
+
+    assert_eq!(res.len(), 8);
+    Ok(())
 }
 
 pub fn mpsc_bench(c: &mut Criterion) {
     let mut group = c.benchmark_group("mpsc");
-    group.sample_size(3000);
-    group.noise_threshold(0.03);
-
+    
     let input = [
         (1, "order_three_1"),
         (2, "order_three_2"),
@@ -56,7 +54,7 @@ pub fn mpsc_bench(c: &mut Criterion) {
     ];
     for inp in input {
         group.bench_with_input(inp.1, &inp, |b, i| {
-            b.iter(|| message_solver(black_box(i.0)))
+            b.iter(|| black_box(from_builder(black_box(i.0))))
         });
     }
 

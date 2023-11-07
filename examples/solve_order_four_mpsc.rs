@@ -1,39 +1,24 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{Enumerable, Permutation, O4};
-use lo_shu::{ThreadManager, Worker};
-use std::{
-    sync::{
-        atomic::AtomicBool,
-        mpsc::{self, Sender},
-        Arc,
-    },
-    thread,
-};
+use lo_shu::{IndexConst, MessageSolver, O4};
 
-pub fn message_solver(t: u128) {
-    let f = Arc::new(AtomicBool::new(false));
-    let (sx, rx) = mpsc::channel();
+#[inline]
+pub fn from_builder() -> Result<(), anyhow::Error> {
+    MessageSolver::<O4>::default_build()
+        .threads(16)
+        .upper_bound(O4::MAX_INDEX)
+        .n(40)
+        .echo(true)
+        .start(80867885530)
+        .generate_d(false)
+        .output_dir("examples/collected/orderfour/")
+        .filename("SolverMPSC")
+        .execute()?;
 
-    for i in 0..t {
-        let sender: Sender<Permutation<O4>> = sx.clone();
-        let found = f.clone();
-        let tm = ThreadManager::new(t, 512, false);
-        thread::spawn(move || {
-            tm.channel_check(i, sender, found);
-        });
-    }
-    loop {
-        match rx.recv() {
-            Ok(idxs) => {
-                println!("{}", idxs.clone().index());
-            }
-            Err(_) => panic!("Worker threads disconnected before solution found!"),
-        }
-    }
+    Ok(())
 }
 
-fn main() {
-    message_solver(16);
+fn main() -> Result<(), anyhow::Error> {
+    from_builder()
 }

@@ -1,18 +1,16 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{MessageSolver, O5, IndexConst};
+use lo_shu::{IndexConst, MessageSolver, O3};
 
 #[inline]
 pub fn from_builder() -> Result<(), anyhow::Error> {
-    MessageSolver::<O5>::default_build()
+    MessageSolver::<O3>::default_build()
         .threads(16)
-        .upper_bound(O5::MAX_INDEX)
-        .n(40)
+        .upper_bound(O3::MAX_INDEX)
+        .n(2)
         .echo(true)
-        .start(100000000000000000000000)
-        .generate_d(false)
-        .output_dir("examples/collected/orderfive/")
+        .output_dir("examples/collected/orderfour/")
         .filename("SolverMPSC")
         .execute()?;
 
@@ -20,6 +18,5 @@ pub fn from_builder() -> Result<(), anyhow::Error> {
 }
 
 fn main() -> Result<(), anyhow::Error> {
-    // message_solver(16);
     from_builder()
 }
