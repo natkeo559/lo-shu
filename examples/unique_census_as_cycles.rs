@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-use lo_shu::{read_serial, Permutation, Enumerable, O4, write_serial};
+use lo_shu::{read_serial, write_serial, Enumerable, Permutation, O4};
 
 // To make output work with GAP, delete all quotes
 fn main() {
@@ -8,8 +8,8 @@ fn main() {
 
     let output = file
         .into_iter()
-        .map(|i| format!("{}", Permutation::<O4>::kth(i)
-        .cyclic_notation())).collect::<Vec<String>>();
+        .map(|i| format!("{}", Permutation::<O4>::kth(i).cyclic_notation()))
+        .collect::<Vec<String>>();
 
     write_serial(output, "examples/collected/orderfour/ReducedCycles.txt").unwrap();
 }
