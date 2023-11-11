@@ -33,8 +33,8 @@ pub fn write_serial<T: IntoIterator + serde::Serialize, P: AsRef<Path>>(
     path: P,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut file = File::create(path)?;
-    let str = serde_json::to_string_pretty(&data)?;
-    write!(file, "{}", str)?;
+    let fstr = serde_json::to_string_pretty(&data)?;
+    write!(file, "{}", fstr)?;
 
     Ok(())
 }
@@ -42,8 +42,8 @@ pub fn write_serial<T: IntoIterator + serde::Serialize, P: AsRef<Path>>(
 pub fn read_serial<T: IntoIterator + serde::de::DeserializeOwned, P: AsRef<Path>>(
     path: P,
 ) -> Result<T, Box<dyn std::error::Error>> {
-    let str: String = read_to_string(path)?;
-    let data = serde_json::from_str::<T>(&str)?;
+    let fstr: String = read_to_string(path)?;
+    let data = serde_json::from_str::<T>(&fstr)?;
 
     Ok(data)
 }
