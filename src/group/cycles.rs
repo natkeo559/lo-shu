@@ -74,7 +74,24 @@ impl<P: Params + Copy> Cycles<P> {
 
 impl<P: Params> fmt::Display for Cycles<P> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?}", self.k)
+        let d = &self.k;
+
+        let mut output = String::new();
+        for i in d {
+            let mut s = String::new();
+            s.push('(');
+            for (index, elem) in i.into_iter().enumerate() {
+                s.push_str(&elem.to_string());
+                if index + 1 != i.len() {
+                    s.push_str(", ");
+                }
+            }
+            s.push(')');
+
+            output.push_str(&s);
+        }
+
+        write!(f, "{}", output)
     }
 }
 
@@ -129,6 +146,23 @@ where
 mod test_ops {
     use crate::{CheckVector, Cycles, Enumerable, Permutation, Square, O3, O4};
     use rayon::prelude::*;
+
+    #[test]
+    #[ignore = "debugging"]
+    fn test_display() {
+        let a = Cycles::<O3>::from_vecs(vec![
+            vec![1, 4],
+            vec![2, 14],
+            vec![3, 15],
+            vec![5, 9],
+            vec![6, 7],
+            vec![8, 12],
+            vec![10, 11],
+            vec![13, 16],
+        ]);
+
+        println!("{}", a)
+    }
 
     #[test]
     fn test_cyclic() {
