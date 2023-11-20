@@ -2,3 +2,8 @@
 /Cargo.lock
 /tests
 /notes
+
+/paper/*
+!*.tex
+!*references.bib
+!images/
