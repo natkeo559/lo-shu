@@ -1,6 +1,7 @@
-\documentclass[12pt]{report}
 % chktex-file 44
 % chktex-file 40
+\documentclass[12pt]{report}
+\usepackage[document]{ragged2e}
 
 \usepackage{algorithm2e} \usepackage{amsmath} \usepackage{amssymb} \usepackage{fancyref}
 \usepackage{indentfirst} \setlength\parindent{24pt}
@@ -10,12 +11,14 @@
 \usepackage{collcell} \newcommand{\fwcell}[1]{\makebox[\arraystretch\normalbaselineskip]{$#1$}}
 \usepackage{tcolorbox} \tcbuselibrary{theorems}
 \usepackage{amsthm}
-
 \usepackage{color}
+
+\setlength{\RaggedRightParindent}{2em}
+
 \definecolor{light}{rgb}{0.5, 0.5, 0.5}
 \def\light#1{{\color{light}#1}}
 
-\usepackage{graphicx} \graphicspath{{./images/}}
+\graphicspath{{./images/}}
 
 \tolerance=1
 \emergencystretch=\maxdimen{}
@@ -540,9 +543,10 @@ of the permutations in the set. Specifically, the order of a permutation is the 
 its cycle lengths and represents the smallest integer $n \ni p^n = e$. Given our assumption, we
 selected four elements from each conjugacy class and ran the resulting set through
 $Ext\left(K_4\right)$. The set was small, only 104 elements, yet still produced $M_4$. Following
-this, elements were iteratively contained only 50 elements and $Ext\left(K_4\right)$ still resulted
-in $M_4$. This discovery was extremely valuable since we could now compute $M_4$ from 50 magic
-squares alone with a total run time of about 1 second.
+this, elements were iteratively were iteratively removed from the set via backtracking if $M_4$
+could still be computed without them. The resulting set contained only 50 elements and
+$Ext\left(K_4\right)$ still resulted in $M_4$. This discovery was extremely valuable since we could
+now compute $M_4$ from 50 magic squares alone with a total run time of about 1 second.
 
 \par Initially, we were not entirely sure what the smallest set $K_n$ that produces $M_n$
 represented, assuming one existed. Our main theory was that the elements in the minimal set are
@@ -587,6 +591,7 @@ interesting to see what kind of variety and sampling distributions of $M_n$ we c
 certain algorithms to produce small sets of solutions as well as what effect this has on the output
 of $Ext\left(K_n\right)$.
 
+\newpage{}
 \section{Magic-Preserving Group}
 
 \par The action of the dihedral group on any magic square will always result in a magic square.
@@ -656,11 +661,85 @@ uniquely as $\pi$, since this is how we treat the actions of the dihedral group 
 
 \section{Introduction}
 
+\par While confident in the performance of our new algorithm for solving magic squares, we have yet
+to fully understand the implications of using magic squares in a group-theoretic context. The
+application of a group structure to the set of magic squares of a specific order makes the
+intuition for computations simpler. However, it also adds a significant amount of complexity and
+increases the number of assumptions we use to compute them.
+
 \section{Alternative Methods}
+
+\par Compared to alternative methods for computing magic squares, we recognized very few approaches
+that use a similar permutation group representation. Some of our initial assumptions and
+applications of group theory almost transform the grid-square construction into a different kind of
+problem, so we find it somewhat difficult to make direct comparisons to more standard models of the
+magic square problem. In the few examples we found of solving magic squares using group theory, we
+found that researchers tended to apply general linear group structures over permutation groups.
+While this is a completely different approach, bringing with it other kinds of questions and
+results, this is a perfectly valid way to go about solving magic squares as the information in
+general linear groups is more geared towards grid/matrix problems, and thus contains a more
+intuitive structure. Standard models, however, are typically very well defined and date back to
+some of the earliest research into the magic square puzzle. Oftentimes these standard models use
+methods on magic squares that do not encapsulate the full solution set, rather, they typically aim
+to produce magic squares in the most efficient/intuitive way regardless of the specific value of a
+solution. This can be useful still, in cases where one only needs a solution, not necessarily
+information about all solutions.
 
 \section{Generalizations}
 
+\par For almost all of our examples, the algorithm we used to generate the complete set of magic
+squares was just made for order four. One generalization that we've considered and would like to
+see, is if this algorithm can successfully be applied to magic squares with orders greater than
+four. The code for this algorithm was designed to be order-agnostic meaning that, in theory, we
+could very easily just use a different order of magic square and the same processes and
+computations would still be applied to potentially generate the full set of solutions. Of course,
+this assumes that solutions of magic squares of different orders can be computed using the same
+transformations as order four.
+
+\par We tested this on magic squares of order five but due to the sheer size of the solution space
+for brute force calculations, we were unable to obtain a large enough initial generating set to
+produce new terms. Our hypothesis is that with additional known magic squares of order five, we may
+be able to generate additional solutions using our method. The same could potentially be said for
+magic squares of order six and above, if proven to be true for smaller orders.
+
+\par Additionally, we are curious if this algorithm still yields solutions for other kinds of magic
+squares. For example, does removing the constraint on the diagonals affect the way permutations
+interact with one another in a group structure? What about for pandiagonal magic squares?
+Generalizing our algorithm for other kinds of magic squares could introduce more or less complexity
+depending on the assumptions that other types of magic squares make. They could also yield wildly
+different results based on their own group structure analysis.
+
 \section{Open Questions}
+
+\indent Aside from the questions induced by thinking about potential generalizations of our
+algorithm,
+there are still some things we don't know but would find useful in our discovery. Many questions
+that we've had depend on the individual assumptions we've made up to that point. Eliminating or
+potentially proving our assumptions will almost certainly improve our results.
+\linebreak
+\linebreak
+\textbf{Does random sampling from a given distribution improve the relative variety of our
+  generators over normal methods?} Given the difficulty of finding a minimally generating set, we
+would like to know to what degree randomness could affect our ability to create smaller or
+``stronger'' generating sets.
+\linebreak
+\linebreak
+\textbf{To what degree might ``supercomputing'' improve our results?} This sort of problem could be
+geared more for high-performance or massively distributed systems. Our code itself is actually
+thread-agnostic in some cases which could enable increased performance and throughput of
+computations.
+\linebreak
+\linebreak
+\textbf{Are there better ways to represent magic squares as algebraic objects?} Our paper suffers
+from formality. Since developing the algorithm in code was always a priority over formalization of
+the underlying mathematics, our terminology and definitions might inadvertently be limiting our
+ability to perform efficient analysis.
+\linebreak
+\linebreak
+\textbf{Are our results unique?} To our knowledge, our method introduces something new in the way
+of solving magic squares, however we are not completely confident in its uniqueness according to
+group theory. We believe with moderate confidence that our method uses results from theorems that
+haven't necessarily been formalized in this paper.
 
 \nocite{*}
 \printbibliography{}
