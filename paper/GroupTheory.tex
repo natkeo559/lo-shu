@@ -11,6 +11,10 @@
 \usepackage{tcolorbox} \tcbuselibrary{theorems}
 \usepackage{amsthm}
 
+\usepackage{color}
+\definecolor{light}{rgb}{0.5, 0.5, 0.5}
+\def\light#1{{\color{light}#1}}
+
 \usepackage{graphicx} \graphicspath{{./images/}}
 
 \tolerance=1
@@ -389,28 +393,268 @@ orders.
 $\sigma$, by factoring out the permutation $\alpha$ that acts on $\pi$ to produce $\sigma$. The
 factorization of permutations is a well known problem and is computed by inverting part of the
 original composition:
+\begin{align}
+  \alpha=\pi^{-1}\sigma &  & \text{\light{By definition of function inverse, composition}}
+\end{align}
+The full set of transformations can be computed by taking the Cartesian product defined as:
+\begin{align}
+  M_n \times M_n = \left(\mu \in \mathcal{P}\left(\mathcal{P}\left(M_n\right)\right)\vert
+  \exists\pi,\sigma\in M_n : \mu = (\pi,\sigma)\right) &  & \text{\light{$\mathcal{P}$ denotes
+      power
+      set}}
+\end{align}
+and modifying the set such that:
+\begin{align}
+  \beta = \left\{f(\mu)=\alpha\vert\mu\in M_n \times M_n\right\}
+\end{align}
+We will refer to this modified product as  which represents the set of transformations or group
+actions on $M_n$.
 
-\begin{align*}
-  00
-\end{align*}
+\par Typically, when faced with actually computing magic squares, we only have access to subgroups
+of $M_n$. We denote an arbitrary subgroup of $M_n$ as $K_n$, more specifically, $K_n \leq M_n$.
+Many methods for computing magic squares exist. As such, various distinct subgroups are possible.
+Regardless of the methods used, the group actions still may reveal information about $M_n$ despite
+its incompleteness. We believe that additional magic squares can be extrapolated based on the
+existing knowledge gained from analysis of its group actions.
 
 \chapter{Solving Magic Squares}
 
 \section{Introduction}
 
+\par Ideally, we would like to have enough information about $M_n$ so that by computing one magic
+square, we can generate $M_n$. This generally is the case for order three, considering there is
+only one solution. However, this is not very interesting. For order four, there are 880 unique
+solutions, so we should expect to have to compute more than one magic square to generate the full
+set of solutions in $M_4$. In practice this seems logical, considering there isn't much that two
+arbitrary magic squares have in common besides their group properties. We will have to dig deeper
+in order to find patterns amongst elements in $M_n$.
+
+\par It should also be noted that the elements of  are typically never magic. The idea is that
+given a group action $\alpha$ in $\beta$, and a magic square $\pi$ from $K_n$, then $\pi\alpha$ may
+potentially be a new magic square, not already in $K_n$. Not all elements of $\beta$ produce magic
+squares on elements of $K_n$. Discovering the space of solutions given an action is something we
+wish to explore. One reason for this is that certain magic squares may exist in distinct cosets
+that have a distinct permutation or permutations that act on it. These cosets may provide some
+hints about the symmetries on $M_n$.
+
 \section{Current Method}
 
+\par Solving magic squares and producing the set $K_n$ is itself a different problem.
+Programmatically, we use Rust in a multithreaded environment to squeeze out as much performance as
+we can. We also utilize message passing on a single process, specifically, a Multiple Producer,
+Single Consumer (MPSC) Queue to produce results on all threads available to the system. This method
+is widely used in parallel systems that enable data communication primitives. In Rust, we are able
+to do this very easily.
+
+\par These results are then collected into a set-like data structure. We will use a
+\texttt{BTreeSet}
+(Balanced Binary Search Tree) to store our magic squares for the fast lookup, insertion, and
+concurrency potential. For our initial proof of concept, we computed the first 440 magic squares of
+order four. This computation took about 40 minutes on 16 threads, each running at 4.2 GHz. Of these
+440 magic squares, 239 are unique. Based on the time taken to compute the initial set, we
+anticipate that a full brute-force computation of $M_n$ would require about 10.67 hours.
+
 \section{New Method}
+\par We begin by reading the set of 440 cached magic squares into a set. We then filter the set to
+reduce duplication, hence the resulting set only contains unique squares. The resulting unique set,
+in our case, contains 239 elements and we will consider this set as $K_4$. Up to this point, we
+have only defined $K_4$ as a set containing 239 magic squares in relative order. It should be noted
+that these are not necessarily the first 239 unique magic squares in order, but we will eventually
+explore this difference in our analysis.
+
+\par Once $K_4$ is computed, we may then start producing the actions of $K_4$. We compute the set
+of actions by generating the Cartesian Product $K_4 \times K_4$. The resulting set contains every
+possible unique ordered pair of elements in $K_4$. The size of this set is $\left|K_4\right|^2$.
+For each pair $\left(\pi,\sigma\right)\vert a,c\in K_4$, compute $\pi^{-1}\sigma$. The set after
+this operation contains every action on $K_4$. Filtered for uniqueness, this set contains 22,490
+elements which we call $\beta$.
+
+\par Now, compute the Cartesian Product $K_4 \times \beta$. The resulting set of size $\left|K_n
+  \right|\cdot \left|\beta \right|$ contains elements $\left(s, b\right)\vert s\in K_n, b\in
+  \beta$.
+For each element in $K_4$, compute the dihedral group of the magic square $s$ as the set $D$, then
+element-wise compute $db=m$ for each element $d\in D$. For each element $m$ in $Db$, if $m$ is
+magic, then collect the element into a set $K^\prime$; if not, then do nothing with $m$. Finally,
+we filter unique elements from $K^\prime$. The result is an extension of $K_4$ which we call
+$Ext\left(K_4\right)$ where $\left|Ext\left(K_4\right) \right|\geq \left|K_4 \right|$. For this
+particular example with order four magic squares and the specific pre-computed $K_4$,
+$\left|Ext\left(K_4\right) \right|=880 \text{ and } Ext\left(K_4\right)=M_4$.
 
 \chapter{Analysis}
 
-\section{Introduction}
+\section{Introduction} The fact that $\left|K_4\right|\leq 880, \left|Ext\left(K_4
+  \right)\right|=880$ not only tells us that we've found a great computational performance
+improvement, it also hints to us that there are possibly more symmetries than just the 8 induced by
+the action of the dihedral group. These additional symmetries may be key to producing more
+efficient algorithms as well as for making profound generalizations on larger order magic square
+symmetry.
+
+\par Overall, it will be very important for us to not only make statements based on experimental
+data, but to back up our claims with logical reasoning. In any case, we will typically begin with
+experimental data. The algorithm outlined in the previous section enables a greater range in
+computational capability, however, it also opens a door to a whole new set of questioning regarding
+the structure of the solution space for $M_4$. One of the things we would like to do with this
+information is to understand why we are able to exploit magic square symmetry in this way so that
+we may apply the same method for larger orders.
 
 \section{Computational Analysis}
 
+\par The result of $Ext\left(K_4\right)$ with $\left|K_4\right|=239$ (in relative order) computes
+in 71
+seconds. This is an amazing computational performance improvement over the remaining 10 hours for
+brute-force enumeration. The code is parallel across threads, thus we may conclude that the
+implementation we've chosen is adequate. Of course, the sizes of the sets we work with are still
+rather large. Only now, we may start to consider that storage is our most limiting factor. As
+$\left|K_n\right|$ approaches $\left|M_n\right|$, the amount of memory required to continue working
+with the sets grows extremely fast. In one case, we used $M_n$ as our $K_n$ and the program ran out
+of memory. This is suboptimal, considering we would like to be able to compute larger orders with
+this algorithm.
+
+\par The simplest solution to this is additional parallelization, although there also exists the
+possibility for set partitioning. The combination of these solutions lands the problem in the realm
+of High-Performance Computing (HPC) for proper multi-process computation using extremely high CPU
+counts, super-scale storage solutions, and vast quantities of working memory. Given our current
+time and budget constraints, we see partitioning as the most viable solution to cutting down on the
+memory/storage requirement at the cost of program runtime.
+
+\par The amortized runtime analysis of the algorithm is difficult considering the amount of
+abstraction used in the body of the code. Given that we compute $\beta = K_n \times K_n$ and $\beta
+  \times K_n$, we may say the algorithm runs somewhere around $O\left(n^3\right)+C$. This beats the
+performance of iterative brute-force which is $O\left(n!\right)+C$. With this in mind, the set
+reduction incurred by looking at group actions in this way is likely vast. The largest possible set
+with $n=239$ is $\approx 1.36519 \times 10^7$ whereas $16!\approx 2.09227 \times 10^{13}$.
+
 \section{Generating Sets}
 
+\par While the maximum set size difference is great for $n=239$, it is entirely dependant on our
+choice of Kn. In a way, the choice of Kn is completely arbitrary. We will choose a different set
+now, also calling it $K_4$, however, we will select the first 440 magic squares from $M_4$. This
+set contains 232 unique magic squares, produces a set of 20,210 actions, but only generates 871
+unique magic squares from $Ext\left(K_4\right)$. This is interesting since it is the first choice
+of $K_4$ that actually fails to compute $M_4$. What if we chose a different set using a different
+sampling method?
+
+\par One of our hypotheses was that certain types of magic squares have different kinds of
+influence on the output of $Ext\left(K_4\right)$, and we thought it could be related to the order
+of the permutations in the set. Specifically, the order of a permutation is the \texttt{lcm} of all
+its cycle lengths and represents the smallest integer $n \ni p^n = e$. Given our assumption, we
+selected four elements from each conjugacy class and ran the resulting set through
+$Ext\left(K_4\right)$. The set was small, only 104 elements, yet still produced $M_4$. Following
+this, elements were iteratively contained only 50 elements and $Ext\left(K_4\right)$ still resulted
+in $M_4$. This discovery was extremely valuable since we could now compute $M_4$ from 50 magic
+squares alone with a total run time of about 1 second.
+
+\par Initially, we were not entirely sure what the smallest set $K_n$ that produces $M_n$
+represented,
+assuming one existed. Our main theory was that the elements in the minimal set are representatives
+of the cosets of $M_n$, where each element encodes with it some type of group symmetry. If this is
+the
+case, then the minimal set possibly could contain fewer than 50 elements, dividing the order of the
+group (due to Lagrange's theorem). Attempts at Monte Carlo simulation to find smaller sets were not
+successful due to time constraints, but did suggest that the size of the minimal set is very close
+to 50.
+
+\par However, revisiting our definitions tells us that $K_n$ is a set of generators for a group
+containing the elements of $M_n$. This implies that the smallest set $K_n$ that produces $M_n$ is
+considered a ``minimal set $S$ that generates $G$'' which we  use interchangeably with ``generating
+subset of minimal cardinality.'' For finite, solvable groups, the cardinality $k$ of the minimally
+generating subset is at least $\lceil\log_{p}{\left|G\right|}\rceil$ (where $p$ is the smallest
+prime dividing $G$), which is a byproduct of Lagrange's Theorem. Using the ``Groups, Algorithms,
+and Programming'' system (GAP), an open-source programming model for computational discrete algebra
+  [CITE], we found that the group containing all magic squares of order four has an order of
+10,461,394,944,000, which is equal to the order of the group generated by our small $K_4$. This may
+indicate that these groups are identical. With $k=2$, $\left|G\right|$=10,461,394,944,000, we found
+that the minimal cardinality of the subset that generates $G$ is 44 (rounded up to the nearest
+integer).
+
+\par In other words, the group containing all magic squares of order four requires that our initial
+generating set contain at least 44 magic squares as generators, assuming our group is finite and
+solvable. This is very close to the size of our small set ($\left|K_n\right|=50$). Finding a
+group's minimally generating subset, whose length is the rank of the group, would allow us to more
+accurately describe the group's structure, relationships, and dependencies among elements of the
+group. The process for actually describing a generating set with minimal cardinality is still quite
+difficult, even for computational approaches. In general, it's easiest to use methods that don't
+require a total enumeration of the group. Also known as the Rank Problem, the concept of computing
+a generating subset of a group with minimal cardinality is one of the most well known and
+challenging problems in algorithmic group theory.
+
+\par One other hypothesis we had is that different sampling methods or random distributions may
+allow us to build more interesting sets to use as $K_n$. The relative distance between elements in
+the
+set of 50 magic squares appears random \hyphen{} the set contains no discernible pattern. Our code
+implements some functionality that enables random sampling from $M_n$ using various distributions.
+The
+main goal of testing different distributions is to explore the relative variety generated by using
+different sampling methods. Of course, the next easiest method would be to build $K_n$ from the
+various constructive algorithms that exist for magic squares. It would be interesting to see what
+kind of variety and sampling distributions of $M_n$ we can achieve by using certain algorithms to
+produce small sets of solutions as well as what effect this has on the output of
+$Ext\left(K_n\right)$.
+
 \section{Magic-Preserving Group}
+
+\par The action of the dihedral group on any magic square will always result in a magic square.
+This is true for all magic squares, since the actions of rotating and reflecting a square are
+magic-preserving. In a similar manner, other kinds of transformations exist that when applied to a
+magic square, also produce a magic square. This group, in the context of group actions on sets and
+element transformations, reveals a high degree of symmetry and can be used to further improve the
+computational performance of enumerating magic squares.
+
+\par One of the things that we can do with our code is collect the transformations of a set. For
+example, given a set of permutations, we can collect the actions between elements in the set. For
+the group action magic square solver, we collect the actions of $K_4$ into $\beta$. Then, when
+$K_4$ is being conditionally extended, we insert the actions that are not magic-preserving into a
+rejection set $R$. In other words, if $\pi\alpha$ is not magic, for $\pi \in K_n, \alpha \in
+  \beta$, then $\alpha$ is rejected \hyphen{} it cannot be a member of the magic-preserving group.
+Once $Ext\left(K_4\right)$ has completed, $MP= \beta \setminus R$ is the magic-preserving group.
+
+\par To our surprise, $\left|MP\right|=4$ (excluding rotations and reflections), implying three new
+magic-preserving symmetries in addition to the identity element. These permutations are:
+
+\begin{figure}[h!]
+  \begin{align*}
+    \begin{tabular}{|
+      *{4}{>{\collectcell\fwcell}c<{\endcollectcell} |} }
+      \hline 1  & 2  & 3  & 4  \\
+      \hline 5  & 6  & 7  & 8  \\
+      \hline 9  & 10 & 11 & 12 \\
+      \hline 13 & 14 & 15 & 16 \\
+      \hline
+    \end{tabular}
+    \quad
+    \begin{tabular}{|
+      *{4}{>{\collectcell\fwcell}c<{\endcollectcell} |} }
+      \hline 1  & 3  & 2  & 4  \\
+      \hline 9  & 11 & 10 & 12 \\
+      \hline 5  & 7  & 6  & 8  \\
+      \hline 13 & 15 & 14 & 16 \\
+      \hline
+    \end{tabular}
+    \quad
+    \begin{tabular}{|
+      *{4}{>{\collectcell\fwcell}c<{\endcollectcell} |} }
+      \hline 7  & 5  & 8  & 6  \\
+      \hline 15 & 13 & 16 & 14 \\
+      \hline 3  & 1  & 4  & 2  \\
+      \hline 11 & 9  & 12 & 10 \\
+      \hline
+    \end{tabular}
+    \quad
+    \begin{tabular}{|
+      *{4}{>{\collectcell\fwcell}c<{\endcollectcell} |} }
+      \hline 7  & 8  & 5  & 6  \\
+      \hline 3  & 4  & 1  & 2  \\
+      \hline 15 & 16 & 13 & 14 \\
+      \hline 11 & 12 & 9  & 10 \\
+      \hline
+    \end{tabular}
+  \end{align*}
+  \caption{Members of the magic-preserving group.}\label{fig:preserving}
+\end{figure}
+
+\par It is proven that $\forall\pi\in\ M_4,\alpha\in MP, \pi\alpha \in M_4$. One question that
+arises from the knowledge of this set is on whether or not $\pi\alpha$ should still be considered
+uniquely as $\pi$, since this is how we treat the actions of the dihedral group on $\pi$.
 
 \chapter{Conclusions}
 
