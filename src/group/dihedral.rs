@@ -8,7 +8,8 @@ where
     /// Generate the dihedral group for a Square or Permutation
     ///
     /// # Note:
-    /// Because this function uses a HashSet, the result will contain non-trivial ordering
+    /// Because this function uses a `HashSet`, the result will contain non-trivial ordering
+    #[must_use]
     pub fn generate_d(&self) -> HashSet<Permutation<P>> {
         let mut set = HashSet::new();
         let a = *self;
@@ -31,10 +32,11 @@ where
 macro_rules! impl_generate_d_indexes_for_enumerable_order {
     ($p:tt, $t:ty) => {
         impl Permutation<$p> {
-            /// Generate the dihedral group for a Square or Permutation. The resulting HashSet will only contain the indexes of the associated Permutations.
+            /// Generate the dihedral group for a Square or Permutation. The resulting `HashSet` will only contain the indexes of the associated Permutations.
             ///
             /// # Note:
-            /// Because this function uses a HashSet, the result will contain non-trivial ordering
+            /// Because this function uses a `HashSet`, the result will contain non-trivial ordering
+            #[must_use]
             pub fn generate_d_indexes(&self) -> HashSet<$t> {
                 let mut set = HashSet::new();
                 let a = *self;

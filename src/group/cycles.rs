@@ -9,6 +9,7 @@ pub struct Cycles<P: Params> {
 }
 
 impl<P: Params + Copy> Cycles<P> {
+    #[inline]
     fn gcd(mut a: usize, mut b: usize) -> usize {
         if a == b {
             return a;
@@ -24,19 +25,23 @@ impl<P: Params + Copy> Cycles<P> {
         a
     }
 
+    #[inline]
     fn lcm(a: usize, b: usize) -> usize {
         a * (b / Self::gcd(a, b))
     }
 
+    #[must_use]
     pub fn order(&self) -> usize {
         let lens = self.cycle_lengths();
         lens.into_iter().fold(1, |a, b| Self::lcm(a, b))
     }
 
+    #[must_use]
     pub fn weight(&self) -> usize {
         self.k.len()
     }
 
+    #[must_use]
     pub fn from_vecs(vecs: Vec<Vec<usize>>) -> Self {
         Self {
             k: vecs,
@@ -45,9 +50,10 @@ impl<P: Params + Copy> Cycles<P> {
     }
 
     pub fn push(&mut self, value: Vec<usize>) {
-        self.k.push(value)
+        self.k.push(value);
     }
 
+    #[must_use]
     pub fn into_permutation(&mut self) -> Permutation<P>
     where
         [(); P::ELEMENTS]:,
@@ -67,8 +73,9 @@ impl<P: Params + Copy> Cycles<P> {
         Square::<P>::from_array(s).to_perm()
     }
 
+    #[must_use]
     pub fn cycle_lengths(&self) -> Vec<usize> {
-        self.k.iter().map(|c| c.len()).collect()
+        self.k.iter().map(std::vec::Vec::len).collect()
     }
 }
 
@@ -80,7 +87,7 @@ impl<P: Params> fmt::Display for Cycles<P> {
         for i in d {
             let mut s = String::new();
             s.push('(');
-            for (index, elem) in i.into_iter().enumerate() {
+            for (index, elem) in i.iter().enumerate() {
                 s.push_str(&elem.to_string());
                 if index + 1 != i.len() {
                     s.push_str(", ");
@@ -91,7 +98,7 @@ impl<P: Params> fmt::Display for Cycles<P> {
             output.push_str(&s);
         }
 
-        write!(f, "{}", output)
+        write!(f, "{output}")
     }
 }
 
@@ -99,6 +106,9 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
+    #[must_use]
+    /// # Panics
+    /// * if key to corresponding map does not exist
     pub fn cyclic_notation(&self) -> Cycles<P> {
         let hb: HashMap<usize, usize> = (1..=P::ELEMENTS)
             .zip((self.square.data).into_iter().map(|a| a as usize))
@@ -114,13 +124,12 @@ where
                 let mut k = pair.0;
                 for _ in 0..P::ELEMENTS {
                     let v = *hb.get(&k).unwrap();
-                    if !cycle.contains(&v) {
-                        cycle.push(v);
-                        taken.push((k, v));
-                        k = v;
-                    } else {
+                    if cycle.contains(&v) {
                         break;
                     }
+                    cycle.push(v);
+                    taken.push((k, v));
+                    k = v;
                 }
                 let s = cycle
                     .clone()

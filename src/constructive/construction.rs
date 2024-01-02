@@ -14,6 +14,7 @@ pub struct VecSquare<P: Params> {
 }
 
 impl<P: Params> VecSquare<P> {
+    #[must_use]
     pub fn new() -> Self {
         Self {
             data: Vec::with_capacity(P::ELEMENTS),
@@ -21,6 +22,7 @@ impl<P: Params> VecSquare<P> {
         }
     }
 
+    #[must_use]
     pub fn fill(value: u32) -> Self {
         let data: Vec<u32> = (0..P::ELEMENTS).map(|_| value).collect();
         Self {
@@ -29,6 +31,7 @@ impl<P: Params> VecSquare<P> {
         }
     }
 
+    #[must_use]
     pub fn identity() -> Self {
         let data = (1..=P::ELEMENTS as u32).collect();
         Self {
@@ -37,6 +40,7 @@ impl<P: Params> VecSquare<P> {
         }
     }
 
+    #[must_use]
     pub fn from_vec(data: Vec<u32>) -> Self {
         Self {
             data,
@@ -58,18 +62,17 @@ impl<P: Params> TryFrom<&[u32]> for VecSquare<P> {
         let err =
             ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
 
-        match item.len() == P::ELEMENTS {
-            true => {
-                let data: Result<Vec<u32>, std::convert::Infallible> = item.try_into();
-                match data {
-                    Ok(data) => Ok(Self {
-                        data,
-                        phantom: PhantomData,
-                    }),
-                    Err(_) => Err(err),
-                }
+        if item.len() == P::ELEMENTS {
+            let data: Result<Vec<u32>, std::convert::Infallible> = item.try_into();
+            match data {
+                Ok(data) => Ok(Self {
+                    data,
+                    phantom: PhantomData,
+                }),
+                Err(_) => Err(err),
             }
-            false => Err(err),
+        } else {
+            Err(err)
         }
     }
 }
@@ -90,7 +93,7 @@ impl<P: Params> fmt::Display for VecSquare<P> {
 
 impl<P: Params> Hash for VecSquare<P> {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.data.hash(state)
+        self.data.hash(state);
     }
 }
 
@@ -112,17 +115,24 @@ impl<P: Params> Construction<P>
 where
     [(); P::ELEMENTS]:,
 {
+    #[must_use]
     pub fn zeros() -> Self {
         Construction {
             square: VecSquare::from_vec(vec![0; P::ELEMENTS]),
         }
     }
 
+    #[must_use]
     pub fn identity() -> Self {
         let square = VecSquare::from_vec((1..=P::ELEMENTS as u32).collect());
         Self { square }
     }
 
+    /// # Errors
+    ///
+    /// # Panics
+    ///
+    #[must_use]
     pub fn siamese(seed_idx: usize) -> Self {
         assert!(P::ORDER % 2 != 0, "Order Must Be Odd!");
 
@@ -163,15 +173,14 @@ where
         let err =
             ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
 
-        match item.len() == P::ELEMENTS {
-            true => {
-                let data = VecSquare::<P>::try_from(item);
-                match data {
-                    Ok(data) => Ok(Self { square: data }),
-                    Err(_) => Err(err),
-                }
+        if item.len() == P::ELEMENTS {
+            let data = VecSquare::<P>::try_from(item);
+            match data {
+                Ok(data) => Ok(Self { square: data }),
+                Err(_) => Err(err),
             }
-            false => Err(err),
+        } else {
+            Err(err)
         }
     }
 }
@@ -189,15 +198,14 @@ where
         let err =
             ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
 
-        match item.square.len() == P::ELEMENTS {
-            true => {
-                let data = VecSquare::<P>::try_from(item.square.data.as_slice());
-                match data {
-                    Ok(data) => Ok(Self { square: data }),
-                    Err(_) => Err(err),
-                }
+        if item.square.len() == P::ELEMENTS {
+            let data = VecSquare::<P>::try_from(item.square.data.as_slice());
+            match data {
+                Ok(data) => Ok(Self { square: data }),
+                Err(_) => Err(err),
             }
-            false => Err(err),
+        } else {
+            Err(err)
         }
     }
 }

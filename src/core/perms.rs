@@ -17,6 +17,7 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
+    #[must_use]
     pub fn identity() -> Self {
         let mut data: [u32; P::ELEMENTS] = [0; P::ELEMENTS];
         for (elem, val) in data.iter_mut().zip(1..=P::ELEMENTS as u32) {
@@ -86,7 +87,7 @@ where
     [(); P::ELEMENTS]:,
 {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.square.hash(state)
+        self.square.hash(state);
     }
 }
 
@@ -164,7 +165,7 @@ impl<'de, const N: usize> serde::de::Visitor<'de> for SquareDataVisitor<N> {
     type Value = [u32; N];
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(formatter, "a sequence of {} u32", N)
+        write!(formatter, "a sequence of {N} u32")
     }
 
     fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>

@@ -4,6 +4,10 @@ use std::io::Write;
 use std::path::Path;
 use std::str::FromStr;
 
+/// # Errors
+///
+/// # Panics
+///
 pub fn read_file<T: FromStr, R: FromIterator<T>, P: AsRef<Path>>(
     path: P,
 ) -> Result<R, Box<dyn std::error::Error>>
@@ -18,27 +22,33 @@ where
     Ok(data)
 }
 
+/// # Panics
+///
 pub fn write_file<T: Iterator, P: AsRef<Path>>(data: T, path: P)
 where
     <T as Iterator>::Item: std::fmt::Display,
 {
     let mut outfile = File::create(path).unwrap();
     for i in data {
-        writeln!(outfile, "{}", i).unwrap();
+        writeln!(outfile, "{i}").unwrap();
     }
 }
 
+/// # Errors
+///
 pub fn write_serial<T: IntoIterator + serde::Serialize, P: AsRef<Path>>(
-    data: T,
+    data: &T,
     path: P,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut file = File::create(path)?;
     let fstr = serde_json::to_string_pretty(&data)?;
-    write!(file, "{}", fstr)?;
+    write!(file, "{fstr}")?;
 
     Ok(())
 }
 
+/// # Errors
+///
 pub fn read_serial<T: IntoIterator + serde::de::DeserializeOwned, P: AsRef<Path>>(
     path: P,
 ) -> Result<T, Box<dyn std::error::Error>> {
@@ -50,46 +60,23 @@ pub fn read_serial<T: IntoIterator + serde::de::DeserializeOwned, P: AsRef<Path>
 
 #[cfg(test)]
 mod test_file {
-    use crate::{Enumerable, Permutation, Square, O3};
+    use crate::{Enumerable, Permutation, O3};
     use std::collections::BTreeSet;
 
     use super::*;
 
     #[test]
-    fn test_write_serial() -> Result<(), Box<dyn std::error::Error>> {
+    fn test_red_write_serial() -> Result<(), Box<dyn std::error::Error>> {
         let data = (300..302)
             .map(|a| Permutation::<O3>::kth(a))
             .collect::<BTreeSet<_>>();
 
-        write_serial(data, "examples/tests/orderthree/test_serial.txt")?;
-        Ok(())
-    }
-
-    #[test]
-    fn test_read_serial() -> Result<(), Box<dyn std::error::Error>> {
-        let data = (300..302)
-            .map(|a| Permutation::<O3>::kth(a))
-            .collect::<BTreeSet<_>>();
-
-        write_serial(data, "examples/tests/orderthree/test_serial.txt")?;
-
-        let expected: BTreeSet<Permutation<O3>> = BTreeSet::from([
-            Permutation {
-                square: Square {
-                    data: [1, 2, 3, 6, 7, 8, 4, 5, 9],
-                },
-            },
-            Permutation {
-                square: Square {
-                    data: [1, 2, 3, 6, 7, 8, 4, 9, 5],
-                },
-            },
-        ]);
+        write_serial(&data, "examples/tests/orderthree/test_serial.txt")?;
 
         let read: BTreeSet<Permutation<O3>> =
             read_serial("examples/tests/orderthree/test_serial.txt")?;
 
-        assert_eq!(read, expected);
+        assert_eq!(read, data);
 
         Ok(())
     }

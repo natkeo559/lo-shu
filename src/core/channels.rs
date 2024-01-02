@@ -44,11 +44,11 @@ impl NotAssigned for No {}
 ///
 /// Generic params:
 ///     - P: Params
-///     - T: Integer type for UpperBound
-///     - ThreadSet: threading enabled
-///     - UpperSet: upper bound enabled
-///     - PollingSet: polling enabled
-///     - FirstSet: shared flag/thread breakout enabled
+///     - T: Integer type for `UpperBound`
+///     - `ThreadSet`: threading enabled
+///     - `UpperSet`: upper bound enabled
+///     - `PollingSet`: polling enabled
+///     - `FirstSet`: shared flag/thread breakout enabled
 ///
 #[derive(Debug, Clone)]
 pub struct MessageSolverBuilder<P: Params, T, ThreadsSet, UpperSet, PollingSet, FirstSet>
@@ -86,6 +86,7 @@ where
     FirstSet: ToAssign,
 {
     #[inline]
+    #[must_use]
     pub fn threads(
         self,
         threads: usize,
@@ -112,6 +113,7 @@ where
     }
 
     #[inline]
+    #[must_use]
     pub fn upper_bound(
         self,
         upper_bound: T,
@@ -138,6 +140,7 @@ where
     }
 
     #[inline]
+    #[must_use]
     pub fn n(
         self,
         n: u128,
@@ -164,6 +167,7 @@ where
     }
 
     #[inline]
+    #[must_use]
     pub fn polling_rate(
         self,
         polling_rate: usize,
@@ -190,6 +194,7 @@ where
     }
 
     #[inline]
+    #[must_use]
     pub fn find_first(
         self,
         find_first: bool,
@@ -216,6 +221,7 @@ where
     }
 
     #[inline]
+    #[must_use]
     pub fn echo(
         self,
         echo: bool,
@@ -242,6 +248,7 @@ where
     }
 
     #[inline]
+    #[must_use]
     pub fn output_dir<S: Into<PathBuf>>(
         self,
         path: S,
@@ -268,6 +275,7 @@ where
     }
 
     #[inline]
+    #[must_use]
     pub fn filename<S: Into<String>>(
         self,
         filename: S,
@@ -294,6 +302,7 @@ where
     }
 
     #[inline]
+    #[must_use]
     pub fn start(
         self,
         index: T,
@@ -320,6 +329,7 @@ where
     }
 
     #[inline]
+    #[must_use]
     pub fn file_format(
         self,
         file_format: OutputFormat,
@@ -346,6 +356,7 @@ where
     }
 
     #[inline]
+    #[must_use]
     pub fn stdout_format(
         self,
         stdout_format: OutputFormat,
@@ -372,6 +383,7 @@ where
     }
 
     #[inline]
+    #[must_use]
     pub fn generate_d(
         self,
         gen_d: bool,
@@ -405,6 +417,7 @@ pub struct MessageSolver<P: Params> {
 macro_rules! impl_message_solver {
     ($p:tt, $t:ty) => {
         impl MessageSolver<$p> {
+            #[must_use]
             pub fn default_build() -> MessageSolverBuilder<$p, $t, No, No, No, No> {
                 MessageSolverBuilder {
                     threads: 1,
@@ -442,6 +455,10 @@ fn default_format_index(
     }
 }
 
+/// # Errors
+///
+/// # Panics
+///
 #[inline]
 pub fn file_logger<S: Into<String>, P: Into<PathBuf>>(
     filename: S,
@@ -473,6 +490,10 @@ macro_rules! impl_message_solver_builder {
 
         // threads, upper, no poll, no first
         impl MessageSolverBuilder<$p, $t, Yes, Yes, No, No> {
+            /// # Errors
+            ///
+            /// # Panics
+            ///
             #[inline]
             pub fn execute(self) -> Result<(), anyhow::Error> {
                 let logger = file_logger(self.filename, self.path, self.echo)?;
@@ -486,7 +507,7 @@ macro_rules! impl_message_solver_builder {
                         for n in (i as $t..self.upper_bound).step_by(self.threads) {
                             if let Some(sol) = Permutation::<$p>::kth(n + self.start).check_n_s() {
                                 match sender.send(sol) {
-                                    Ok(_) => {}
+                                    Ok(()) => {}
                                     Err(_) => {}
                                 }
                             }
@@ -533,6 +554,10 @@ macro_rules! impl_message_solver_builder {
         where
             [(); $p::ELEMENTS]:,
         {
+            /// # Errors
+            ///
+            /// # Panics
+            ///
             #[inline]
             pub fn execute<S: Into<String>, P: Into<PathBuf>>(
                 self,
@@ -556,7 +581,7 @@ macro_rules! impl_message_solver_builder {
                             if let Some(sol) = Permutation::<$p>::kth(n + self.start).check_n_s() {
                                 found.store(self.find_first, Relaxed);
                                 match sender.send(sol) {
-                                    Ok(_) => return,
+                                    Ok(()) => return,
                                     Err(_) => {}
                                 };
                             } else if count % self.polling_rate == 0 && found.load(Relaxed) {
@@ -616,7 +641,7 @@ mod channels_tests {
             .upper_bound(O3::MAX_INDEX)
             .n(8)
             .echo(true)
-            .output_dir("examples/collected/orderfour/")
+            .output_dir("examples/tests/orderfour")
             .filename("TestMPSC")
             .execute()?;
 

@@ -28,7 +28,7 @@ where
     [(); P::ELEMENTS]:,
 {
     fn mul_assign(&mut self, rhs: Self) {
-        *self = *self * rhs
+        *self = *self * rhs;
     }
 }
 
@@ -36,6 +36,9 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
+    /// # Panics
+    /// * if key to corresponding map does not exist
+    #[must_use]
     pub fn inv(&self) -> Self {
         let map = self
             .square
@@ -56,6 +59,7 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
+    #[must_use]
     pub fn pow(&self, n: i32) -> Self {
         if n == 0 {
             return Permutation::identity();
@@ -72,6 +76,7 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
+    #[must_use]
     pub fn conj(&self, conjugate: Self) -> Self {
         conjugate.inv() * *self * conjugate
     }

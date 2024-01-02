@@ -156,7 +156,7 @@ fn main() {
     // ========================================================================================= //
     if unique_set.len() == 880 {
         write_serial(
-            unique_set
+            &unique_set
                 .into_iter()
                 .map(|i| i.index())
                 .collect::<BTreeSet<_>>(),
@@ -170,7 +170,7 @@ fn main() {
     // ========================================================================================= //
     if g.len() > 3 {
         write_serial(
-            g.into_iter().map(|i| i.index()).collect::<BTreeSet<_>>(),
+            &g.into_iter().map(|i| i.index()).collect::<BTreeSet<_>>(),
             "examples/collected/orderfour/G.txt",
         )
         .unwrap();

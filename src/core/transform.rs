@@ -4,6 +4,7 @@ impl<P: Params + Copy> Square<P>
 where
     [(); P::ELEMENTS]:,
 {
+    #[must_use]
     pub fn rotate_90(&mut self) -> Self {
         let mut data = [0; P::ELEMENTS];
 
@@ -12,12 +13,13 @@ where
                 .map(|x| x % P::ORDER)
                 .zip((0..P::ELEMENTS).rev().map(|y| y / P::ORDER)),
         ) {
-            *i = self[x * P::ORDER + y]
+            *i = self[x * P::ORDER + y];
         }
 
         Square { data }
     }
 
+    #[must_use]
     pub fn reflect_x(&mut self) -> Self {
         let mut data = [0; P::ELEMENTS];
 
@@ -26,12 +28,13 @@ where
                 .map(|x| x / P::ORDER)
                 .zip((0..P::ELEMENTS).rev().map(|y| y % P::ORDER)),
         ) {
-            *i = self[x * P::ORDER + y]
+            *i = self[x * P::ORDER + y];
         }
 
         Square { data }
     }
 
+    #[must_use]
     pub fn to_perm(&self) -> Permutation<P> {
         Permutation { square: *self }
     }
@@ -41,10 +44,12 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
+    #[must_use]
     pub fn rotate_90(&mut self) -> Self {
         self.square.rotate_90().to_perm()
     }
 
+    #[must_use]
     pub fn reflect_x(&mut self) -> Self {
         self.square.reflect_x().to_perm()
     }

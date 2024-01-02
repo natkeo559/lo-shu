@@ -16,7 +16,7 @@ pub trait CheckScalar {
 impl CheckScalar for Square<O3> {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     unsafe fn check_s_unsafe(&self) -> Option<Self::Output> {
         let a: u32 = *self.get_unchecked(0);
         let b: u32 = *self.get_unchecked(1);
@@ -37,16 +37,21 @@ impl CheckScalar for Square<O3> {
         let s7 = d + e + f;
         let s8 = g + h + i;
 
-        match [s1, s2, s3, s4, s5, s6, s7, s8]
+        if [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O3::MAGIC_SUM)
         {
-            true => Some(*self),
-            false => None,
+            Some(*self)
+        } else {
+            None
         }
     }
 
-    #[inline(always)]
+    /// # Errors
+    ///
+    /// # Panics
+    ///
+    #[inline]
     fn check_s(&self) -> Option<Self::Output> {
         let a: u32 = *self.get(0).unwrap();
         let b: u32 = *self.get(1).unwrap();
@@ -67,12 +72,13 @@ impl CheckScalar for Square<O3> {
         let s7 = d + e + f;
         let s8 = g + h + i;
 
-        match [s1, s2, s3, s4, s5, s6, s7, s8]
+        if [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O3::MAGIC_SUM)
         {
-            true => Some(*self),
-            false => None,
+            Some(*self)
+        } else {
+            None
         }
     }
 }
@@ -80,7 +86,7 @@ impl CheckScalar for Square<O3> {
 impl CheckScalar for VecSquare<O3> {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     unsafe fn check_s_unsafe(&self) -> Option<Self::Output> {
         let a: u32 = *self.data.get_unchecked(0);
         let b: u32 = *self.data.get_unchecked(1);
@@ -101,16 +107,21 @@ impl CheckScalar for VecSquare<O3> {
         let s7 = d + e + f;
         let s8 = g + h + i;
 
-        match [s1, s2, s3, s4, s5, s6, s7, s8]
+        if [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O3::MAGIC_SUM)
         {
-            true => Some(self.clone()),
-            false => None,
+            Some(self.clone())
+        } else {
+            None
         }
     }
 
-    #[inline(always)]
+    /// # Errors
+    ///
+    /// # Panics
+    ///
+    #[inline]
     fn check_s(&self) -> Option<Self::Output> {
         let a: u32 = *self.data.first().unwrap();
         let b: u32 = *self.data.get(1).unwrap();
@@ -131,12 +142,13 @@ impl CheckScalar for VecSquare<O3> {
         let s7 = d + e + f;
         let s8 = g + h + i;
 
-        match [s1, s2, s3, s4, s5, s6, s7, s8]
+        if [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O3::MAGIC_SUM)
         {
-            true => Some(self.clone()),
-            false => None,
+            Some(self.clone())
+        } else {
+            None
         }
     }
 }
@@ -144,7 +156,7 @@ impl CheckScalar for VecSquare<O3> {
 impl CheckScalar for Square<O4> {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     unsafe fn check_s_unsafe(&self) -> Option<Self> {
         let a: u32 = *self.get_unchecked(0);
         let b: u32 = *self.get_unchecked(1);
@@ -172,16 +184,21 @@ impl CheckScalar for Square<O4> {
         let s7 = e + f + g + h;
         let s8 = i + j + k + l;
 
-        match [s1, s2, s3, s4, s5, s6, s7, s8]
+        if [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O4::MAGIC_SUM)
         {
-            true => Some(*self),
-            false => None,
+            Some(*self)
+        } else {
+            None
         }
     }
 
-    #[inline(always)]
+    /// # Errors
+    ///
+    /// # Panics
+    ///
+    #[inline]
     fn check_s(&self) -> Option<Self> {
         let a: u32 = *self.get(0).unwrap();
         let b: u32 = *self.get(1).unwrap();
@@ -209,12 +226,13 @@ impl CheckScalar for Square<O4> {
         let s7 = e + f + g + h;
         let s8 = i + j + k + l;
 
-        match [s1, s2, s3, s4, s5, s6, s7, s8]
+        if [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O4::MAGIC_SUM)
         {
-            true => Some(*self),
-            false => None,
+            Some(*self)
+        } else {
+            None
         }
     }
 }
@@ -222,7 +240,7 @@ impl CheckScalar for Square<O4> {
 impl CheckScalar for VecSquare<O4> {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     unsafe fn check_s_unsafe(&self) -> Option<Self> {
         let a: u32 = *self.data.get_unchecked(0);
         let b: u32 = *self.data.get_unchecked(1);
@@ -250,16 +268,21 @@ impl CheckScalar for VecSquare<O4> {
         let s7 = e + f + g + h;
         let s8 = i + j + k + l;
 
-        match [s1, s2, s3, s4, s5, s6, s7, s8]
+        if [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O4::MAGIC_SUM)
         {
-            true => Some(self.clone()),
-            false => None,
+            Some(self.clone())
+        } else {
+            None
         }
     }
 
-    #[inline(always)]
+    /// # Errors
+    ///
+    /// # Panics
+    ///
+    #[inline]
     fn check_s(&self) -> Option<Self> {
         let a: u32 = *self.data.first().unwrap();
         let b: u32 = *self.data.get(1).unwrap();
@@ -287,17 +310,18 @@ impl CheckScalar for VecSquare<O4> {
         let s7 = e + f + g + h;
         let s8 = i + j + k + l;
 
-        match [s1, s2, s3, s4, s5, s6, s7, s8]
+        if [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O4::MAGIC_SUM)
         {
-            true => Some(self.clone()),
-            false => None,
+            Some(self.clone())
+        } else {
+            None
         }
     }
 }
 
-#[inline(always)]
+#[inline]
 fn sum_constraint_vectors<P: Params>(values: &[u32]) -> Option<()>
 where
     [(); P::ORDER]:,
@@ -306,9 +330,10 @@ where
     assert!(chunks.remainder().is_empty());
 
     if chunks.len() == 1 {
-        return match chunks.next()?.iter().sum::<u32>() == P::MAGIC_SUM {
-            true => Some(()),
-            false => None,
+        return if chunks.next()?.iter().sum::<u32>() == P::MAGIC_SUM {
+            Some(())
+        } else {
+            None
         };
     }
 
@@ -319,9 +344,10 @@ where
         acc
     });
 
-    match sums.into_iter().all(|sum| sum == P::MAGIC_SUM) {
-        true => Some(()),
-        false => None,
+    if sums.into_iter().all(|sum| sum == P::MAGIC_SUM) {
+        Some(())
+    } else {
+        None
     }
 }
 
@@ -329,14 +355,15 @@ where
 //-------------------------------------------------------------------------------------------------
 
 macro_rules! impl_generic_scalar_checker_for_type {
-    ($type:tt) => {
-        impl<P: Params + Copy> $type<P>
+    ($t:tt) => {
+        impl<P: Params + Copy> $t<P>
         where
             [(); P::ELEMENTS]:,
             [(); P::ORDER]:,
         {
-            #[inline(always)]
-            pub fn check_n_s(&self) -> Option<$type<P>> {
+            #[inline]
+            #[must_use]
+            pub fn check_n_s(&self) -> Option<$t<P>> {
                 let (r, c): (Vec<u32>, Vec<u32>) = (0..P::ELEMENTS)
                     .map(|e| e / P::ORDER)
                     .zip((0usize..P::ELEMENTS).map(|s| s % P::ORDER))
@@ -379,7 +406,8 @@ macro_rules! impl_check_scalar_for_type_with_param {
         impl CheckScalar for $type<$param> {
             type Output = Self;
 
-            #[inline(always)]
+            #[inline]
+            #[must_use]
             unsafe fn check_s_unsafe(&self) -> Option<Self::Output> {
                 let p = self.clone();
 
@@ -390,7 +418,8 @@ macro_rules! impl_check_scalar_for_type_with_param {
                 None
             }
 
-            #[inline(always)]
+            #[inline]
+            #[must_use]
             fn check_s(&self) -> Option<Self::Output> {
                 let p = self.clone();
 

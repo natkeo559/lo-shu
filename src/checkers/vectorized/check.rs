@@ -9,7 +9,7 @@ pub trait CheckVector {
     type Output;
 
     /// Checks if a Permutation of element type T, order N is magic.
-    /// Computations are vectorized and implemented using std::simd.
+    /// Computations are vectorized and implemented using `std::simd`.
     ///
     /// # Safety
     ///
@@ -17,14 +17,14 @@ pub trait CheckVector {
     unsafe fn check_v_unsafe(&self) -> Option<Self::Output>;
 
     /// Checks if a Permutation of element type T, order N is magic.
-    /// Computations are vectorized and implemented using std::simd.
+    /// Computations are vectorized and implemented using `std::simd`.
     fn check_v(&self) -> Option<Self::Output>;
 }
 
 impl CheckVector for VecSquare<O3> {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     unsafe fn check_v_unsafe(&self) -> Option<Self::Output> {
         let mut result = Self::from_vec(vec![0; O3::ELEMENTS]);
         const VMASK: Simd<u32, 8_usize> =
@@ -64,13 +64,18 @@ impl CheckVector for VecSquare<O3> {
         }
 
         result.data = self.data.clone();
-        match v_a == VMASK {
-            true => Some(result),
-            false => None,
+        if v_a == VMASK {
+            Some(result)
+        } else {
+            None
         }
     }
 
-    #[inline(always)]
+    /// # Errors
+    ///
+    /// # Panics
+    ///
+    #[inline]
     fn check_v(&self) -> Option<Self::Output> {
         let mut result = Self::from_vec(vec![0; O3::ELEMENTS]);
         const VMASK: Simd<u32, 8_usize> =
@@ -119,9 +124,10 @@ impl CheckVector for VecSquare<O3> {
         }
 
         result.data = self.data.clone();
-        match v_a == VMASK {
-            true => Some(result),
-            false => None,
+        if v_a == VMASK {
+            Some(result)
+        } else {
+            None
         }
     }
 }
@@ -129,7 +135,7 @@ impl CheckVector for VecSquare<O3> {
 impl CheckVector for Square<O3> {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     unsafe fn check_v_unsafe(&self) -> Option<Self::Output> {
         let mut result = Self::from_array([0; O3::ELEMENTS]);
         const VMASK: Simd<u32, 8_usize> =
@@ -169,13 +175,18 @@ impl CheckVector for Square<O3> {
         }
 
         result.data = self.data;
-        match v_a == VMASK {
-            true => Some(result),
-            false => None,
+        if v_a == VMASK {
+            Some(result)
+        } else {
+            None
         }
     }
 
-    #[inline(always)]
+    /// # Errors
+    ///
+    /// # Panics
+    /// If index is
+    #[inline]
     fn check_v(&self) -> Option<Self::Output> {
         let mut result = Self::from_array([0; O3::ELEMENTS]);
         const VMASK: Simd<u32, 8_usize> =
@@ -224,9 +235,10 @@ impl CheckVector for Square<O3> {
         }
 
         result.data = self.data;
-        match v_a == VMASK {
-            true => Some(result),
-            false => None,
+        if v_a == VMASK {
+            Some(result)
+        } else {
+            None
         }
     }
 }
@@ -234,7 +246,7 @@ impl CheckVector for Square<O3> {
 impl CheckVector for Square<O4> {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     unsafe fn check_v_unsafe(&self) -> Option<Self> {
         const VMASK: Simd<u32, 8_usize> =
             Simd::from_slice(&[O4::MAGIC_SUM; O4::CONSTRAINT_VECTORS]);
@@ -336,13 +348,18 @@ impl CheckVector for Square<O4> {
             return None;
         }
 
-        match v_a == VMASK {
-            true => Some(*self),
-            false => None,
+        if v_a == VMASK {
+            Some(*self)
+        } else {
+            None
         }
     }
 
-    #[inline(always)]
+    /// # Errors
+    ///
+    /// # Panics
+    ///
+    #[inline]
     fn check_v(&self) -> Option<Self> {
         const VMASK: Simd<u32, 8_usize> =
             Simd::from_slice(&[O4::MAGIC_SUM; O4::CONSTRAINT_VECTORS]);
@@ -444,9 +461,10 @@ impl CheckVector for Square<O4> {
             return None;
         }
 
-        match v_a == VMASK {
-            true => Some(*self),
-            false => None,
+        if v_a == VMASK {
+            Some(*self)
+        } else {
+            None
         }
     }
 }
@@ -454,7 +472,7 @@ impl CheckVector for Square<O4> {
 impl CheckVector for VecSquare<O4> {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     unsafe fn check_v_unsafe(&self) -> Option<Self> {
         const VMASK: Simd<u32, 8_usize> =
             Simd::from_slice(&[O4::MAGIC_SUM; O4::CONSTRAINT_VECTORS]);
@@ -556,13 +574,18 @@ impl CheckVector for VecSquare<O4> {
             return None;
         }
 
-        match v_a == VMASK {
-            true => Some(self.clone()),
-            false => None,
+        if v_a == VMASK {
+            Some(self.clone())
+        } else {
+            None
         }
     }
 
-    #[inline(always)]
+    /// # Errors
+    ///
+    /// # Panics
+    ///
+    #[inline]
     fn check_v(&self) -> Option<Self> {
         const VMASK: Simd<u32, 8_usize> =
             Simd::from_slice(&[O4::MAGIC_SUM; O4::CONSTRAINT_VECTORS]);
@@ -664,9 +687,10 @@ impl CheckVector for VecSquare<O4> {
             return None;
         }
 
-        match v_a == VMASK {
-            true => Some(self.clone()),
-            false => None,
+        if v_a == VMASK {
+            Some(self.clone())
+        } else {
+            None
         }
     }
 }
@@ -715,7 +739,8 @@ impl<P: Params + Copy> Construction<P>
 where
     [(); P::ELEMENTS]:,
 {
-    #[inline(always)]
+    #[inline]
+    #[must_use]
     pub fn check_n_v<const B: usize>(&self) -> Option<Construction<P>>
     where
         LaneCount<B>: SupportedLaneCount,
@@ -747,36 +772,31 @@ where
 
         let mut buffs = Vec::with_capacity(P::ORDER);
         for _ in 0..P::ORDER {
-            buffs.push(Vec::<u32>::with_capacity(B))
+            buffs.push(Vec::<u32>::with_capacity(B));
         }
 
         for i in 0..P::ORDER {
             for j in rows[i] {
-                buffs[i].push(*j)
+                buffs[i].push(*j);
             }
             for j in cols[i] {
-                buffs[i].push(*j)
+                buffs[i].push(*j);
             }
             buffs[i].push(t1[i]);
             buffs[i].push(t2[i]);
 
             if pad != 0 {
                 for _ in 0..pad {
-                    buffs[i].push(0)
+                    buffs[i].push(0);
                 }
             }
         }
 
-        let mut r_vec: Vec<u32> = vec![];
-        for _ in 0..P::CONSTRAINT_VECTORS {
-            r_vec.push(P::MAGIC_SUM)
+        let mut r_vec: Vec<u32> = vec![0; P::CONSTRAINT_VECTORS + pad];
+        for item in r_vec.iter_mut().take(P::CONSTRAINT_VECTORS) {
+            *item = P::MAGIC_SUM;
         }
 
-        if pad != 0 {
-            for _ in 0..pad {
-                r_vec.push(0)
-            }
-        }
         let fv = buffs
             .into_iter()
             .fold(Simd::splat(0), |a, n| a + Simd::from_slice(&n[..B]));

@@ -20,11 +20,13 @@ impl<P: Params> Square<P>
 where
     [(); P::ELEMENTS]:,
 {
+    #[must_use]
     pub fn len(&self) -> usize {
         self.data.len()
     }
 
     /// Returns `true` if the slice has a length of 0.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.data.is_empty()
     }
@@ -48,6 +50,7 @@ where
     }
 
     ///Creates a Square from an array.
+    #[must_use]
     pub fn from_array(data: [u32; P::ELEMENTS]) -> Self {
         Self { data }
     }
@@ -66,16 +69,14 @@ where
         let err =
             ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
 
-        match item.len() == P::ELEMENTS {
-            true => {
-                let data: Result<[u32; P::ELEMENTS], std::array::TryFromSliceError> =
-                    item.try_into();
-                match data {
-                    Ok(data) => Ok(Self { data }),
-                    Err(_) => Err(err),
-                }
+        if item.len() == P::ELEMENTS {
+            let data: Result<[u32; P::ELEMENTS], std::array::TryFromSliceError> = item.try_into();
+            match data {
+                Ok(data) => Ok(Self { data }),
+                Err(_) => Err(err),
             }
-            false => Err(err),
+        } else {
+            Err(err)
         }
     }
 }
@@ -87,6 +88,7 @@ where
 {
     type Output = I::Output;
 
+    #[must_use]
     fn index(&self, index: I) -> &Self::Output {
         &self.data[index]
     }
@@ -107,7 +109,7 @@ where
     [(); P::ELEMENTS]:,
 {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.data.hash(state)
+        self.data.hash(state);
     }
 }
 
@@ -145,7 +147,7 @@ impl<'de, const N: usize> serde::de::Visitor<'de> for SquareDataVisitor<N> {
     type Value = [u32; N];
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(formatter, "a sequence of {} u32", N)
+        write!(formatter, "a sequence of {N} u32")
     }
 
     fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>

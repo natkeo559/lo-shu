@@ -18,9 +18,9 @@ macro_rules! impl_consts_for_enumerable_params {
     };
 }
 
-impl_consts_for_enumerable_params!(O3, u32, 362880);
-impl_consts_for_enumerable_params!(O4, u64, 20922789888000);
-impl_consts_for_enumerable_params!(O5, u128, 15511210043330985984000000);
+impl_consts_for_enumerable_params!(O3, u32, 362_880);
+impl_consts_for_enumerable_params!(O4, u64, 20_922_789_888_000);
+impl_consts_for_enumerable_params!(O5, u128, 15_511_210_043_330_985_984_000_000);
 
 pub trait Enumerable<P: Params + EnumerableMarker, T>
 where
@@ -92,9 +92,9 @@ mod test_enumerable {
 
     #[test]
     fn test_constants() {
-        assert_eq!(O3::MAX_INDEX, 362880);
-        assert_eq!(O4::MAX_INDEX, 20922789888000);
-        assert_eq!(O5::MAX_INDEX, 15511210043330985984000000);
+        assert_eq!(O3::MAX_INDEX, 362_880);
+        assert_eq!(O4::MAX_INDEX, 20_922_789_888_000);
+        assert_eq!(O5::MAX_INDEX, 15_511_210_043_330_985_984_000_000);
     }
 
     #[test]
