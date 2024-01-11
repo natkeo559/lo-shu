@@ -1,9 +1,7 @@
 use crate::{Construction, Params, Permutation, Square, VecSquare, O3, O4};
 use itertools::Itertools;
-use std::simd::{
-    simd_swizzle, LaneCount, Simd, SimdPartialOrd, SimdUint, SupportedLaneCount,
-    Which::{First, Second},
-};
+use std::simd::prelude::*;
+use std::simd::{LaneCount, SupportedLaneCount};
 
 pub trait CheckVector {
     type Output;
@@ -43,20 +41,7 @@ impl CheckVector for VecSquare<O3> {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(2),
-                First(5),
-                Second(0),
-                First(6),
-                First(7),
-                Second(0),
-                Second(0),
-                First(6)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
@@ -103,20 +88,7 @@ impl CheckVector for VecSquare<O3> {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(2),
-                First(5),
-                Second(0),
-                First(6),
-                First(7),
-                Second(0),
-                Second(0),
-                First(6)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
@@ -154,20 +126,7 @@ impl CheckVector for Square<O3> {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(2),
-                First(5),
-                Second(0),
-                First(6),
-                First(7),
-                Second(0),
-                Second(0),
-                First(6)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
@@ -214,20 +173,7 @@ impl CheckVector for Square<O3> {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(2),
-                First(5),
-                Second(0),
-                First(6),
-                First(7),
-                Second(0),
-                Second(0),
-                First(6)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
@@ -274,74 +220,22 @@ impl CheckVector for Square<O4> {
             ]),
         ];
 
-        let mut v_a = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(0),
-                First(0),
-                First(0),
-                First(1),
-                First(2),
-                First(3),
-                First(4),
-                Second(0)
-            ]
-        );
-        let mut v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(1),
-                First(4),
-                First(5),
-                First(5),
-                First(6),
-                First(6),
-                First(5),
-                Second(1)
-            ]
-        );
+        let mut v_a = simd_swizzle!(vals[0], vals[1], [0, 0, 0, 1, 2, 3, 4, 8]);
+        let mut v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(2),
-                Second(0),
-                Second(2),
-                Second(1),
-                Second(2),
-                Second(1),
-                First(6),
-                Second(2)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(3),
-                Second(4),
-                Second(7),
-                Second(5),
-                Second(6),
-                Second(4),
-                First(7),
-                Second(3)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
@@ -387,74 +281,22 @@ impl CheckVector for Square<O4> {
             ]),
         ];
 
-        let mut v_a = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(0),
-                First(0),
-                First(0),
-                First(1),
-                First(2),
-                First(3),
-                First(4),
-                Second(0)
-            ]
-        );
-        let mut v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(1),
-                First(4),
-                First(5),
-                First(5),
-                First(6),
-                First(6),
-                First(5),
-                Second(1)
-            ]
-        );
+        let mut v_a = simd_swizzle!(vals[0], vals[1], [0, 0, 0, 1, 2, 3, 4, 8]);
+        let mut v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(2),
-                Second(0),
-                Second(2),
-                Second(1),
-                Second(2),
-                Second(1),
-                First(6),
-                Second(2)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(3),
-                Second(4),
-                Second(7),
-                Second(5),
-                Second(6),
-                Second(4),
-                First(7),
-                Second(3)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
@@ -500,74 +342,22 @@ impl CheckVector for VecSquare<O4> {
             ]),
         ];
 
-        let mut v_a = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(0),
-                First(0),
-                First(0),
-                First(1),
-                First(2),
-                First(3),
-                First(4),
-                Second(0)
-            ]
-        );
-        let mut v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(1),
-                First(4),
-                First(5),
-                First(5),
-                First(6),
-                First(6),
-                First(5),
-                Second(1)
-            ]
-        );
+        let mut v_a = simd_swizzle!(vals[0], vals[1], [0, 0, 0, 1, 2, 3, 4, 8]);
+        let mut v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(2),
-                Second(0),
-                Second(2),
-                Second(1),
-                Second(2),
-                Second(1),
-                First(6),
-                Second(2)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(3),
-                Second(4),
-                Second(7),
-                Second(5),
-                Second(6),
-                Second(4),
-                First(7),
-                Second(3)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
@@ -613,74 +403,22 @@ impl CheckVector for VecSquare<O4> {
             ]),
         ];
 
-        let mut v_a = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(0),
-                First(0),
-                First(0),
-                First(1),
-                First(2),
-                First(3),
-                First(4),
-                Second(0)
-            ]
-        );
-        let mut v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(1),
-                First(4),
-                First(5),
-                First(5),
-                First(6),
-                First(6),
-                First(5),
-                Second(1)
-            ]
-        );
+        let mut v_a = simd_swizzle!(vals[0], vals[1], [0, 0, 0, 1, 2, 3, 4, 8]);
+        let mut v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(2),
-                Second(0),
-                Second(2),
-                Second(1),
-                Second(2),
-                Second(1),
-                First(6),
-                Second(2)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {
             return None;
         }
 
-        v_b = simd_swizzle!(
-            vals[0],
-            vals[1],
-            [
-                First(3),
-                Second(4),
-                Second(7),
-                Second(5),
-                Second(6),
-                Second(4),
-                First(7),
-                Second(3)
-            ]
-        );
+        v_b = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
 
         v_a = v_a.saturating_add(v_b);
         if v_a.simd_lt(v_b).any() {

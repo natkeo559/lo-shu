@@ -63,6 +63,7 @@ impl<P: Params> TryFrom<&[u32]> for VecSquare<P> {
             ParameterSetError::ElementCount("Item length does not match P::ELEMENTS!".to_string());
 
         if item.len() == P::ELEMENTS {
+            #[allow(clippy::unnecessary_fallible_conversions)]
             let data: Result<Vec<u32>, std::convert::Infallible> = item.try_into();
             match data {
                 Ok(data) => Ok(Self {

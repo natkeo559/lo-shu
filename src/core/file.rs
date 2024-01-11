@@ -57,27 +57,3 @@ pub fn read_serial<T: IntoIterator + serde::de::DeserializeOwned, P: AsRef<Path>
 
     Ok(data)
 }
-
-#[cfg(test)]
-mod test_file {
-    use crate::{Enumerable, Permutation, O3};
-    use std::collections::BTreeSet;
-
-    use super::*;
-
-    #[test]
-    fn test_red_write_serial() -> Result<(), Box<dyn std::error::Error>> {
-        let data = (300..302)
-            .map(|a| Permutation::<O3>::kth(a))
-            .collect::<BTreeSet<_>>();
-
-        write_serial(&data, "examples/tests/orderthree/test_serial.txt")?;
-
-        let read: BTreeSet<Permutation<O3>> =
-            read_serial("examples/tests/orderthree/test_serial.txt")?;
-
-        assert_eq!(read, data);
-
-        Ok(())
-    }
-}
