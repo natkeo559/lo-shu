@@ -1,3 +1,4 @@
+/// A trait for parameter sets defining the properties of a square.
 pub trait Params {
     const ORDER: usize;
     const ELEMENTS: usize;
@@ -5,6 +6,7 @@ pub trait Params {
     const CONSTRAINT_VECTORS: usize;
 }
 
+/// Macro to generate implementations of the Params trait for different parameter sets.
 macro_rules! impl_parameter_set {
     ($order:literal, $name:tt) => {
         #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -20,6 +22,7 @@ macro_rules! impl_parameter_set {
     };
 }
 
+// Generate implementations for specific parameter sets.
 impl_parameter_set!(3, O3);
 impl_parameter_set!(4, O4);
 impl_parameter_set!(5, O5);

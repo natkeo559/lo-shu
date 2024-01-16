@@ -36,8 +36,9 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
+    /// Computes the inverse of the permutation.
     /// # Panics
-    /// * if key to corresponding map does not exist
+    /// - If key to corresponding map does not exist.
     #[must_use]
     pub fn inv(&self) -> Self {
         let map = self
@@ -59,6 +60,7 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
+    /// Raises the permutation to the power of `n`.
     #[must_use]
     pub fn pow(&self, n: i32) -> Self {
         if n == 0 {
@@ -76,6 +78,7 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
+    /// Conjugates the permutation by another permutation.
     #[must_use]
     pub fn conj(&self, conjugate: Self) -> Self {
         conjugate.inv() * *self * conjugate

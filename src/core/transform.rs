@@ -4,6 +4,7 @@ impl<P: Params + Copy> Square<P>
 where
     [(); P::ELEMENTS]:,
 {
+    /// Rotate a `Square` 90 degrees counter-clockwise
     #[must_use]
     pub fn rotate_90(&mut self) -> Self {
         let mut data = [0; P::ELEMENTS];
@@ -19,6 +20,7 @@ where
         Square { data }
     }
 
+    /// Reflect a `Square` about the x-axis
     #[must_use]
     pub fn reflect_x(&mut self) -> Self {
         let mut data = [0; P::ELEMENTS];
@@ -34,6 +36,7 @@ where
         Square { data }
     }
 
+    /// Convert a `Square` into a `Permutation`
     #[must_use]
     pub fn to_perm(&self) -> Permutation<P> {
         Permutation { square: *self }
@@ -44,11 +47,13 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
+    /// Rotate a `Permutation` 90 degrees counter-clockwise
     #[must_use]
     pub fn rotate_90(&mut self) -> Self {
         self.square.rotate_90().to_perm()
     }
 
+    /// Reflect a `Permutation` about the x-axis
     #[must_use]
     pub fn reflect_x(&mut self) -> Self {
         self.square.reflect_x().to_perm()

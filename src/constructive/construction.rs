@@ -7,6 +7,7 @@ use std::{
 
 use crate::{ParameterSetError, Params, Permutation};
 
+/// A generic struct representing a square with data stored in a vector of unsigned 32-bit integers.
 #[derive(Debug, Clone, PartialOrd)]
 pub struct VecSquare<P: Params> {
     pub data: Vec<u32>,
@@ -14,6 +15,7 @@ pub struct VecSquare<P: Params> {
 }
 
 impl<P: Params> VecSquare<P> {
+    /// Creates a new `VecSquare` with capacity dictated by the parameter `P`.
     #[must_use]
     pub fn new() -> Self {
         Self {
@@ -22,6 +24,7 @@ impl<P: Params> VecSquare<P> {
         }
     }
 
+    /// Creates a new `VecSquare` with all elements set to the specified value.
     #[must_use]
     pub fn fill(value: u32) -> Self {
         let data: Vec<u32> = (0..P::ELEMENTS).map(|_| value).collect();
@@ -31,6 +34,8 @@ impl<P: Params> VecSquare<P> {
         }
     }
 
+    /// Creates a new `VecSquare` representing the identity square.
+    /// The elements are set to consecutive integers starting from 1.
     #[must_use]
     pub fn identity() -> Self {
         let data = (1..=P::ELEMENTS as u32).collect();
@@ -40,6 +45,7 @@ impl<P: Params> VecSquare<P> {
         }
     }
 
+    /// Creates a new `VecSquare` from a vector of unsigned 32-bit integers.
     #[must_use]
     pub fn from_vec(data: Vec<u32>) -> Self {
         Self {
@@ -104,6 +110,16 @@ impl<P: Params> PartialEq for VecSquare<P> {
     }
 }
 
+/// A generic struct representing a construction based on parameters `P` implementing the `Params` trait.
+/// It contains a `VecSquare` with data stored in a vector of unsigned 32-bit integers.
+///
+/// # Examples
+///
+/// ```
+/// use lo_shu::{Construction, O3};
+///
+/// let a = Construction::<O3>::siamese(1);
+/// ```
 #[derive(Debug, PartialEq, Clone)]
 pub struct Construction<P: Params>
 where
@@ -116,6 +132,7 @@ impl<P: Params> Construction<P>
 where
     [(); P::ELEMENTS]:,
 {
+    /// Creates a new `Construction` with all elements set to zero.
     #[must_use]
     pub fn zeros() -> Self {
         Construction {
@@ -123,16 +140,17 @@ where
         }
     }
 
+    /// Creates a new `Construction` representing the identity square.
+    /// The elements are set to consecutive integers starting from 1.
     #[must_use]
     pub fn identity() -> Self {
         let square = VecSquare::from_vec((1..=P::ELEMENTS as u32).collect());
         Self { square }
     }
 
-    /// # Errors
-    ///
+    /// Creates a new `Construction` using the Siamese method based on the provided seed index.
     /// # Panics
-    ///
+    /// - If the square order is not odd.
     #[must_use]
     pub fn siamese(seed_idx: usize) -> Self {
         assert!(P::ORDER % 2 != 0, "Order Must Be Odd!");

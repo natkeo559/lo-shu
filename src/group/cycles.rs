@@ -2,13 +2,40 @@ use crate::{Params, Permutation, Square};
 use std::mem::swap;
 use std::{collections::HashMap, fmt, marker::PhantomData};
 
+/// A generic struct representing formal permutation presentation based on parameters `P`
+/// implementing the `Params` trait.
+///
+/// # Examples
+///
+/// ```
+/// use lo_shu::{Cycles, Square, O4};
+///
+/// let a = Cycles::from_vecs(vec![
+///     vec![1, 4],
+///     vec![2, 14],
+///     vec![3, 15],
+///     vec![5, 9],
+///     vec![6, 7],
+///     vec![8, 12],
+///     vec![10, 11],
+///     vec![13, 16],
+/// ]);
+///
+/// let b = Square::<O4>::from_array([4, 14, 15, 1, 9, 7, 6, 12, 5, 11, 10, 8, 16, 2, 3, 13])
+///     .to_perm()
+///     .cyclic_notation();
+///
+/// assert_eq!(a, b);
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Cycles<P: Params> {
+    /// The vector of cycles represented as vectors of usize.
     pub k: Vec<Vec<usize>>,
     phantom: PhantomData<P>,
 }
 
 impl<P: Params + Copy> Cycles<P> {
+    /// Calculates the greatest common divisor of two integers.
     #[inline]
     fn gcd(mut a: usize, mut b: usize) -> usize {
         if a == b {
@@ -25,22 +52,26 @@ impl<P: Params + Copy> Cycles<P> {
         a
     }
 
+    /// Calculates the least common multiple of two integers.
     #[inline]
     fn lcm(a: usize, b: usize) -> usize {
         a * (b / Self::gcd(a, b))
     }
 
+    /// Computes the order of the cycles.
     #[must_use]
     pub fn order(&self) -> usize {
         let lens = self.cycle_lengths();
         lens.into_iter().fold(1, |a, b| Self::lcm(a, b))
     }
 
+    /// Computes the weight of the cycles.
     #[must_use]
     pub fn weight(&self) -> usize {
         self.k.len()
     }
 
+    /// Creates a new `Cycles` instance from a vector of vectors of usize.
     #[must_use]
     pub fn from_vecs(vecs: Vec<Vec<usize>>) -> Self {
         Self {
@@ -49,10 +80,12 @@ impl<P: Params + Copy> Cycles<P> {
         }
     }
 
+    /// Adds a new cycle to the `Cycles` instance.
     pub fn push(&mut self, value: Vec<usize>) {
         self.k.push(value);
     }
 
+    /// Converts the `Cycles` instance into a `Permutation`.
     #[must_use]
     pub fn into_permutation(&mut self) -> Permutation<P>
     where
@@ -73,6 +106,7 @@ impl<P: Params + Copy> Cycles<P> {
         Square::<P>::from_array(s).to_perm()
     }
 
+    /// Retrieves the lengths of the cycles.
     #[must_use]
     pub fn cycle_lengths(&self) -> Vec<usize> {
         self.k.iter().map(std::vec::Vec::len).collect()
@@ -106,9 +140,10 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
-    #[must_use]
+    /// Converts the Permutation into cyclic notation represented by Cycles.
     /// # Panics
-    /// * if key to corresponding map does not exist
+    /// - If key to corresponding map does not exist.
+    #[must_use]
     pub fn cyclic_notation(&self) -> Cycles<P> {
         let hb: HashMap<usize, usize> = (1..=P::ELEMENTS)
             .zip((self.square.data).into_iter().map(|a| a as usize))

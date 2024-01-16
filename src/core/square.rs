@@ -8,6 +8,16 @@ use crate::ParameterSetError;
 
 use core::array::try_from_fn;
 
+/// A generic Square struct parameterized by the type `P` implementing the `Params` trait.
+/// This struct represents a square with data stored in an array of unsigned 32-bit integers.
+///
+/// # Examples
+///
+/// ```
+/// use lo_shu::{Square, O3};
+///
+/// let a = Square::<O3>::from_array([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+/// ```
 #[derive(Clone, Copy, Debug, PartialOrd)]
 pub struct Square<P: Params>
 where
@@ -222,11 +232,11 @@ mod test_square {
         let expected = Square {
             data: [1, 2, 3, 4, 5, 6, 7, 8, 9],
         };
-        let str = serde_json::to_string(&square)?;
-        let deser_square: Square<O3> = serde_json::from_str(&str)?;
+        let ser_square = serde_json::to_string(&square)?;
+        let de_square: Square<O3> = serde_json::from_str(&ser_square)?;
 
-        assert_eq!(str, "[1,2,3,4,5,6,7,8,9]");
-        assert_eq!(deser_square, expected);
+        assert_eq!(ser_square, "[1,2,3,4,5,6,7,8,9]");
+        assert_eq!(de_square, expected);
 
         Ok(())
     }

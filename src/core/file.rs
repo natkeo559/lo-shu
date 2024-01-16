@@ -4,10 +4,11 @@ use std::io::Write;
 use std::path::Path;
 use std::str::FromStr;
 
+/// Read a file with type T on new lines into a collection.
 /// # Errors
-///
+/// - If full path does not exist
 /// # Panics
-///
+/// - If reading encountered a parse error
 pub fn read_file<T: FromStr, R: FromIterator<T>, P: AsRef<Path>>(
     path: P,
 ) -> Result<R, Box<dyn std::error::Error>>
@@ -22,8 +23,11 @@ where
     Ok(data)
 }
 
+/// Write the contents of a collection to file seperated by newlines.
 /// # Panics
-///
+/// - If full file path does not exist
+/// - If formatting the string fails
+/// - If `write_fmt` fails
 pub fn write_file<T: Iterator, P: AsRef<Path>>(data: T, path: P)
 where
     <T as Iterator>::Item: std::fmt::Display,
@@ -34,8 +38,11 @@ where
     }
 }
 
+/// Write serialized data to file.
 /// # Errors
-///
+/// - If full file path does not exist
+/// - If formatting the string fails
+/// - If `write_fmt` fails
 pub fn write_serial<T: IntoIterator + serde::Serialize, P: AsRef<Path>>(
     data: &T,
     path: P,
@@ -47,8 +54,10 @@ pub fn write_serial<T: IntoIterator + serde::Serialize, P: AsRef<Path>>(
     Ok(())
 }
 
+/// Read serialized data from file to a type T.
 /// # Errors
-///
+/// - If full file path does not exist
+/// - If deserialization fails
 pub fn read_serial<T: IntoIterator + serde::de::DeserializeOwned, P: AsRef<Path>>(
     path: P,
 ) -> Result<T, Box<dyn std::error::Error>> {

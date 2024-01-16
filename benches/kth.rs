@@ -41,5 +41,8 @@ pub fn kth_growth_bench(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, kth_bench, kth_growth_bench);
+criterion_group!(
+    benches, kth_bench,
+    // kth_growth_bench
+);
 criterion_main!(benches);

@@ -22,11 +22,15 @@ impl_consts_for_enumerable_params!(O3, u32, 362_880);
 impl_consts_for_enumerable_params!(O4, u64, 20_922_789_888_000);
 impl_consts_for_enumerable_params!(O5, u128, 15_511_210_043_330_985_984_000_000);
 
+/// A trait for types that represent enumerable sets based on parameters `P` implementing the `Params` trait
+/// and `T` representing the type used for indexing and counting.
 pub trait Enumerable<P: Params + EnumerableMarker, T>
 where
     [(); P::ELEMENTS]:,
 {
+    /// Generate the k-th permutation of the enumerable set.
     fn kth(k: T) -> Permutation<P>;
+    /// Get the index associated with the current `Permutation`.
     fn index(&self) -> T;
 }
 
