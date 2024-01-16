@@ -2,14 +2,13 @@ use crate::{Construction, Params, Permutation, Square, VecSquare, O3, O4};
 pub trait CheckScalar {
     type Output;
 
-    /// Checks if a Permutation of element type T, order N is magic.
+    /// Check if a square-like object is magic.
     ///
     /// # Safety
-    ///
     /// Use of `get_unchecked` is unsafe. For a safe abstraction, use `get` to return references to Square elements.
     unsafe fn check_s_unsafe(&self) -> Option<Self::Output>;
 
-    /// Checks if a Permutation of element type T, order N is magic.
+    /// Check if a square-like object is magic.
     fn check_s(&self) -> Option<Self::Output>;
 }
 
@@ -37,20 +36,14 @@ impl CheckScalar for Square<O3> {
         let s7 = d + e + f;
         let s8 = g + h + i;
 
-        if [s1, s2, s3, s4, s5, s6, s7, s8]
+        [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O3::MAGIC_SUM)
-        {
-            Some(*self)
-        } else {
-            None
-        }
+            .then_some(*self)
     }
 
-    /// # Errors
-    ///
     /// # Panics
-    ///
+    /// - If the value returned by `get` is `None`
     #[inline]
     fn check_s(&self) -> Option<Self::Output> {
         let a: u32 = *self.get(0).unwrap();
@@ -72,14 +65,10 @@ impl CheckScalar for Square<O3> {
         let s7 = d + e + f;
         let s8 = g + h + i;
 
-        if [s1, s2, s3, s4, s5, s6, s7, s8]
+        [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O3::MAGIC_SUM)
-        {
-            Some(*self)
-        } else {
-            None
-        }
+            .then_some(*self)
     }
 }
 
@@ -107,20 +96,14 @@ impl CheckScalar for VecSquare<O3> {
         let s7 = d + e + f;
         let s8 = g + h + i;
 
-        if [s1, s2, s3, s4, s5, s6, s7, s8]
+        [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O3::MAGIC_SUM)
-        {
-            Some(self.clone())
-        } else {
-            None
-        }
+            .then_some((*self).clone())
     }
 
-    /// # Errors
-    ///
     /// # Panics
-    ///
+    /// - If the value returned by `get` is `None`
     #[inline]
     fn check_s(&self) -> Option<Self::Output> {
         let a: u32 = *self.data.first().unwrap();
@@ -142,14 +125,10 @@ impl CheckScalar for VecSquare<O3> {
         let s7 = d + e + f;
         let s8 = g + h + i;
 
-        if [s1, s2, s3, s4, s5, s6, s7, s8]
+        [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O3::MAGIC_SUM)
-        {
-            Some(self.clone())
-        } else {
-            None
-        }
+            .then_some((*self).clone())
     }
 }
 
@@ -184,20 +163,14 @@ impl CheckScalar for Square<O4> {
         let s7 = e + f + g + h;
         let s8 = i + j + k + l;
 
-        if [s1, s2, s3, s4, s5, s6, s7, s8]
+        [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O4::MAGIC_SUM)
-        {
-            Some(*self)
-        } else {
-            None
-        }
+            .then_some(*self)
     }
 
-    /// # Errors
-    ///
     /// # Panics
-    ///
+    /// - If the value returned by `get` is `None`
     #[inline]
     fn check_s(&self) -> Option<Self> {
         let a: u32 = *self.get(0).unwrap();
@@ -226,14 +199,10 @@ impl CheckScalar for Square<O4> {
         let s7 = e + f + g + h;
         let s8 = i + j + k + l;
 
-        if [s1, s2, s3, s4, s5, s6, s7, s8]
+        [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O4::MAGIC_SUM)
-        {
-            Some(*self)
-        } else {
-            None
-        }
+            .then_some(*self)
     }
 }
 
@@ -268,20 +237,14 @@ impl CheckScalar for VecSquare<O4> {
         let s7 = e + f + g + h;
         let s8 = i + j + k + l;
 
-        if [s1, s2, s3, s4, s5, s6, s7, s8]
+        [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O4::MAGIC_SUM)
-        {
-            Some(self.clone())
-        } else {
-            None
-        }
+            .then_some((*self).clone())
     }
 
-    /// # Errors
-    ///
     /// # Panics
-    ///
+    /// - If the value returned by `get` is `None`
     #[inline]
     fn check_s(&self) -> Option<Self> {
         let a: u32 = *self.data.first().unwrap();
@@ -310,14 +273,10 @@ impl CheckScalar for VecSquare<O4> {
         let s7 = e + f + g + h;
         let s8 = i + j + k + l;
 
-        if [s1, s2, s3, s4, s5, s6, s7, s8]
+        [s1, s2, s3, s4, s5, s6, s7, s8]
             .into_iter()
             .all(|sum| sum == O4::MAGIC_SUM)
-        {
-            Some(self.clone())
-        } else {
-            None
-        }
+            .then_some((*self).clone())
     }
 }
 
@@ -351,7 +310,7 @@ where
     }
 }
 
-/// Reduce code duplication
+// Reduce code duplication
 //-------------------------------------------------------------------------------------------------
 
 macro_rules! impl_generic_scalar_checker_for_type {
@@ -361,6 +320,7 @@ macro_rules! impl_generic_scalar_checker_for_type {
             [(); P::ELEMENTS]:,
             [(); P::ORDER]:,
         {
+            /// Check if a square-like object of any size is magic.
             #[inline]
             #[must_use]
             pub fn check_n_s(&self) -> Option<$t<P>> {
@@ -374,10 +334,10 @@ macro_rules! impl_generic_scalar_checker_for_type {
                         )
                     })
                     .unzip();
+
                 let t1: Vec<u32> = (0..P::ORDER)
                     .map(|a| self.square.data[a * (P::ORDER + 1)])
                     .collect();
-
                 let t2: Vec<u32> = (0..P::ORDER)
                     .map(|a| self.square.data[(a + 1) * (P::ORDER - 1)])
                     .collect();
@@ -387,7 +347,7 @@ macro_rules! impl_generic_scalar_checker_for_type {
                 sum_constraint_vectors(&t1)?;
                 sum_constraint_vectors(&t2)?;
 
-                Some(self.clone())
+                Some((*self).clone())
             }
         }
     };
@@ -398,9 +358,8 @@ impl_generic_scalar_checker_for_type!(Permutation);
 
 //-------------------------------------------------------------------------------------------------
 
-/// Reduce code duplication
+// Reduce code duplication
 //-------------------------------------------------------------------------------------------------
-
 macro_rules! impl_check_scalar_for_type_with_param {
     ($type:tt, $param:tt) => {
         impl CheckScalar for $type<$param> {
@@ -418,6 +377,8 @@ macro_rules! impl_check_scalar_for_type_with_param {
                 None
             }
 
+            /// # Panics
+            /// - If the value returned by `get` is `None`
             #[inline]
             #[must_use]
             fn check_s(&self) -> Option<Self::Output> {

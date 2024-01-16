@@ -135,11 +135,11 @@ pub fn check_generic_bench_s(c: &mut Criterion) {
 
 criterion_group!(
     benches,
-    // check_v_bench,
-    // check_s_bench,
-    check_safe_s_v_bench,
+    check_v_bench,
+    check_s_bench,
+    // check_safe_s_v_bench,
     // check_unsafe_s_v_bench,
     // check_generic_bench_v,
-    check_generic_bench_s
+    // check_generic_bench_s
 );
 criterion_main!(benches);

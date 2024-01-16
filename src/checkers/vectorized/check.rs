@@ -6,15 +6,15 @@ use std::simd::{LaneCount, SupportedLaneCount};
 pub trait CheckVector {
     type Output;
 
-    /// Checks if a Permutation of element type T, order N is magic.
+    /// Check if a square-like object is magic.
     /// Computations are vectorized and implemented using `std::simd`.
     ///
     /// # Safety
-    ///
-    /// Use of `get_unchecked` is unsafe. For a safe abstraction, use `get` to return references to Square elements.
+    /// Use of `get_unchecked` is unsafe. For a safe abstraction, use `get` to return references to
+    /// square-like elements. `check_v` is the safe version of this function.
     unsafe fn check_v_unsafe(&self) -> Option<Self::Output>;
 
-    /// Checks if a Permutation of element type T, order N is magic.
+    /// Check if a square-like object is magic.
     /// Computations are vectorized and implemented using `std::simd`.
     fn check_v(&self) -> Option<Self::Output>;
 }
@@ -24,7 +24,6 @@ impl CheckVector for VecSquare<O3> {
 
     #[inline]
     unsafe fn check_v_unsafe(&self) -> Option<Self::Output> {
-        let mut result = Self::from_vec(vec![0; O3::ELEMENTS]);
         const VMASK: Simd<u32, 8_usize> =
             Simd::from_slice(&[O3::MAGIC_SUM; O3::CONSTRAINT_VECTORS]);
 
@@ -34,35 +33,19 @@ impl CheckVector for VecSquare<O3> {
         ];
 
         let mut v_a = simd_swizzle!(vals[0], [0, 3, 6, 0, 1, 2, 0, 2]);
-        let mut v_b = simd_swizzle!(vals[0], [1, 4, 7, 3, 4, 5, 4, 4]);
+        let v_b = simd_swizzle!(vals[0], [1, 4, 7, 3, 4, 5, 4, 4]);
+        let v_c = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
 
         v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
+        v_a = v_a.saturating_add(v_c);
 
-        v_b = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        result.data = self.data.clone();
-        if v_a == VMASK {
-            Some(result)
-        } else {
-            None
-        }
+        v_a.simd_eq(VMASK).all().then_some((*self).clone())
     }
 
-    /// # Errors
-    ///
     /// # Panics
-    ///
+    /// - If the value returned by `get` is `None`
     #[inline]
     fn check_v(&self) -> Option<Self::Output> {
-        let mut result = Self::from_vec(vec![0; O3::ELEMENTS]);
         const VMASK: Simd<u32, 8_usize> =
             Simd::from_slice(&[O3::MAGIC_SUM; O3::CONSTRAINT_VECTORS]);
 
@@ -81,26 +64,13 @@ impl CheckVector for VecSquare<O3> {
         ];
 
         let mut v_a = simd_swizzle!(vals[0], [0, 3, 6, 0, 1, 2, 0, 2]);
-        let mut v_b = simd_swizzle!(vals[0], [1, 4, 7, 3, 4, 5, 4, 4]);
+        let v_b = simd_swizzle!(vals[0], [1, 4, 7, 3, 4, 5, 4, 4]);
+        let v_c = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
 
         v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
+        v_a = v_a.saturating_add(v_c);
 
-        v_b = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        result.data = self.data.clone();
-        if v_a == VMASK {
-            Some(result)
-        } else {
-            None
-        }
+        v_a.simd_eq(VMASK).all().then_some((*self).clone())
     }
 }
 
@@ -109,7 +79,6 @@ impl CheckVector for Square<O3> {
 
     #[inline]
     unsafe fn check_v_unsafe(&self) -> Option<Self::Output> {
-        let mut result = Self::from_array([0; O3::ELEMENTS]);
         const VMASK: Simd<u32, 8_usize> =
             Simd::from_slice(&[O3::MAGIC_SUM; O3::CONSTRAINT_VECTORS]);
 
@@ -119,35 +88,19 @@ impl CheckVector for Square<O3> {
         ];
 
         let mut v_a = simd_swizzle!(vals[0], [0, 3, 6, 0, 1, 2, 0, 2]);
-        let mut v_b = simd_swizzle!(vals[0], [1, 4, 7, 3, 4, 5, 4, 4]);
+        let v_b = simd_swizzle!(vals[0], [1, 4, 7, 3, 4, 5, 4, 4]);
+        let v_c = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
 
         v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
+        v_a = v_a.saturating_add(v_c);
 
-        v_b = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        result.data = self.data;
-        if v_a == VMASK {
-            Some(result)
-        } else {
-            None
-        }
+        v_a.simd_eq(VMASK).all().then_some(*self)
     }
 
-    /// # Errors
-    ///
     /// # Panics
-    /// If index is
+    /// - If the value returned by `get` is `None`
     #[inline]
     fn check_v(&self) -> Option<Self::Output> {
-        let mut result = Self::from_array([0; O3::ELEMENTS]);
         const VMASK: Simd<u32, 8_usize> =
             Simd::from_slice(&[O3::MAGIC_SUM; O3::CONSTRAINT_VECTORS]);
 
@@ -166,26 +119,13 @@ impl CheckVector for Square<O3> {
         ];
 
         let mut v_a = simd_swizzle!(vals[0], [0, 3, 6, 0, 1, 2, 0, 2]);
-        let mut v_b = simd_swizzle!(vals[0], [1, 4, 7, 3, 4, 5, 4, 4]);
+        let v_b = simd_swizzle!(vals[0], [1, 4, 7, 3, 4, 5, 4, 4]);
+        let v_c = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
 
         v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
+        v_a = v_a.saturating_add(v_c);
 
-        v_b = simd_swizzle!(vals[0], vals[1], [2, 5, 8, 6, 7, 8, 8, 6]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        result.data = self.data;
-        if v_a == VMASK {
-            Some(result)
-        } else {
-            None
-        }
+        v_a.simd_eq(VMASK).all().then_some(*self)
     }
 }
 
@@ -221,38 +161,19 @@ impl CheckVector for Square<O4> {
         ];
 
         let mut v_a = simd_swizzle!(vals[0], vals[1], [0, 0, 0, 1, 2, 3, 4, 8]);
-        let mut v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
+        let v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
+        let v_c = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
+        let v_d = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
 
         v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
+        v_a = v_a.saturating_add(v_c);
+        v_a = v_a.saturating_add(v_d);
 
-        v_b = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        v_b = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        if v_a == VMASK {
-            Some(*self)
-        } else {
-            None
-        }
+        v_a.simd_eq(VMASK).all().then_some(*self)
     }
 
-    /// # Errors
-    ///
     /// # Panics
-    ///
+    /// - If the value returned by `get` is `None`
     #[inline]
     fn check_v(&self) -> Option<Self> {
         const VMASK: Simd<u32, 8_usize> =
@@ -282,32 +203,15 @@ impl CheckVector for Square<O4> {
         ];
 
         let mut v_a = simd_swizzle!(vals[0], vals[1], [0, 0, 0, 1, 2, 3, 4, 8]);
-        let mut v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
+        let v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
+        let v_c = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
+        let v_d = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
 
         v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
+        v_a = v_a.saturating_add(v_c);
+        v_a = v_a.saturating_add(v_d);
 
-        v_b = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        v_b = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        if v_a == VMASK {
-            Some(*self)
-        } else {
-            None
-        }
+        v_a.simd_eq(VMASK).all().then_some(*self)
     }
 }
 
@@ -343,38 +247,19 @@ impl CheckVector for VecSquare<O4> {
         ];
 
         let mut v_a = simd_swizzle!(vals[0], vals[1], [0, 0, 0, 1, 2, 3, 4, 8]);
-        let mut v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
+        let v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
+        let v_c = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
+        let v_d = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
 
         v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
+        v_a = v_a.saturating_add(v_c);
+        v_a = v_a.saturating_add(v_d);
 
-        v_b = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        v_b = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        if v_a == VMASK {
-            Some(self.clone())
-        } else {
-            None
-        }
+        v_a.simd_eq(VMASK).all().then_some((*self).clone())
     }
 
-    /// # Errors
-    ///
     /// # Panics
-    ///
+    /// - If the value returned by `get` is `None`
     #[inline]
     fn check_v(&self) -> Option<Self> {
         const VMASK: Simd<u32, 8_usize> =
@@ -404,36 +289,19 @@ impl CheckVector for VecSquare<O4> {
         ];
 
         let mut v_a = simd_swizzle!(vals[0], vals[1], [0, 0, 0, 1, 2, 3, 4, 8]);
-        let mut v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
+        let v_b = simd_swizzle!(vals[0], vals[1], [1, 4, 5, 5, 6, 6, 5, 9]);
+        let v_c = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
+        let v_d = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
 
         v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
+        v_a = v_a.saturating_add(v_c);
+        v_a = v_a.saturating_add(v_d);
 
-        v_b = simd_swizzle!(vals[0], vals[1], [2, 8, 10, 9, 10, 9, 6, 10]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        v_b = simd_swizzle!(vals[0], vals[1], [3, 12, 15, 13, 14, 12, 7, 11]);
-
-        v_a = v_a.saturating_add(v_b);
-        if v_a.simd_lt(v_b).any() {
-            return None;
-        }
-
-        if v_a == VMASK {
-            Some(self.clone())
-        } else {
-            None
-        }
+        v_a.simd_eq(VMASK).all().then_some((*self).clone())
     }
 }
 
-/// Reduce code duplication
+// Reduce code duplication
 //-------------------------------------------------------------------------------------------------
 
 macro_rules! impl_check_vector_for_type_with_param {
@@ -453,6 +321,8 @@ macro_rules! impl_check_vector_for_type_with_param {
             }
 
             #[inline(always)]
+            /// # Panics
+            /// - If the value returned by `get` is `None`
             fn check_v(&self) -> Option<Self::Output> {
                 let p = self.clone();
 
@@ -477,12 +347,25 @@ impl<P: Params + Copy> Construction<P>
 where
     [(); P::ELEMENTS]:,
 {
+    /// Check if a square-like object of any size is magic.
+    ///
+    /// `B`: represents the `LaneCount` for the SIMD arrays and can be though of the number of items
+    /// taken from the contraint vectors at each step to perform the whole summation, similar to
+    /// taking chunks of an iterator.
+    ///
+    /// # Caution
+    /// This method has not been tested for all cases and/or does not output correctly for certain
+    /// values of `B`. If accuracy is desired over throughput, use the `check_s_v` method.
     #[inline]
     #[must_use]
-    pub fn check_n_v<const B: usize>(&self) -> Option<Construction<P>>
+    pub fn check_n_v<const B: usize>(&self) -> Option<Self>
     where
         LaneCount<B>: SupportedLaneCount,
     {
+        // Decompose the square data into two iterables.
+        //
+        // r: iterator over the joined rows of the square
+        // c: iterator over the joined cols of the square
         let (r, c): (Vec<u32>, Vec<u32>) = (0..P::ELEMENTS)
             .map(|e| e / P::ORDER)
             .zip((0usize..P::ELEMENTS).map(|s| s % P::ORDER))
@@ -493,8 +376,12 @@ where
                 )
             })
             .unzip();
+
+        // Chunk over the row, col iterators so that we can iterate over whole rows and whole cols.
         let rows = r.chunks_exact(P::ORDER).collect_vec();
         let cols = c.chunks_exact(P::ORDER).collect_vec();
+
+        // Iterators over the left and right trace
         let t1: Vec<u32> = (0..P::ORDER)
             .map(|a| self.square.data[a * (P::ORDER + 1)])
             .collect();
@@ -502,17 +389,20 @@ where
             .map(|a| self.square.data[(a + 1) * (P::ORDER - 1)])
             .collect();
 
+        // Number of zeros to pad on the end of the SIMD arrays.
         let pad = if P::CONSTRAINT_VECTORS.is_power_of_two() {
             0
         } else {
             B.abs_diff(P::CONSTRAINT_VECTORS)
         };
 
+        // Allocate the arrays used for summing.
         let mut buffs = Vec::with_capacity(P::ORDER);
         for _ in 0..P::ORDER {
             buffs.push(Vec::<u32>::with_capacity(B));
         }
 
+        // load the data into the arrays, padding zeros at the end.
         for i in 0..P::ORDER {
             for j in rows[i] {
                 buffs[i].push(*j);
@@ -530,21 +420,21 @@ where
             }
         }
 
+        // The result vector, containing padding to match the summing arrays.
         let mut r_vec: Vec<u32> = vec![0; P::CONSTRAINT_VECTORS + pad];
         for item in r_vec.iter_mut().take(P::CONSTRAINT_VECTORS) {
             *item = P::MAGIC_SUM;
         }
 
+        // Turn slices from the summing vectors into SIMD arrays and add each of them together.
         let fv = buffs
             .into_iter()
-            .fold(Simd::splat(0), |a, n| a + Simd::from_slice(&n[..B]));
+            .fold(Simd::splat(0), |a, n| a + Simd::from_slice(&n));
 
+        // If the SIMD vector is equal to the expected result SIMD vector, then the square must be
+        // magic.
         let sumv: Simd<u32, B> = Simd::from_slice(r_vec.as_slice());
-        if fv == sumv {
-            Some(self.clone())
-        } else {
-            None
-        }
+        fv.simd_eq(sumv).all().then_some((*self).clone())
     }
 }
 
