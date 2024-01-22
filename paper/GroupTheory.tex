@@ -113,12 +113,12 @@ mathematicians and hobbyists since the puzzle's inception.
 \par Today, magic squares hold less of a mythical and powerful cultural reputation. Mathematics, at
 this point in history, has been able to deduce new and creative uses for magic squares in various
 different fields, especially physics. In 2021, scientists found a connection between electrostatic
-potentials and magic squares of the $5^{th}$ and $6^{th}$ order [CITE]. Similarly, magic squares of
-the $6^{th}$ order have been associated with the Weak Force in physics [CITE]. Outside of physics,
-there are also uses for magic squares in image encryption, specifically, using large squares as
-chaos maps in chaos-based encryption schemes [CITE]. For these reasons and many others, the
-continual study of magic squares carries with it the possibility of new breakthroughs in applied
-mathematics.
+potentials and magic squares of the $5^{th}$ and $6^{th}$ order [Fahimi]. Similarly, magic squares
+of the $6^{th}$ order have been associated with the Weak Force in physics [ONeill]. Outside of
+physics, there are also uses for magic squares in image encryption, specifically, using large
+squares as chaos maps in chaos-based encryption schemes [Wang]. For these reasons and many others,
+the continual study of magic squares carries with it the possibility of new breakthroughs in
+applied mathematics.
 
 \par Although there are many kinds of magic squares, we will only interest ourselves in ``normal''
 magic squares, which have two main requirements: $(1)$ The square must be filled with the integers
@@ -177,7 +177,7 @@ mathematically and programmatically.
 and Number Theory. Specifically, we will study the permutations of magic squares. In the 1770s,
 Joseph Louis Lagrange studied permutations of the roots of polynomial equations. This led to Galois
 theory founded by Évariste Galois, which describes what is or is not possible with respect to
-solving polynomial equations by radicals [CITE]. In modern mathematics, there are many similar
+solving polynomial equations by radicals [Fraser]. In modern mathematics, there are many similar
 situations where studying permutations can help us understand a problem.
 
 \par Roughly speaking, magic squares may be represented as permutations of $n^2$ objects. By the
@@ -214,7 +214,7 @@ factorial number system, is a mixed radix adapted for combinatorial systems. In 
 express the permutations of $n$ objects in lexicographical order, that is naturally from $0$ to
 $n!-1$ as a bijection. Using the factor-adic number system's properties we can treat magic squares
 (or any grid square) as a permutation, and map that permutation uniquely to an integer. More
-generally, this concept is called a Lehmer Encoding of a permutation on $n$ integers [CITE]. This
+generally, this concept is called a Lehmer Encoding of a permutation on $n$ integers [Lehmer]. This
 not only simplifies our intuition of what a unique magic square looks like, but also improves the
 performance of a magic square computation in some cases, specifically, the cost of copying integers
 over whole arrays and storing magic squares in memory.
@@ -226,7 +226,7 @@ in their ordered set has not so far proved to be helpful. Exhaustive enumeration
 is presumed to be an NP-Hard problem, making it suitable for certain cryptographic applications.
 However, it is at least NP;\@ the NP-completeness and classification of the magic square problem is
 formally unknown. The complexity of predicting magic squares is unknown, yet, there do exist
-applications in artificial intelligence for predicting and classifying magic squares [CITE].
+applications in artificial intelligence for predicting and classifying magic squares [Weed].
 
 \chapter{Permutation Groups}
 
@@ -450,12 +450,12 @@ is widely used in parallel systems that enable data communication primitives. In
 to do this very easily.
 
 \par These results are then collected into a set-like data structure. We will use a
-\texttt{BTreeSet}
-(Balanced Binary Search Tree) to store our magic squares for the fast lookup, insertion, and
-concurrency potential. For our initial proof of concept, we computed the first 440 magic squares of
-order four. This computation took about 40 minutes on 16 threads, each running at 4.2 GHz. Of these
-440 magic squares, 239 are unique. Based on the time taken to compute the initial set, we
-anticipate that a full brute-force computation of $M_n$ would require about 10.67 hours.
+\texttt{BTreeSet} (Balanced Binary Search Tree) to store our magic squares for the fast lookup,
+insertion, and concurrency potential. For our initial proof of concept, we first computed the first
+440 magic squares of order four. This computation took about 40 minutes on 16 threads, each running
+at 4.2 GHz. Of these 440 magic squares, 239 are unique. Notably, 239 is prime. Based on the time
+taken to compute the initial set, we anticipate that a full brute-force computation of $M_n$ would
+require about 10.67 hours.
 
 \section{New Method}
 \par We begin by reading the set of 440 cached magic squares into a set. We then filter the set to
@@ -468,20 +468,23 @@ explore this difference in our analysis.
 \par Once $K_4$ is computed, we may then start producing the actions of $K_4$. We compute the set
 of actions by generating the Cartesian Product $K_4 \times K_4$. The resulting set contains every
 possible unique ordered pair of elements in $K_4$. The size of this set is $\left|K_4\right|^2$.
-For each pair $\left(\pi,\sigma\right)\vert a,c\in K_4$, compute $\pi^{-1}\sigma$. The set after
+For each pair $\left(\pi_0,\sigma\right)\vert \pi,\sigma\in K_4$, compute $\pi^{-1}\sigma$. The set
+after
 this operation contains every action on $K_4$. Filtered for uniqueness, this set contains 22,490
 elements which we call $\beta$.
 
 \par Now, compute the Cartesian Product $K_4 \times \beta$. The resulting set of size $\left|K_n
-  \right|\cdot \left|\beta \right|$ contains elements $\left(s, b\right)\vert s\in K_n, b\in
-  \beta$.
+  \right|\cdot \left|\beta \right|$ contains elements $\left(\pi_1, \alpha\right)\vert \pi_1\in
+  K_n, \alpha\in \beta$.
 For each element in $K_4$, compute the dihedral group of the magic square $s$ as the set $D$, then
-element-wise compute $db=m$ for each element $d\in D$. For each element $m$ in $Db$, if $m$ is
+element-wise compute $d\alpha=m$ for each element $d\in D$. For each element $m$ in $D\alpha$, if
+$m$ is
 magic, then collect the element into a set $K^\prime$; if not, then do nothing with $m$. Finally,
 we filter unique elements from $K^\prime$. The result is an extension of $K_4$ which we call
 $Ext\left(K_4\right)$ where $\left|Ext\left(K_4\right) \right|\geq \left|K_4 \right|$. For this
 particular example with order four magic squares and the specific pre-computed $K_4$,
-$\left|Ext\left(K_4\right) \right|=880 \text{ and } Ext\left(K_4\right)=M_4$.
+$\left|Ext\left(K_4\right) \right|=880 \text{ and } Ext\left(K_4\right)=M_4$. Taking only the first
+238 unique squares rather than our initial 239, fails to generate $M_4$
 
 \chapter{Analysis}
 
@@ -530,12 +533,12 @@ with $n=239$ is $\approx 1.36519 \times 10^7$ whereas $16!\approx 2.09227 \times
 \section{Generating Sets}
 
 \par While the maximum set size difference is great for $n=239$, it is entirely dependant on our
-choice of Kn. In a way, the choice of Kn is completely arbitrary. We will choose a different set
-now, also calling it $K_4$, however, we will select the first 440 magic squares from $M_4$. This
-set contains 232 unique magic squares, produces a set of 20,210 actions, but only generates 871
-unique magic squares from $Ext\left(K_4\right)$. This is interesting since it is the first choice
-of $K_4$ that actually fails to compute $M_4$. What if we chose a different set using a different
-sampling method?
+choice of $K_n$. In a way, the choice of $K_n$ is completely arbitrary. We will choose a different
+set now, also calling it $K_4$, however, we will select the first 440 magic squares from $M_4$.
+This set contains 232 unique magic squares, produces a set of 20,210 actions, but only generates
+871 unique magic squares from $Ext\left(K_4\right)$. This is interesting since it is the first
+choice of $K_4$ that actually fails to compute $M_4$. What if we chose a different set using a
+different sampling method?
 
 \par One of our hypotheses was that certain types of magic squares have different kinds of
 influence on the output of $Ext\left(K_4\right)$, and we thought it could be related to the order
@@ -563,7 +566,7 @@ subset of minimal cardinality.'' For finite, solvable groups, the cardinality $k
 generating subset is at least $\lceil\log_{p}{\left|G\right|}\rceil$ (where $p$ is the smallest
 prime dividing $G$), which is a byproduct of Lagrange's Theorem. Using the ``Groups, Algorithms,
 and Programming'' system (GAP), an open-source programming model for computational discrete algebra
-  [CITE], we found that the group containing all magic squares of order four has an order of
+, we found that the group containing all magic squares of order four has an order of
 10,461,394,944,000, which is equal to the order of the group generated by our small $K_4$. This may
 indicate that these groups are identical. With $k=2$, $\left|G\right|$=10,461,394,944,000, we found
 that the minimal cardinality of the subset that generates $G$ is 44 (rounded up to the nearest
@@ -688,7 +691,7 @@ information about all solutions.
 \section{Generalizations}
 
 \par For almost all of our examples, the algorithm we used to generate the complete set of magic
-squares was just made for order four. One generalization that we've considered and would like to
+squares was implemented for order four. One generalization that we've considered and would like to
 see, is if this algorithm can successfully be applied to magic squares with orders greater than
 four. The code for this algorithm was designed to be order-agnostic meaning that, in theory, we
 could very easily just use a different order of magic square and the same processes and
