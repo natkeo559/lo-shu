@@ -546,7 +546,7 @@ of the permutations in the set. Specifically, the order of a permutation is the 
 its cycle lengths and represents the smallest integer $n \ni p^n = e$. Given our assumption, we
 selected four elements from each conjugacy class and ran the resulting set through
 $Ext\left(K_4\right)$. The set was small, only 104 elements, yet still produced $M_4$. Following
-this, elements were iteratively were iteratively removed from the set via backtracking if $M_4$
+this, elements were iteratively removed from the set via backtracking if $M_4$
 could still be computed without them. The resulting set contained only 50 elements and
 $Ext\left(K_4\right)$ still resulted in $M_4$. This discovery was extremely valuable since we could
 now compute $M_4$ from 50 magic squares alone with a total run time of about 1 second.
@@ -569,7 +569,7 @@ and Programming'' system (GAP), an open-source programming model for computation
 , we found that the group containing all magic squares of order four has an order of
 10,461,394,944,000 $\left(\frac{16!}{2}\right)$, which is equal to the order of the group generated 
 by our small $K_4$. This may
-indicate that these groups are identical. With $k=2$, $\left|G\right|$=10,461,394,944,000, we found
+indicate that these groups are identical. With $p=2$, $\left|G\right|$=10,461,394,944,000, we found
 that the minimal cardinality of the subset that generates $G$ is 44 (rounded up to the nearest
 integer).
 
@@ -657,7 +657,7 @@ magic-preserving symmetries in addition to the identity element. These permutati
   \caption{Members of the magic-preserving group.}\label{fig:preserving}
 \end{figure}
 
-\par It is proven that $\forall\pi\in\ M_4,\alpha\in MP, \pi\alpha \in M_4$. One question that
+\par It is proven computationally that $\forall\pi\in\ M_4,\alpha\in MP, \pi\alpha \in M_4$. One question that
 arises from the knowledge of this set is on whether or not $\pi\alpha$ should still be considered
 uniquely as $\pi$, since this is how we treat the actions of the dihedral group on $\pi$.
 
