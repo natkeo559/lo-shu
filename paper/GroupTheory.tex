@@ -279,7 +279,7 @@ is acted on by $\sigma$''.
 Notably, we can define a function $g$ to be the group operation of composition, and $X$ to be a
 permutation group. Then $g:X\rightarrow X$ denotes that g is a function mapping any element in $X$
 back to another element in $X$ which is a group endomorphism. Any composition of permutations
-results in a permutation.
+results in a permutation. Likewise, the inverse of a permutation is also a permutation.
 
 \singlespacing{}
 \begin{thmbox}{}{thmcomp}
@@ -290,6 +290,18 @@ results in a permutation.
     bijections is a bijection. Their domain and codomains are coincident,\\ $\therefore
       \pi\circ\sigma$
     must also be a permutation of $S$.
+  \end{proof}
+\end{thmbox}
+\doublespacing{}
+
+\singlespacing{}
+\begin{thmbox}{}{thminv}
+  \textbf{Inverse of a Permutation is a Permutation}
+  \begin{proof}[Proof:]
+    Let $f : S \rightarrow S$ be a permutation of the set $S$. Recall that permutations are
+    bijections and that by definition of bijection $f^{-1}$ is also a bijection. By definition of
+    inverse releation, the domain and codomains of $f$ and $f^{-1}$ are coincident. The domain and
+    codomain of $f^{-1}$ is $S$,\\ $\therefore$ $f^{-1}$ must be a permutation of $S$.
   \end{proof}
 \end{thmbox}
 \doublespacing{}
@@ -510,14 +522,16 @@ in 71
 seconds. This is an amazing computational performance improvement over the remaining 10 hours for
 brute-force enumeration. The code is parallel across threads, thus we may conclude that the
 implementation we've chosen is adequate. Of course, the sizes of the sets we work with are still
-rather large. Only now, we may start to consider that storage is our most limiting factor. As
+rather large. Only now, we may start to consider memory and storage as our most limiting factors. As
 $\left|K_n\right|$ approaches $\left|M_n\right|$, the amount of memory required to continue working
 with the sets grows extremely fast. In one case, we used $M_n$ as our $K_n$ and the program ran out
 of memory. This is suboptimal, considering we would like to be able to compute larger orders with
 this algorithm.
 
 \par The simplest solution to this is additional parallelization, although there also exists the
-possibility for set partitioning. The combination of these solutions lands the problem in the realm
+possibility for set partitioning. Additionally, we could revisit how the sets are represeted
+computatively to use more efficeint implementations at this particular scale.
+The combination of these solutions lands the problem in the realm
 of High-Performance Computing (HPC) for proper multi-process computation using extremely high CPU
 counts, super-scale storage solutions, and vast quantities of working memory. Given our current
 time and budget constraints, we see partitioning as the most viable solution to cutting down on the
