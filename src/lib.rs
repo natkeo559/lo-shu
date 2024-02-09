@@ -12,9 +12,11 @@ pub mod constructive;
 pub mod core;
 pub mod group;
 pub mod order;
+pub mod prelude;
 
 pub use crate::checkers::*;
 pub use crate::constructive::*;
 pub use crate::core::*;
 pub use crate::group::*;
 pub use crate::order::*;
+pub use crate::prelude::*;

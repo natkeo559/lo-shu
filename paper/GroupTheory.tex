@@ -35,13 +35,14 @@
 
 \addbibresource{references.bib}
 
-\title{A Novel Approach to Computing Magic Squares Using Group Theory} \author{Nathan Keough \\
+\title{An Approach to Computing Magic Squares Using High-Performance Computing and Group Theory}
+\author{Nathan Keough \\
   \href{mailto:nathan.keough@my.maryvillecollege.edu}{nathan.keough@my.maryvillecollege.edu} }
 \date{\today}
 
 \begin{document}
 
-\setcounter{chapter}{-1}
+\setcounter{chapter}{0}
 
 % \renewcommand{\chaptername}{}
 % \renewcommand{\thechapter}{}
@@ -87,7 +88,7 @@
   \caption{Magic square.}\label{fig:square}
 \end{figure}
 
-\par The secrets behind magic squares have eluded mathematicians for millennia. The magic square
+\par The secrets behind magic squares have engaged mathematicians for millennia. The magic square
 problem itself is believed to have originated in China around 2200 BCE with the introduction of
 what are now known as “Lo-Shu” magic squares. These magic squares are defined as $3\times3$ grids
 with the numbers $1$ through $9$ arranged such that the sums of all the rows, columns, and
@@ -102,18 +103,10 @@ square problem brings with it new questions in mathematics. The number of soluti
 magic square problem is well known. However, The number of solutions to other kinds of squares
 remains a great mystery, especially as the size of the square grows.
 
-\par There is only one unique solution for the Lo-Shu Square, pictured in Fig.~\ref{fig:square}.
-There are extensions to the magic square problem, with variants having larger side lengths (order),
-different ``magic'' requirements, or different kinds of element values. For order four, there are
-$880$ unique solutions. For order five, there are $275,305,224$ unique solutions. However, the
-number of exact unique solutions for order six remains unknown. The number of unique solutions for
-each order exhibits a kind of exponential growth, and their values have been of interest to
-mathematicians and hobbyists since the puzzle's inception.
-
 \par Today, magic squares hold less of a mythical and powerful cultural reputation. Mathematics, at
 this point in history, has been able to deduce new and creative uses for magic squares in various
 different fields, especially physics. In 2021, scientists found a connection between electrostatic
-potentials and magic squares of the $5^{th}$ and $6^{th}$ order [Fahimi]. Similarly, magic squares
+potentials and magic squares of the $4^{th}$ and $5^{th}$ order [Fahimi]. Similarly, magic squares
 of the $6^{th}$ order have been associated with the Weak Force in physics [ONeill]. Outside of
 physics, there are also uses for magic squares in image encryption, specifically, using large
 squares as chaos maps in chaos-based encryption schemes [Wang]. For these reasons and many others,
@@ -156,13 +149,21 @@ vectors'' of a magic square.
 \end{figure}
 
 \par We are also only interested in studying ``unique'' magic squares. By this, we mean magic
-squares that are unique up to rotations and reflections. An example of this is taking a magic
+squares that are unique up to rotations and reflections or isometry. An example of this is taking a magic
 square $A$ and rotating it $90^{\circ }$ or reflecting it about the y-axis any number of times. The
 resulting square will always be considered equivalent to $A$. There may also be times when we refer
 to a ``positionally distinct'' magic square. In this case, reflections or rotations of a magic
 square $A$, results in a ``different'' square $B$. Neither of these definitions affect the validity
 of magic squares; they only affect how we count them. Fig.~\ref{fig:unique} accurately represents
-two magic squares that we would consider to be the ``same'' square.
+two magic squares that we would consider to be the ``same'' square up to isometry.
+
+\par There is only one unique solution for the Lo-Shu Square, pictured in Fig.~\ref{fig:square}.
+There are extensions to the magic square problem, with variants having larger side lengths (order),
+different ``magic'' requirements, or different kinds of element values. For order four, there are
+$880$ unique solutions. For order five, there are $275,305,224$ unique solutions [Fahimi]. However, the
+number of exact unique solutions for order six remains unknown. The number of unique solutions for
+each order exhibits a kind of exponential growth, and their values have been of interest to
+mathematicians and hobbyists since the puzzle's inception.
 
 \par To help us compute magic squares, we have implemented a custom Computational Algebra System
 (CAS) written in the Rust Programming Language. This system allows us to construct and manipulate
@@ -170,6 +171,16 @@ square data to find magic squares. Once we have magic squares, we may do additio
 them to learn more about their structures. The system is geared for high performance and thus
 implements some of the best known strategies for working with magic square structures, both
 mathematically and programmatically.
+
+\par The decision to use Rust follows three main selling points despite any perceived controversy
+or opinions regarding the novelty of the language. While the Rust Programming Language is relatively
+new compared to other languages such as C/C++ or Python, Rust comes with the benefit of over 40 years
+of hindsight with respect to modern software development practices. Additionally, Rust offers a high
+degree of performance out of the box, which was something we specifically required due to the scale of
+our computations. Finally, using Rust provides our software with a great deal of flexibility as we can
+create low-level solutions using high-level interfaces. We also save quite a bit of time in development
+due to the lack of trivial memory bugs, representable invalid states, and time spent manually scripting
+complex build processes.
 
 \section{Permutations}
 
@@ -184,10 +195,29 @@ situations where studying permutations can help us understand a problem.
 definition of a normal magic square, these are the positive integers (mod $n^2$). The dimension
 need not matter since the coordinates of elements in a two-dimensional, row-major grid square may
 be mapped to a one-dimensional sequence, which is a bijection. The square, laid out as a
-one-dimensional sequence, represents the sequence of integers as a permutation. There are total of
-$n^{2}$! permutations of a square, that is $n^2$ factorial permutations, $n$ being the order of the
+one-dimensional sequence, represents the sequence of integers as a permutation. There are a total of
+$n^{2}$! permutations of a square, where $n$ is the order of the
 square. The permutations of squares represent the different possible configurations of integers in
 the square, many of them meeting the requirements to be considered magic squares.
+
+\begin{figure}[h!]
+  \begin{align*}
+    \quad \renewcommand{\arraystretch}{2}
+    \begin{tabular}{|
+      *{3}{>{\collectcell\fwcell}c<{\endcollectcell} |} }
+      \hline a & b & c \\
+      \hline d & e & f \\
+      \hline g & h & i \\
+      \hline
+    \end{tabular}
+  \end{align*}
+  \caption{A set arranged in a square.}\label{fig:squareperm}
+\end{figure}
+
+\par The concept of interpreting grid squares as permutations may be realized by Fig.~\ref{fig:squareperm}
+where the set $S = \{a, b, c, d, e, f, g, h, i\} \in S_9$. By decomposing the rows of an $n\times n$ 
+square into an ordered set containing all elements from $1\cdots n^2$, we may consistently map the set
+to unique permutations on $n^2$ objects. 
 
 \par We believe that by studying different permutations of squares, including those that are magic,
 we may be able to describe various kinds of symmetry related to magic squares of specific orders.
@@ -201,10 +231,15 @@ beyond simple row and column transposition.
 
 \par In our investigation into the inner structures and symmetries of magic squares, we may find it
 useful to enumerate the magic squares, i.e.\ exhaustively listing and analyzing every magic square
-of a specific order. By hand, this is futile, but with high performance programming, we can do this
-very easily for certain orders and with certain algorithms. Listing magic squares in this way, as
-we will see, is useful and allows us to generalize certain properties of magic squares, potentially
-also for higher orders.
+of a specific order. By hand, this is difficult, but with high performance programming, we can do this
+very easily for certain orders and with certain algorithms. Prior to modern computing, mathematicians
+were computing large orders by hand using various methods. Some in particular developed by W.S. Andrews
+in 1908 utilized ``constructions'', whereby assumptions about initial known values are used to help 
+complete a magic square using some algorithmic process, potentially cutting down on the total amount 
+of computation [Andrews]. Some aspects of constructions are similar to the method outlined in this paper but with some differences.
+Our method makes no assumptions about initial values, but some code exists that could support constructive methods
+of magic square generation. Listing magic squares in this way, as we will see, 
+is useful and allows us to generalize certain properties of magic squares, potentially also for higher orders.
 
 \par Recall that the number of permutations of $n$ objects is $n$!. We can actually exploit this
 fact to implement an element of ordering for magic squares. There exists a natural ordering from
@@ -223,29 +258,36 @@ over whole arrays and storing magic squares in memory.
 easily identifiable pattern. Perhaps there is a pattern, but we have no way of identifying it based
 on our current assumptions of magic squares. In any case, analyzing the frequency of magic squares
 in their ordered set has not so far proved to be helpful. Exhaustive enumeration of magic squares
-is presumed to be an NP-Hard problem, making it suitable for certain cryptographic applications.
+is presumed to be an NP-Hard problem, making it suitable for certain cryptographic applications. 
 However, it is at least NP;\@ the NP-completeness and classification of the magic square problem is
-formally unknown. The complexity of predicting magic squares is unknown, yet, there do exist
-applications in artificial intelligence for predicting and classifying magic squares [Weed].
+formally unknown. For context, P versus NP is an unsolved problem in theoretical computer science and is a millennium prize problem.
+A problem classified as P is solvable and verifiable in polynomial time with respect to its input size.
+Problems in NP are verifiable in polynomial time. Solving if P = NP would mean that problems verifiable
+in polynomial time are solvable in polynomial time. A problem X in NP is considered NP-complete if and only if 
+any other problem in NP is reducible to X. The class of NP-Hard problems contains all NP-Complete problems but also
+includes those that are undecidable. The theoretical complexity of predicting magic squares is unknown, yet, there do exist
+applications in artificial intelligence for predicting and classifying magic squares [Weed]. The role
+of artificial intelligence in mathematics is becoming increasingly apparent. Opting for AI-driven
+solutions could be a great approach for future studies.
 
 \chapter{Permutation Groups}
 
 \section{Introduction}
 
 \par The set of magic square solutions falls under the definition of a permutation group.
-Generally, there are many kinds of permutation groups. For example, Sn is considered a permutation
+Generally, there are many kinds of permutation groups. For example, $S_n$ is considered a permutation
 group, but as a whole, it is typically considered a representation of the symmetric group.
 
-\singlespacing{}
-\begin{defbox}{}{defperm}
-  Let $S$ be a set with $n$ elements. Let $\varGamma\left(S\right)$ represent the set of
-  permutations of $S$. Let $\left(\varGamma\left(S\right), \circ \right)$ be the algebraic
-  structure
-  such that $\circ$ denotes the composition of mappings. Then, $\left(\varGamma\left(S\right),
-    \circ
-    \right)$ is the symmetric group on S, also known as $S_n$.
-\end{defbox}
-\doublespacing{}
+% \singlespacing{}
+% \begin{defbox}{}{defperm}
+%   Let $S$ be a set with $n$ elements. Let $\varGamma\left(S\right)$ represent the set of
+%   permutations of $S$. Let $\left(\varGamma\left(S\right), \circ \right)$ be the algebraic
+%   structure
+%   such that $\circ$ denotes the composition of mappings. Then, $\left(\varGamma\left(S\right),
+%     \circ
+%     \right)$ is the symmetric group on S, also known as $S_n$.
+% \end{defbox}
+% \doublespacing{}
 
 \par Additionally, a permutation group may be considered a subgroup of the symmetric group on $S$,
 a set of $n$ integers.
@@ -265,14 +307,13 @@ a set of $n$ integers.
 \end{thmbox}
 \doublespacing{}
 
-\par A set of magic squares may also be considered a permutation group. The group operation, in
-this case, is multiplication. This is different from the typical arithmetic operation. Rather, it
-could be called “composition” since the behavior of multiplication on a permutation resembles
-function composition. We may think of permutations as functions that bijectively map a set to
-itself. The product of two functions, $\pi\cdot\sigma$ is the function mapping any element $x$ in
+\par A set of magic squares may also be considered elements of a permutation group. The group operation, in
+this case, is composition. This is different from the typical arithmetic operation. We may think of 
+permutations as functions that bijectively map a set to itself. The product of two functions, 
+$\pi\cdot\sigma$ is the function mapping any element $x$ in
 the set to $\pi\left(\sigma\left(x\right)\right)$. Generally, the operation is defined for left
-multiplication, but since these are permutation representations (and to simplify expressions in our
-code) we will use right multiplication. In other words ``$\pi$ is permuted by $\sigma$'' or ``$\pi$
+composition, but since these are permutation representations (and to simplify expressions in our
+code) we will use right composition. In other words ``$\pi$ is permuted by $\sigma$'' or ``$\pi$
 is acted on by $\sigma$''.
 
 \par It follows that a permutation composed with a permutation results in another permutation.
@@ -300,13 +341,13 @@ results in a permutation. Likewise, the inverse of a permutation is also a permu
   \begin{proof}[Proof:]
     Let $f : S \rightarrow S$ be a permutation of the set $S$. Recall that permutations are
     bijections and that by definition of bijection $f^{-1}$ is also a bijection. By definition of
-    inverse releation, the domain and codomains of $f$ and $f^{-1}$ are coincident. The domain and
+    inverse relation, the domain and codomains of $f$ and $f^{-1}$ are coincident. The domain and
     codomain of $f^{-1}$ is $S$,\\ $\therefore$ $f^{-1}$ must be a permutation of $S$.
   \end{proof}
 \end{thmbox}
 \doublespacing{}
 
-\par Generally, we may study how magic squares behave under multiplication. Magic squares, being
+\par Generally, we may study how magic squares behave under composition. Magic squares, being
 permutations in $S_{n^2}$, exhibit group properties. However, we may not describe a set of magic
 squares as a group due to the absence of the identity permutation or an identity magic square,
 inverses, and closure. Rather, we may treat a set $K$ of magic squares as a set of generators for
@@ -327,9 +368,7 @@ about how the internal structures and generating subsets generalize for larger o
 route we are left with is to use iterative brute force methods to find the generators of $M_n$ so
 that we may perform further analyses.
 
-\chapter{Group Actions}
-
-\section{Introduction}
+\section{Group Action}
 
 \par A rational way to understand a complicated or obscure group is to let it act on something. The
 concept of a group action in the context of group theory defines a set of functions that act on a
@@ -366,7 +405,7 @@ considered the ``same'' square.
 \par The set of structure-preserving transformations of a square (or any regular polygon) actually
 has its own name: the dihedral group denoted $D_n$. A regular polygon has $2n$ symmetries \hyphen{}
 $n$ rotational and $n$ reflection symmetries. We may also call it $D_{2n}$ due to this fact. In any
-case, $D_8$ is the group of rigid symmetries of a square. This dihedral group encodes all of the
+case, $D_8$ is the group of rigid symmetries of a square. This dihedral group encodes all the
 orientations of a unique magic square. However, magic squares contain more than four elements, thus
 the rotations and reflections of magic squares are merely congruent to $D_8$.
 
@@ -529,8 +568,8 @@ of memory. This is suboptimal, considering we would like to be able to compute l
 this algorithm.
 
 \par The simplest solution to this is additional parallelization, although there also exists the
-possibility for set partitioning. Additionally, we could revisit how the sets are represeted
-computatively to use more efficeint implementations at this particular scale.
+possibility for set partitioning. Additionally, we could revisit how the sets are represented
+computationally to use more efficient implementations at this particular scale.
 The combination of these solutions lands the problem in the realm
 of High-Performance Computing (HPC) for proper multi-process computation using extremely high CPU
 counts, super-scale storage solutions, and vast quantities of working memory. Given our current
