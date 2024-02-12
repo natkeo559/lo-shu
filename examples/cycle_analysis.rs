@@ -13,7 +13,7 @@ fn main() {
     let mut cycle_map = HashMap::new();
 
     for i in magic_squares {
-        let mut cycles = Permutation::<O4>::kth(i).cyclic_notation();
+        let cycles = Permutation::<O4>::kth(i).cyclic_notation();
 
         let cycle_lens = cycles.order();
         if cycle_map.contains_key(&cycle_lens) {

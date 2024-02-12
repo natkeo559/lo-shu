@@ -87,7 +87,7 @@ impl<P: Params + Copy> Cycles<P> {
 
     /// Converts the `Cycles` instance into a `Permutation`.
     #[must_use]
-    pub fn into_permutation(&mut self) -> Permutation<P>
+    pub fn into_permutation(&self) -> Permutation<P>
     where
         [(); P::ELEMENTS]:,
     {

@@ -5,6 +5,12 @@ use std::cmp::Ordering;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 
+#[derive(Debug, PartialEq)]
+pub enum Parity {
+    Even,
+    Odd,
+}
+
 /// A struct representing a permutation based on parameters `P` implementing the `Params` trait.
 /// It contains a square with data stored in an array of unsigned 32-bit integers.
 ///
@@ -58,6 +64,28 @@ where
         // Reverse suffix
         self.square[i..].reverse();
         Some(self)
+    }
+
+    #[must_use]
+    pub fn sign(&self) -> Parity
+    where
+        [(); P::ELEMENTS]:,
+    {
+        let mut inversions = 0;
+        let data = self.square.data;
+        for (x, px) in data.iter().enumerate() {
+            for (y, py) in data.iter().enumerate() {
+                if x < y && px > py {
+                    inversions += 1;
+                }
+            }
+        }
+
+        if inversions % 2 == 0 {
+            Parity::Even
+        } else {
+            Parity::Odd
+        }
     }
 }
 
@@ -190,7 +218,7 @@ mod test_perms {
 
     use std::collections::BTreeSet;
 
-    use crate::{Permutation, Square, O3, O4};
+    use crate::{Enumerable, Parity, Permutation, Square, O3, O4};
 
     #[test]
     fn test_first_3() {
@@ -237,6 +265,34 @@ mod test_perms {
         let mut a = Permutation::<O4>::identity();
         a = *a.next_perm().unwrap();
         assert_eq!(result, a);
+    }
+
+    #[test]
+    fn test_sign() {
+        let odd_p1 = Permutation::<O4>::kth(1); // odd
+        let odd_p2 = Permutation::<O4>::kth(2); // odd
+        let even_p3 = Permutation::<O4>::kth(12); // even
+        let even_p4 = Permutation::<O4>::kth(15); // even
+
+        let odd_odd_p = odd_p1 * odd_p2;
+        let even_even_p = even_p3 * even_p4;
+        let odd_even_p = odd_p1 * even_p3;
+
+        let odd_inv = odd_p1.inv();
+
+        let even_inv = even_p3.inv();
+
+        assert_eq!(odd_p1.sign(), Parity::Odd);
+        assert_eq!(odd_p2.sign(), Parity::Odd);
+        assert_eq!(even_p3.sign(), Parity::Even);
+        assert_eq!(even_p4.sign(), Parity::Even);
+
+        assert_eq!(odd_odd_p.sign(), Parity::Even);
+        assert_eq!(even_even_p.sign(), Parity::Even);
+        assert_eq!(odd_even_p.sign(), Parity::Odd);
+
+        assert_eq!(even_inv.sign(), Parity::Even);
+        assert_eq!(odd_inv.sign(), Parity::Odd);
     }
 
     #[test]

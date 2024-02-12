@@ -1,7 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{read_serial, write_serial};
+use lo_shu::{read_serial, write_serial, Parity};
 use lo_shu::{CheckVector, Enumerable, Permutation, O4};
 use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
 
@@ -25,7 +25,7 @@ fn main() {
     // functions. To simplify the flow of data, result from mpsc were cached into Part.txt.      //
     // From this file, the others are generated.                                                 //
     // ========================================================================================= //
-    let file: BTreeSet<u64> = read_serial("examples/collected/orderfour/UniqueCensus.txt").unwrap();
+    let file: BTreeSet<u64> = read_serial("examples/collected/orderfour/Reduced.txt").unwrap();
 
     let magic_squares = file
         .into_iter()
@@ -37,7 +37,7 @@ fn main() {
         //     UniqueCensus.txt:    >= 239                                                       //
         //     Reduced.txt:         >= 50                                                        //
         // ===================================================================================== //
-        .take(239)
+        .take(50)
         // ===================================================================================== //
         .map(|a| Permutation::<O4>::kth(a))
         .collect::<BTreeSet<_>>();
@@ -175,6 +175,20 @@ fn main() {
         )
         .unwrap();
     }
+
+    let mut even = 0;
+    let mut odd = 0;
+
+    for i in actions.iter() {
+        if i.sign() == Parity::Even {
+            even += 1;
+        } else {
+            odd += 1;
+        }
+    }
+
+    println!("Actions Parity");
+    println!("Even: {even}\nOdd: {odd}")
 }
 
 /// Filters a set to contain unique squares up to all possible rotations and reflections.
@@ -215,6 +229,8 @@ fn compute_group_actions(group: &BTreeSet<Permutation<O4>>) -> BTreeSet<Permutat
 
 #[cfg(test)]
 mod debugging {
+    use lo_shu::Parity;
+
     use super::*;
 
     #[test]
@@ -239,5 +255,18 @@ mod debugging {
             }
             println!("Passed: {}\nFailed: {}\n", passed, failed);
         }
+
+        let mut even = 0;
+        let mut odd = 0;
+
+        for i in s.iter() {
+            if Permutation::<O4>::kth(*i).sign() == Parity::Even {
+                even += 1;
+            } else {
+                odd += 1;
+            }
+        }
+
+        println!("Even: {even}\nOdd: {odd}")
     }
 }
