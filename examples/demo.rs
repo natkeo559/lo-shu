@@ -4,14 +4,13 @@ use lo_shu::{reduce_isometry, CheckScalar, Cycles, Permutation, O4};
 
 fn main() {
     let names = [
-        // "a",
-        "b", "c",
+        "a", "b",
     ];
 
     let r = Permutation::<O4>::identity().rotate_90();
     let s = Permutation::<O4>::identity().reflect_x();
 
-    let isometry = [
+    let isometry = BTreeSet::from([
         ("e", Permutation::identity()),
         ("r", r),
         ("r.pow(2)", r.pow(2)),
@@ -20,14 +19,9 @@ fn main() {
         ("sr", s * r),
         ("sr.pow(2)", s * r.pow(2)),
         ("sr.pow(3)", s * r.pow(3)),
-    ];
+    ]);
 
     let input = [
-        // vec![
-        //     vec![2, 5, 14, 10, 8, 3, 12],
-        //     vec![4, 16, 13],
-        //     vec![6, 11, 9, 15, 7],
-        // ],
         vec![
             vec![2, 4, 16, 11, 8, 5, 12],
             vec![3, 13, 6, 14, 7],
@@ -104,29 +98,26 @@ fn main() {
                         +---------------------------+---------------------------------------------------------+----------+--------+";
 
     println!("{banner}");
-    for (name, perm) in input_ms.iter() {
-        let is_magic = perm.check_s().is_some();
-        let p = format!("{}", perm.cyclic_notation());
-        println!(
-            "| {: <25} | {: <55} | {: <8} | {: <6} |",
-            name, p, is_magic, ""
-        )
-    }
-    for (name, perm) in isometry.iter() {
-        let is_magic = perm.check_s().is_some();
-        let p = format!("{}", perm.cyclic_notation());
-        println!(
-            "| {: <25} | {: <55} | {: <8} | {: <6} |",
-            name, p, is_magic, ""
-        )
+
+    for set in [input_ms, isometry] {
+        for (name, perm) in set.iter() {
+            let is_magic = perm.check_s().is_some();
+            let is_new = !input_ms_isometry_set.contains(&perm) && is_magic;
+            let p = format!("{}", perm.cyclic_notation());
+            println!(
+                "| {: <25} | {: <55} | {: <8} | {: <6} |",
+                name, p, is_magic, is_new
+            )
+        }
     }
     println!("+---------------------------+---------------------------------------------------------+----------+--------+");
     for (name, perm) in actions {
         let is_magic = perm.check_s().is_some();
+        let is_new = !input_ms_isometry_set.contains(&perm) && is_magic;
         let p = format!("{}", perm.cyclic_notation());
         println!(
             "| {: <25} | {: <55} | {: <8} | {: <6} |",
-            name, p, is_magic, ""
+            name, p, is_magic, is_new
         )
     }
     println!("+---------------------------+---------------------------------------------------------+----------+--------+");
