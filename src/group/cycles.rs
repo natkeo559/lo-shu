@@ -167,7 +167,6 @@ where
                     k = v;
                 }
                 let s = cycle
-                    .clone()
                     .iter()
                     .position(|&a| &a == cycle.clone().iter().min().unwrap())
                     .unwrap();
