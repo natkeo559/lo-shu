@@ -1,11 +1,9 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashMap};
 
-use lo_shu::{reduce_isometry, CheckScalar, Cycles, Permutation, O4};
+use lo_shu::{prelude::*, CheckScalar, Cycles, Permutation, O4};
 
 fn main() {
-    let names = [
-        "a", "b",
-    ];
+    let names = ["a", "b"];
 
     let r = Permutation::<O4>::identity().rotate_90();
     let s = Permutation::<O4>::identity().reflect_x();
@@ -36,10 +34,13 @@ fn main() {
 
     let mut input_ms_isometry_set = BTreeSet::new();
 
-    let input_ms = names
-        .into_iter()
-        .zip(input.map(|i| Cycles::<O4>::from_vecs(i).into_permutation()))
-        .collect::<BTreeSet<_>>();
+    let input_ms =
+        names
+            .into_iter()
+            .zip(input.map(|i| {
+                minimize_permutation_isometry(Cycles::<O4>::from_vecs(i).into_permutation())
+            }))
+            .collect::<BTreeSet<_>>();
 
     for i in input_ms.iter() {
         for j in i.1.generate_d() {
@@ -81,6 +82,11 @@ fn main() {
         }
     }
 
+    let results_expr_table = results
+        .iter()
+        .map(|(s, p)| (format!("{}", p.cyclic_notation()), s))
+        .collect::<HashMap<String, &String>>();
+
     let mut unique_results = vec![];
     let unique_result_ms_perms_set = reduce_isometry(&result_ms_perms_set);
     for (name, perm) in results.iter() {
@@ -93,9 +99,9 @@ fn main() {
 
     let mut new_ms_set = BTreeSet::new();
 
-    let banner = "+---------------------------+---------------------------------------------------------+----------+--------+\n\
-                        | EXPRESSION                | PERMUTATION (VALUE)                                     | IS MAGIC | IS NEW |\n\
-                        +---------------------------+---------------------------------------------------------+----------+--------+";
+    let banner = "+---------------------------+---------------------------------------------------------+----------+--------+--------+\n\
+                        | EXPRESSION                | PERMUTATION (VALUE)                                     | IS MAGIC | IS NEW | PARITY |\n\
+                        +---------------------------+---------------------------------------------------------+----------+--------+--------+";
 
     println!("{banner}");
 
@@ -104,46 +110,50 @@ fn main() {
             let is_magic = perm.check_s().is_some();
             let is_new = !input_ms_isometry_set.contains(&perm) && is_magic;
             let p = format!("{}", perm.cyclic_notation());
+            let parity = format!("{}", perm.sign());
             println!(
-                "| {: <25} | {: <55} | {: <8} | {: <6} |",
-                name, p, is_magic, is_new
+                "| {:<25} | {:<55} | {:<8} | {:<6} | {:<6} |",
+                name, p, is_magic, is_new, parity
             )
         }
     }
-    println!("+---------------------------+---------------------------------------------------------+----------+--------+");
-    for (name, perm) in actions {
+    println!("+---------------------------+---------------------------------------------------------+----------+--------+--------+");
+    for (name, perm) in actions.iter() {
         let is_magic = perm.check_s().is_some();
         let is_new = !input_ms_isometry_set.contains(&perm) && is_magic;
         let p = format!("{}", perm.cyclic_notation());
+        let parity = format!("{}", perm.sign());
         println!(
-            "| {: <25} | {: <55} | {: <8} | {: <6} |",
-            name, p, is_magic, is_new
+            "| {:<25} | {:<55} | {:<8} | {:<6} | {:<6} |",
+            name, p, is_magic, is_new, parity
         )
     }
-    println!("+---------------------------+---------------------------------------------------------+----------+--------+");
-    for (name, perm) in results {
+    println!("+---------------------------+---------------------------------------------------------+----------+--------+--------+");
+    for (name, perm) in results.iter() {
         let p = format!("{}", perm.cyclic_notation());
         let is_magic = perm.check_s().is_some();
         let is_new = !input_ms_isometry_set.contains(&perm) && is_magic;
         if is_new {
             new_ms_set.insert((name.clone(), perm));
         }
+        let parity = format!("{}", perm.sign());
         println!(
-            "| {: <25} | {: <55} | {: <8} | {: <6} |",
-            name, p, is_magic, is_new
+            "| {:<25} | {:<55} | {:<8} | {:<6} | {:<6} |",
+            name, p, is_magic, is_new, parity
         )
     }
-    println!("+---------------------------+---------------------------------------------------------+----------+--------+");
+    println!("+---------------------------+---------------------------------------------------------+----------+--------+--------+");
     for (name, perm) in new_ms_set.iter() {
         let p = format!("{}", perm.cyclic_notation());
         let is_magic = perm.check_s().is_some();
         let is_new = !input_ms_isometry_set.contains(&perm) && is_magic;
+        let parity = format!("{}", perm.sign());
         println!(
-            "| {: <25} | {: <55} | {: <8} | {: <6} |",
-            name, p, is_magic, is_new
+            "| {:<25} | {:<55} | {:<8} | {:<6} | {:<6} |",
+            name, p, is_magic, is_new, parity
         )
     }
-    println!("+---------------------------+---------------------------------------------------------+----------+--------+");
+    println!("+---------------------------+---------------------------------------------------------+----------+--------+--------+");
 
     let mut new_ms_isometry_set = BTreeSet::new();
     for (name, perm) in new_ms_set.iter() {
@@ -151,19 +161,29 @@ fn main() {
         let is_magic = perm.check_s().is_some();
         let is_new = !input_ms_isometry_set.contains(&perm) && is_magic;
 
-        if !new_ms_isometry_set.contains(perm) {
+        if !new_ms_isometry_set.contains(*perm) {
             for i in perm.generate_d() {
                 new_ms_isometry_set.insert(i);
             }
+            let parity = format!("{}", perm.sign());
             println!(
-                "| {: <25} | {: <55} | {: <8} | {: <6} |",
-                name, p, is_magic, is_new
+                "| {:<25} | {:<55} | {:<8} | {:<6} | {:<6} |",
+                name, p, is_magic, is_new, parity
             )
         }
     }
-    println!("+---------------------------+---------------------------------------------------------+----------+--------+");
-    println!("Output:");
-    for i in unique_result_ms_perms_set {
-        println!("{}", i.cyclic_notation())
+    println!("+---------------------------+---------------------------------------------------------+----------+--------+--------+");
+    for perm in unique_result_ms_perms_set {
+        let min_perm = minimize_permutation_isometry(perm);
+        let p = format!("{}", min_perm.cyclic_notation());
+        let is_magic = min_perm.check_s().is_some();
+        let is_new = !input_ms_isometry_set.contains(&min_perm) && is_magic;
+        let name = results_expr_table.get(&p).unwrap();
+        let parity = format!("{}", min_perm.sign());
+        println!(
+            "| {:<25} | {:<55} | {:<8} | {:<6} | {:<6} |",
+            name, p, is_magic, is_new, parity
+        )
     }
+    println!("+---------------------------+---------------------------------------------------------+----------+--------+--------+");
 }

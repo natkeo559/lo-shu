@@ -11,6 +11,21 @@ pub enum Parity {
     Odd,
 }
 
+impl fmt::Display for Parity {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Parity::Even => {
+                write!(f, "Even")?;
+            }
+            Parity::Odd => {
+                write!(f, "Odd")?;
+            }
+        }
+
+        Ok(())
+    }
+}
+
 /// A struct representing a permutation based on parameters `P` implementing the `Params` trait.
 /// It contains a square with data stored in an array of unsigned 32-bit integers.
 ///

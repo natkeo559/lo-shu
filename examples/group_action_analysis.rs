@@ -1,7 +1,7 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{read_serial, write_serial, Parity};
+use lo_shu::{minimize_permutation_isometry, read_serial, write_serial, Parity};
 use lo_shu::{CheckVector, Enumerable, Permutation, O4};
 use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
 
@@ -49,6 +49,11 @@ fn main() {
     // and reflections.                                                                          //
     // ========================================================================================= //
     let mut unique_set = unique_squares(&magic_squares);
+
+    unique_set = unique_set
+        .into_iter()
+        .map(|p| minimize_permutation_isometry(p))
+        .collect();
 
     println!("(Unique): {}", unique_set.len());
     println!("Collecting Actions...");
