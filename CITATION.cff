@@ -1,0 +1,25 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Lo-Shu (crate)
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Nathan Keough
+    email: nathan.keough@my.maryvillecollege.edu
+repository-code: 'https://github.com/natkeo559/lo-shu'
+abstract: >-
+  This is a project I've been working on in Rust, exploring
+  concepts behind Lo-Shu, or more commonly, magic squares.
+  This project will aim to solve various problems in
+  combinatorics utilizing accelerated computing as well as
+  enhance my understanding of the Rust Programming Language.
+keywords:
+  - Rust
+  - Magic Square
+  - High-Performance
+  - Group Theory
+license: MIT
