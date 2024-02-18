@@ -1,5 +1,6 @@
 % chktex-file 44
 % chktex-file 40
+% chktex-file 29
 \documentclass[12pt]{report}
 \usepackage[document]{ragged2e}
 
@@ -165,23 +166,6 @@ the number of exact unique solutions for order six remains unknown. The number o
 for each order exhibits a kind of exponential growth, and their values have been of interest to
 mathematicians and hobbyists since the puzzle's inception.
 
-\par To help us compute magic squares, we have implemented a custom Computational Algebra System
-(CAS) written in the Rust Programming Language. This system allows us to construct and manipulate
-square data to find magic squares. Once we have magic squares, we may do additional processing on
-them to learn more about their structures. The system is geared for high performance and thus
-implements some of the best known strategies for working with magic square structures, both
-mathematically and programmatically.
-
-\par The decision to use Rust follows three main selling points despite any perceived controversy
-or opinions regarding the novelty of the language. While the Rust Programming Language is
-relatively new compared to other languages such as C/C++ or Python, Rust comes with the benefit of
-over 40 years of hindsight with respect to modern software development practices. Additionally,
-Rust offers a high degree of performance out of the box, which was something we specifically
-required due to the scale of our computations. Finally, using Rust provides our software with a
-great deal of flexibility as we can create low-level solutions using high-level interfaces. We also
-save quite a bit of time in development due to the lack of trivial memory bugs, representable
-invalid states, and time spent manually scripting complex build processes.
-
 \section{Permutations}
 
 \par The main mechanism that we use for encoding a magic square and its properties comes from Group
@@ -271,6 +255,100 @@ those that are undecidable. The theoretical complexity of predicting magic squar
 there do exist applications in artificial intelligence for predicting and classifying magic squares
   [Weed]. The role of artificial intelligence in mathematics is becoming increasingly apparent.
 Opting for AI-driven solutions could be a great approach for future studies.
+
+\chapter{Computational Approach}
+
+\section{Introduction}
+
+\par To help us compute magic squares, we have implemented a custom Computational Algebra System
+(CAS) written in the Rust Programming Language. This system allows us to construct and manipulate
+square data to find magic squares. Once we have magic squares, we may do additional processing on
+them to learn more about their structures. The system is geared for high performance and thus
+implements some of the best known strategies for working with magic square structures, both
+mathematically and programmatically.
+
+\par All implementations are justified through the use of a benchmark-driven software development
+policy, meaning certain implementations or algorithms are added, used, and possibly modified
+modified based on benchmarking and profiling results. This, of course, is highly dependent on the
+hardware being used. Our specific hardware being used to quantify and express the results of
+computed magic squares includes:
+
+\begin{itemize}
+  \item AMD Ryzen 7 5800X x8 (16) @ 4.200GHz, 32GB RAM \hyphen{}  Pop!\_Os 22.04 LTS x86\_64
+  \item Apple M2 x8 (8) (x4 performance, x4 efficiency) @ 3.500GHz, 24GB RAM \hyphen{} macOS 13.3.1
+        22E261 ARM64
+\end{itemize}
+
+\section{Modern Design Patterns}
+
+\par The decision to use Rust follows three main selling points despite any perceived controversy
+or opinions regarding the novelty of the language. While the Rust Programming Language is
+relatively new compared to other languages such as C/C++ or Python, Rust comes with the benefit of
+over 40 years of hindsight with respect to modern software development practices. Additionally,
+Rust offers a high degree of performance out of the box, which was something we specifically
+required due to the scale of our computations. Finally, using Rust provides our software with a
+great deal of flexibility as we can create low-level solutions using high-level interfaces. We also
+save quite a bit of time in development due to the lack of trivial memory bugs, representable
+invalid states, and time spent manually scripting complex build processes.
+
+\par Our code, written entirely from scratch, implements many strategies for working with
+permutations, including their enumerations. Given that our code is being used in a scientific
+context, special emphasis was placed on making the code's interface as usable as possible without
+missing out on performance. In Rust, this is easy to guarantee through a process called ``Bounded
+Parametric Polymorphism'' wherein we can monomorphize for various arbitrary but constrained
+parameter sets containing constants, where the constants feed generic types evaluated at compile
+time [Luca]. This improves the performance greatly, but increases compile times and binary sizes
+\hyphen{} a necessary tradeoff to maximize the performance potential of our code. The resulting
+code appears generic and agnostic to magic square order.
+
+\section{High-Performance Computing}
+
+\par Applying high-performance computing paradigms to our code vastly improves both the quality and
+efficiency of our computations. We implemented three main strategies for improving the performance
+of our code. These are Multi-threading, Single Instruction Multiple Data (SIMD), and
+implementations of Message Passing Interfaces (MPI).
+
+\par We tested many strategies for implementing multi-threading and compared each one through the
+use of benchmarks and profiling. In our benchmarks we found that using multi-threading improved
+brute-force performance of order three magic squares by about 91.12\% on average. This resulted in
+a total computation time of 1.03 ms. Combined with trivial set reduction, multi-threading resulted
+in computation times of about 349.60 µs. This is a massive improvement over standard brute-force
+iteration. In addition we found that certain thread management strategies tend to produce better
+performance benchmarks. We concluded that non-linear partitioning of thread data and reduction of
+shared memory resulted in 29.79\% better performance on average.
+
+\par We implemented SIMD for certain highly parallelizable tasks such as magic square validity
+checking. This is a somewhat niche optimization that exists on the specific hardware we are using.
+We interact with the CPU architecture through the use of intrinsics to manage specific registers
+that operate in parallel so that we may process a higher throughput of data. The alternative to
+using SIMD registers is to use scalar CPU operations. We compared the performance of both scalar
+and vector code. We found that the performance gained from using SIMD intrinsics was negligible
+compared to scalar code. We also encountered some inconsistencies attributable to environment and
+hardware related caveats that are difficult to control for. Overall, we concluded that SIMD would
+most likely benefit from operating on larger streams of data than how they are being used
+currently, thus possibly having more influence on benchmarks for magic square orders greater than
+four. In hindsight, it still makes sense to target checking for optimizations since it takes about
+six times more time to check an arbitrary square than it does to generate new permutations (101.8
+ns vs 16.7 ns).
+
+\par We alse implemented a form of message passing in Rust that utilizes a Multiple Producer Single
+Consumer (MPSC) Queue to better manage threads performing parallel computations on magic squares.
+We tested multiple strategies regarding thread management and found that MPSC thread management
+also benefits from partitioning and reduction of shared state concurrency. Each ``producer'' in the
+context of MPSC is non-blocking and does not interact with the other threads. The ``consumer''
+feeds a continuous stream of solved magic squares to the main thread and is also non-blocking. This
+results in vast performance improvements for computing magic squares using brute-force. The MPSC
+system we implemented solved the entire set of order three magic squares in about 243.64 µs. This
+method will be our primary method for brute-force computing magic squares in parallel.
+
+\section{Additional Features}
+
+\par In addition to the high-performance aspects of our code, we've also added features that would
+be useful to other scientists exploring magic squares. Additional features include the ability to
+log or serialize computations to files, encode magic sqaures in compressed formats, implement
+parameter sets defining large-order squares, use contructive methods, and run examples with
+extensive documentation. The code itself is structured as a crate or library, so given sufficent
+interest, it can be readily published. Alternatively, all of the code is on Github [Keough].
 
 \chapter{Permutation Groups}
 
@@ -497,7 +575,6 @@ is widely used in parallel systems that enable data communication primitives. In
 to do this very easily.
 
 \par These results are then collected into a set-like data structure. We will use a
-
 \texttt{BTreeSet} (Balanced Binary Search Tree) to store our magic squares for the fast lookup,
 insertion, and concurrency potential. For our initial proof of concept, we first computed the first
 440 magic squares of order four. This computation took about 40 minutes on 16 threads, each running
