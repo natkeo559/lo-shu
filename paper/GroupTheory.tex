@@ -85,7 +85,7 @@
       \hline
     \end{tabular}
   \end{align*}
-  \caption{Magic square.}\label{fig:square}
+  \caption{The magic square of order 3 is shown.}\label{fig:square}
 \end{figure}
 
 \par The secrets behind magic squares have engaged mathematicians for millennia. The magic square
@@ -145,14 +145,14 @@ vectors'' of a magic square.
       \hline
     \end{tabular}
   \end{align*}
-  \caption{The magic squares are equivalent.}\label{fig:unique}
+  \caption{The magic squares are isometric.}\label{fig:unique}
 \end{figure}
 
 \par We are also only interested in studying ``unique'' magic squares. By this, we mean magic
-squares that are unique up to rotations and reflections or isometry. An example of this is taking a magic
-square $A$ and rotating it $90^{\circ }$ or reflecting it about the y-axis any number of times. The
-resulting square will always be considered equivalent to $A$. There may also be times when we refer
-to a ``positionally distinct'' magic square. In this case, isometries of a magic
+squares that are unique up to rotations and reflections or isometry. An example of this is taking a
+magic square $A$ and rotating it $90^{\circ }$ or reflecting it about the y-axis any number of
+times. The resulting square will always be considered equivalent to $A$. There may also be times
+when we refer to a ``positionally distinct'' magic square. In this case, isometries of a magic
 square $A$, result in a ``different'' square $B$. Neither of these definitions affect the validity
 of magic squares; they only affect how we count them. Fig.~\ref{fig:unique} accurately represents
 two magic squares that we would consider to be the ``same'' square up to isometry.
@@ -160,9 +160,9 @@ two magic squares that we would consider to be the ``same'' square up to isometr
 \par There is only one unique solution for the Lo-Shu Square, pictured in Fig.~\ref{fig:square}.
 There are extensions to the magic square problem, with variants having larger side lengths (order),
 different ``magic'' requirements, or different kinds of element values. For order four, there are
-$880$ unique solutions. For order five, there are $275,305,224$ unique solutions [Fahimi]. However, the
-number of exact unique solutions for order six remains unknown. The number of unique solutions for
-each order exhibits a kind of exponential growth, and their values have been of interest to
+$880$ unique solutions. For order five, there are $275,305,224$ unique solutions [Fahimi]. However,
+the number of exact unique solutions for order six remains unknown. The number of unique solutions
+for each order exhibits a kind of exponential growth, and their values have been of interest to
 mathematicians and hobbyists since the puzzle's inception.
 
 \par To help us compute magic squares, we have implemented a custom Computational Algebra System
@@ -173,14 +173,14 @@ implements some of the best known strategies for working with magic square struc
 mathematically and programmatically.
 
 \par The decision to use Rust follows three main selling points despite any perceived controversy
-or opinions regarding the novelty of the language. While the Rust Programming Language is relatively
-new compared to other languages such as C/C++ or Python, Rust comes with the benefit of over 40 years
-of hindsight with respect to modern software development practices. Additionally, Rust offers a high
-degree of performance out of the box, which was something we specifically required due to the scale of
-our computations. Finally, using Rust provides our software with a great deal of flexibility as we can
-create low-level solutions using high-level interfaces. We also save quite a bit of time in development
-due to the lack of trivial memory bugs, representable invalid states, and time spent manually scripting
-complex build processes.
+or opinions regarding the novelty of the language. While the Rust Programming Language is
+relatively new compared to other languages such as C/C++ or Python, Rust comes with the benefit of
+over 40 years of hindsight with respect to modern software development practices. Additionally,
+Rust offers a high degree of performance out of the box, which was something we specifically
+required due to the scale of our computations. Finally, using Rust provides our software with a
+great deal of flexibility as we can create low-level solutions using high-level interfaces. We also
+save quite a bit of time in development due to the lack of trivial memory bugs, representable
+invalid states, and time spent manually scripting complex build processes.
 
 \section{Permutations}
 
@@ -195,10 +195,10 @@ situations where studying permutations can help us understand a problem.
 definition of a normal magic square, these are the positive integers (mod $n^2$). The dimension
 need not matter since the coordinates of elements in a two-dimensional, row-major grid square may
 be mapped to a one-dimensional sequence, which is a bijection. The square, laid out as a
-one-dimensional sequence, represents the sequence of integers as a permutation. There are a total of
-$n^{2}$! permutations of a square, where $n$ is the order of the
-square. The permutations of squares represent the different possible configurations of integers in
-the square, many of them meeting the requirements to be considered magic squares.
+one-dimensional sequence, represents the sequence of integers as a permutation. There are a total
+of $n^{2}$! permutations of a square, where $n$ is the order of the square. The permutations of
+squares represent the different possible configurations of integers in the square, many of them
+meeting the requirements to be considered magic squares.
 
 \begin{figure}[h!]
   \begin{align*}
@@ -211,13 +211,13 @@ the square, many of them meeting the requirements to be considered magic squares
       \hline
     \end{tabular}
   \end{align*}
-  \caption{A set arranged in a square.}\label{fig:squareperm}
+  \caption{The set $S$ may be imagined as an $n\times n$ grid square.}\label{fig:squareperm}
 \end{figure}
 
-\par The concept of interpreting grid squares as permutations may be realized by Fig.~\ref{fig:squareperm}
-where the set $S = \{a, b, c, d, e, f, g, h, i\} \in S_9$. By decomposing the rows of an $n\times n$ 
-square into an ordered set containing all elements from $1\cdots n^2$, we may consistently map the set
-to unique permutations on $n^2$ objects. 
+\par The concept of interpreting grid squares as permutations may be realized by
+Fig.~\ref{fig:squareperm} where the set $S = \{a, b, c, d, e, f, g, h, i\} \in S_9$. By decomposing
+the rows of an $n\times n$ square into an ordered set containing all elements from $1\cdots n^2$,
+we may consistently map the set to unique permutations on $n^2$ objects.
 
 \par We believe that by studying different permutations of squares, including those that are magic,
 we may be able to describe various kinds of symmetry related to magic squares of specific orders.
@@ -231,15 +231,16 @@ beyond simple row and column transposition.
 
 \par In our investigation into the inner structures and symmetries of magic squares, we may find it
 useful to enumerate the magic squares, i.e.\ exhaustively listing and analyzing every magic square
-of a specific order. By hand, this is difficult, but with high performance programming, we can do this
-very easily for certain orders and with certain algorithms. Prior to modern computing, mathematicians
-were computing large orders by hand using various methods. Some in particular developed by W.S. Andrews
-in 1908 utilized ``constructions'', whereby assumptions about initial known values are used to help 
-complete a magic square using some algorithmic process, potentially cutting down on the total amount 
-of computation [Andrews]. Some aspects of constructions are similar to the method outlined in this paper but with some differences.
-Our method makes no assumptions about initial values, but some code exists that could support constructive methods
-of magic square generation. Listing magic squares in this way, as we will see, 
-is useful and allows us to generalize certain properties of magic squares, potentially also for higher orders.
+of a specific order. By hand, this is difficult, but with high performance programming, we can do
+this very easily for certain orders and with certain algorithms. Prior to modern computing,
+mathematicians were computing large orders by hand using various methods. Some in particular
+developed by W.S. Andrews in 1908 utilized ``constructions'', whereby assumptions about initial
+known values are used to help complete a magic square using some algorithmic process, potentially
+cutting down on the total amount of computation [Andrews]. Some aspects of constructions are
+similar to the method outlined in this paper but with some differences. Our method makes no
+assumptions about initial values, but some code exists that could support constructive methods of
+magic square generation. Listing magic squares in this way, as we will see, is useful and allows us
+to generalize certain properties of magic squares, potentially also for higher orders.
 
 \par Recall that the number of permutations of $n$ objects is $n$!. We can actually exploit this
 fact to implement an element of ordering for magic squares. There exists a natural ordering from
@@ -258,25 +259,27 @@ over whole arrays and storing magic squares in memory.
 easily identifiable pattern. Perhaps there is a pattern, but we have no way of identifying it based
 on our current assumptions of magic squares. In any case, analyzing the frequency of magic squares
 in their ordered set has not so far proved to be helpful. Exhaustive enumeration of magic squares
-is presumed to be an NP-Hard problem, making it suitable for certain cryptographic applications. 
+is presumed to be an NP-Hard problem, making it suitable for certain cryptographic applications.
 However, it is at least NP;\@ the NP-completeness and classification of the magic square problem is
-formally unknown. For context, P versus NP is an unsolved problem in theoretical computer science and is a millennium prize problem.
-A problem classified as P is solvable and verifiable in polynomial time with respect to its input size.
-Problems in NP are verifiable in polynomial time. Solving if P = NP would mean that problems verifiable
-in polynomial time are solvable in polynomial time. A problem X in NP is considered NP-complete if and only if 
-any other problem in NP is reducible to X. The class of NP-Hard problems contains all NP-Complete problems but also
-includes those that are undecidable. The theoretical complexity of predicting magic squares is unknown, yet, there do exist
-applications in artificial intelligence for predicting and classifying magic squares [Weed]. The role
-of artificial intelligence in mathematics is becoming increasingly apparent. Opting for AI-driven
-solutions could be a great approach for future studies.
+formally unknown. For context, P versus NP is an unsolved problem in theoretical computer science
+and is a millennium prize problem. A problem classified as P is solvable and verifiable in
+polynomial time with respect to its input size. Problems in NP are verifiable in polynomial time.
+Solving if P = NP would mean that problems verifiable in polynomial time are solvable in polynomial
+time. A problem X in NP is considered NP-complete if and only if any other problem in NP is
+reducible to X. The class of NP-Hard problems contains all NP-Complete problems but also includes
+those that are undecidable. The theoretical complexity of predicting magic squares is unknown, yet,
+there do exist applications in artificial intelligence for predicting and classifying magic squares
+  [Weed]. The role of artificial intelligence in mathematics is becoming increasingly apparent.
+Opting for AI-driven solutions could be a great approach for future studies.
 
 \chapter{Permutation Groups}
 
 \section{Introduction}
 
 \par The set of magic square solutions falls under the definition of a permutation group.
-Generally, there are many kinds of permutation groups. For example, $S_n$ is considered a permutation
-group, but as a whole, it is typically considered a representation of the symmetric group.
+Generally, there are many kinds of permutation groups. For example, $S_n$ is considered a
+permutation group, but as a whole, it is typically considered a representation of the symmetric
+group.
 
 % \singlespacing{}
 % \begin{defbox}{}{defperm}
@@ -307,14 +310,14 @@ a set of $n$ integers.
 \end{thmbox}
 \doublespacing{}
 
-\par A set of magic squares may also be considered elements of a permutation group. The group operation, in
-this case, is composition. This is different from the typical arithmetic operation. We may think of 
-permutations as functions that bijectively map a set to itself. The product of two functions, 
-$\pi\cdot\sigma$ is the function mapping any element $x$ in
-the set to $\pi\left(\sigma\left(x\right)\right)$. Generally, the operation is defined for left
-composition, but since these are permutation representations (and to simplify expressions in our
-code) we will use right composition. In other words ``$\pi$ is permuted by $\sigma$'' or ``$\pi$
-is acted on by $\sigma$''.
+\par A set of magic squares may also be considered elements of a permutation group. The group
+operation, in this case, is composition. This is different from the typical arithmetic operation.
+We may think of permutations as functions that bijectively map a set to itself. The product of two
+functions, $\pi\cdot\sigma$ is the function mapping any element $x$ in the set to
+$\pi\left(\sigma\left(x\right)\right)$. Generally, the operation is defined for left composition,
+but since these are permutation representations (and to simplify expressions in our code) we will
+use right composition. In other words ``$\pi$ is permuted by $\sigma$'' or ``$\pi$ is acted on by
+$\sigma$''.
 
 \par It follows that a permutation composed with a permutation results in another permutation.
 Notably, we can define a function $g$ to be the group operation of composition, and $X$ to be a
@@ -379,7 +382,7 @@ transformations that exist between elements of the group.
 \singlespacing{}
 \begin{defbox}{}{defaction}
   Let $G$ be a group and let $S$ be a set. Define an action on $S$ by $G$ to be a homomorphism
-  $\varphi:G\rightarrow Sym\left(S\right)$
+  $\varphi:G\rightarrow Sym\left(S\right)$.
 \end{defbox}
 \doublespacing{}
 
@@ -393,13 +396,13 @@ group $G$ that acts on it via composition.
 \section{Isometry and the Dihedral Groups}
 
 \par We apply the concept of a group action heavily in our code. Specifically, the idea of a group
-acting on a set defines how we know if a magic square is unique up to isometry or not. Although the actual square
-data is flat, we may imagine the magic square in its normal grid square arrangement. We define a
-unique magic square as a magic square unique up to rotations and reflections. This means that the
-action of rotating, reflecting, or any combination of rotations and reflections will not result in
-a new magic square being enumerated. It should be noted that these transformations are
-magic-preserving since they do not alter the distances between consecutive elements in the grid.
-Only one magic square from the set of its rotations and reflections is counted; the rest are
+acting on a set defines how we know if a magic square is unique up to isometry or not. Although the
+actual square data is flat, we may imagine the magic square in its normal grid square arrangement.
+We define a unique magic square as a magic square unique up to rotations and reflections. This
+means that the action of rotating, reflecting, or any combination of rotations and reflections will
+not result in a new magic square being enumerated. It should be noted that these transformations
+are magic-preserving since they do not alter the distances between consecutive elements in the
+grid. Only one magic square from the set of its rotations and reflections is counted; the rest are
 considered the ``same'' square.
 
 \par The set of structure-preserving transformations of a square (or any regular polygon) actually
@@ -407,20 +410,20 @@ has its own name: the dihedral group denoted $D_n$. A regular polygon has $2n$ s
 $n$ rotational and $n$ reflection symmetries. We may also call it $D_{2n}$ due to this fact. In any
 case, $D_8$ is the group of rigid symmetries of a square. This dihedral group encodes all the
 orientations of a unique magic square. However, magic squares contain more than four elements, thus
-the rotations and reflections of magic squares are merely congruent to $D_8$. By this point, we may use the definitions
-of Isometry and $D_8$ interchangeably.
+the rotations and reflections of magic squares are merely congruent to $D_8$. By this point, we may
+use the definitions of Isometry and $D_8$ interchangeably.
 
 \begin{figure}[H]
   \begin{align*}
     \includegraphics[scale=0.6]{cayleytable.png}
   \end{align*}
-  \caption{Cayley Table of $D_8$}\label{fig:cayley}
+  \caption{The Cayley Table for the dihedral group $D_8$ is shown.}\label{fig:cayley}
 \end{figure}
 
-\par Computationally, we can select a unique element from the square's isometries consistently
-by selecting the first element from the Cayley table of transformations. Alternatively, we can
-generate the full set of the square's isometries. This table, shown in Fig.~\ref{fig:cayley}, represents
-the transformations of the dihedral group D generated by $<r,s\vert
+\par Computationally, we can select a unique element from the square's isometries consistently by
+selecting the first element from the Cayley table of transformations. Alternatively, we can
+generate the full set of the square's isometries. This table, shown in Fig.~\ref{fig:cayley},
+represents the transformations of the dihedral group D generated by $<r,s\vert
   r^4=s^2={\left(sr\right)}^2=1>$. We treat the table like a set and filter another set containing
 various arbitrary magic squares such that the resulting set only contains unique elements. This is
 useful for brute-force algorithms where we may not have total control over element isometries in a
@@ -430,11 +433,11 @@ duplicate magic squares in our sets, resulting in better analysis and more effic
 \section{Factorizing Magic Squares}
 
 \par In the same manner that the dihedral group applied to the permutation of a square results in
-the same square up to isometry, the dihedral group applied to a magic square always results in a magic square.
-This property represents a symmetry of a magic square. Specifically, it represents the rotational
-and reflective symmetry of an arbitrary magic square. Based on this, the application of group
-actions on sets presents itself as a potential medium for representing group symmetry in the magic
-square permutation group.
+the same square up to isometry, the dihedral group applied to a magic square always results in a
+magic square. This property represents a symmetry of a magic square. Specifically, it represents
+the rotational and reflective symmetry of an arbitrary magic square. Based on this, the application
+of group actions on sets presents itself as a potential medium for representing group symmetry in
+the magic square permutation group.
 
 \par If we assume that the full set of magic squares is known, the group actions of the set would
 be the full set of transformations between magic squares in the set. One thing we are interested in
@@ -448,6 +451,7 @@ orders.
 $\sigma$, by factoring out the permutation $\alpha$ that acts on $\pi$ to produce $\sigma$. The
 factorization of permutations is a well known problem and is computed by inverting part of the
 original composition:
+
 \begin{align}
   \alpha=\pi^{-1}\sigma &  & \text{\light{By definition of function inverse, composition}}
 \end{align}
@@ -456,8 +460,8 @@ The full set of factors $\beta$ in a set of permutations can be computed by:
   \beta = \{\pi,\sigma\in S | \pi^{-1}\sigma\}
 \end{align}
 
-\par Typically, when faced with actually computing magic squares, we only have access to subsets
-of $M_n$. We denote an arbitrary subset of $M_n$ as $K_n$, more specifically, $K_n \subseteq M_n$.
+\par Typically, when faced with actually computing magic squares, we only have access to subsets of
+$M_n$. We denote an arbitrary subset of $M_n$ as $K_n$, more specifically, $K_n \subseteq M_n$.
 Many methods for computing magic squares exist. As such, various distinct subsets are possible.
 Regardless of the methods used, the group actions still may reveal information about $M_n$ despite
 its incompleteness. We believe that additional magic squares can be extrapolated based on the
@@ -470,13 +474,13 @@ existing knowledge gained from analysis of its actions, products, and inverses.
 \par Ideally, we would like to have enough information about $M_n$ so that by computing one magic
 square, we can generate $M_n$. This generally is the case for order three, considering there is
 only one solution. However, this is not very interesting. For order four, there are 880 unique
-solutions up to isometry, so we should expect to have to compute more than one magic square to generate the full
-set of solutions in $M_4$. In practice this seems logical, considering there isn't much that two
-arbitrary magic squares have in common besides their group properties. We will have to dig deeper
-in order to find patterns amongst elements in $M_n$.
+solutions up to isometry, so we should expect to have to compute more than one magic square to
+generate the full set of solutions in $M_4$. In practice this seems logical, considering there
+isn't much that two arbitrary magic squares have in common besides their group properties. We will
+have to dig deeper in order to find patterns amongst elements in $M_n$.
 
-\par It should also be noted that the elements of $\beta$ are typically never magic. The idea is that
-given an action $\alpha$ in $\beta$, and a magic square $\pi$ from $K_n$, then $\pi\alpha$ may
+\par It should also be noted that the elements of $\beta$ are typically never magic. The idea is
+that given an action $\alpha$ in $\beta$, and a magic square $\pi$ from $K_n$, then $\pi\alpha$ may
 potentially be a new magic square, not already in $K_n$. Not all elements of $\beta$ produce magic
 squares on elements of $K_n$. Discovering the space of solutions given an action is something we
 wish to explore. One reason for this is that certain magic squares may exist in distinct cosets
@@ -493,6 +497,7 @@ is widely used in parallel systems that enable data communication primitives. In
 to do this very easily.
 
 \par These results are then collected into a set-like data structure. We will use a
+
 \texttt{BTreeSet} (Balanced Binary Search Tree) to store our magic squares for the fast lookup,
 insertion, and concurrency potential. For our initial proof of concept, we first computed the first
 440 magic squares of order four. This computation took about 40 minutes on 16 threads, each running
@@ -501,36 +506,46 @@ taken to compute the initial set, we anticipate that a full brute-force computat
 require about 10.67 hours.
 
 \section{New Method}
-\par We begin by reading the set of 440 cached magic squares as permutations, which we computed previously.
-We then filter the set to
-reduce duplication, hence the resulting set only contains unique squares up to isometry. The resulting unique set,
-in our case, contains 239 permutations, and we will consider this set as $K_4$ where $K_4\subset M_4$. Up to this point, we
-have only defined $K_4$ as a set containing 239 magic squares as permutations in relative order. It should be noted
-that these are not necessarily the first 239 unique magic squares in lexicographical order since our original $K_n$ was produced
-by multiple threads and at different rates, but we will eventually explore this difference in our analysis.
 
-\par Once $K_4$ is computed, we may then start producing the factors that act on $K_4$. We compute the set
-of actions $\beta$ with $S = K_4$, so  $\beta = \{\pi,\sigma\in K_4| \pi^{-1}\sigma\ = \alpha\}$.
-The set $\beta$ contains the factors between all pairs of elements in $K_4$. Filtering out isometries, this set contains 22,490
-permutations.
+\par We begin by reading the set of 440 cached magic squares as permutations, which we computed
+previously. We then filter the set to reduce duplication, hence the resulting set only contains
+unique squares up to isometry. The resulting unique set, in our case, contains 239 permutations,
+and we will consider this set as $K_4$ where $K_4\subset M_4$. Up to this point, we have only
+defined $K_4$ as a set containing 239 magic squares as permutations in relative order. It should be
+noted that these are not necessarily the first 239 unique magic squares in lexicographical order
+since our original $K_n$ was produced by multiple threads and at different rates, but we will
+eventually explore this difference in our analysis.
 
-\par Now, compute the full set of trivial isometries for all permutations in $K_n$ which we call $Iso(K_4)$. Simply,
-this is the set of all rotations and reflections of the magic square permutations in $K_4$ where $K_4\subsetneq Iso(K_4)$
-and $|Iso(K_4)| = 8|K_4|$.
+\par Once $K_4$ is computed, we may then start producing the factors that act on $K_4$. We compute
+the set of actions $\beta$ with $S = K_4$, so  $\beta = \{\pi,\sigma\in K_4| \pi^{-1}\sigma\ =
+  \alpha\}$. The set $\beta$ contains the factors between all pairs of elements in $K_4$. Filtering
+out isometries, this set contains 22,490 permutations.
 
-\par Finally, we compute the product $Iso(K_4)\times\beta = \{\pi\in Iso(K_4),\alpha\in\beta | \pi\alpha \text{ is magic}\}$. 
-For each permutation in $Iso(K_4)$ and for each $\alpha$ in $\beta$, if $\pi\alpha$ is magic, collect it into the set. If $\pi\alpha$
-is not magic, do not collect it and instead collect the action $\alpha$ into a set ${\beta}\prime$. What we have now is a set ${K_4}\prime = Iso(K_4)\times\beta$ and ${\beta}\prime$
-where $K_4 \subseteq {K_4}\prime \subseteq M_4$, ${\beta}\prime \subseteq \beta$. For our specific set of permutations $K_4$, this algorithm yields
-$|K_4 \prime| = |M_4| = 880 \Rightarrow K_4 \equiv M_4$ and $|\beta \setminus{\beta}\prime| = 4$ after filtering out isometries.
+\par Now, compute the full set of trivial isometries for all permutations in $K_n$ which we call
+$Iso(K_4)$. Simply, this is the set of all rotations and reflections of the magic square
+permutations in $K_4$ where $K_4\subsetneq Iso(K_4)$ and $|Iso(K_4)| = 8|K_4|$.
+
+\par Then, we compute the product $Iso(K_4)\times\beta = \{\pi\in Iso(K_4),\alpha\in\beta |
+  \pi\alpha \text{ is magic}\}$. For each permutation in $Iso(K_4)$ and for each $\alpha$ in
+$\beta$,
+if $\pi\alpha$ is magic, collect it into the set. If $\pi\alpha$ is not magic, do not collect it
+and instead collect the action $\alpha$ into a set ${\beta}^\prime$.
+
+\par Finally, we let ${K_4}^\prime = {K_4}^\prime \cup K_4$. What we have now is a set
+${K_4}^\prime$ and ${\beta}^\prime$ where $K_4 \subseteq {K_4}^\prime \subseteq M_4$,
+${\beta}^\prime \subseteq \beta$. For our specific set of permutations $K_4$, this algorithm yields
+$|{K_4}^\prime| = |M_4| = 880 \Rightarrow K_4 \equiv M_4$ and $|\beta \setminus{\beta}^\prime| = 4$
+after filtering out isometries.
 
 \chapter{Analysis}
 
-\section{Introduction} The fact that $\left|K_4\right|< 880, \left|{K_4}\prime\right|=880$ not only tells us that we've found a great computational performance
-improvement, it also hints to us that there are possibly more symmetries than just the 8 induced by
-the square isometries. These additional symmetries may be key to producing more
-efficient algorithms as well as for making profound generalizations on larger order magic square
-symmetry.
+\section{Introduction}
+
+The fact that $\left|K_4\right|< 880, \left|{K_4}^\prime\right|=880$ not only tells us that we've
+found a great computational performance improvement, it also hints to us that there are possibly
+more symmetries than just the 8 induced by the square isometries. These additional symmetries may
+be key to producing more efficient algorithms as well as for making profound generalizations on
+larger order magic square symmetry.
 
 \par Overall, it will be very important for us to not only make statements based on experimental
 data, but to back up our claims with logical reasoning. In any case, we will typically begin with
@@ -542,14 +557,15 @@ we may apply the same or similar methods for larger orders.
 
 \section{Computational Analysis}
 
-\par The result of ${K_4}\prime$ with $\left|K_4\right|=239$ computes
-in 71 seconds. This is an amazing computational performance improvement over the remaining 10 hours for
-brute-force enumeration. The code is parallel across threads, thus we may conclude that the
-implementation we've chosen is adequate. Of course, the sizes of the sets we work with are still
-rather large. Only now, we may start to consider memory and storage as our most limiting factors. As
+\par The result of ${K_4}^\prime$ with $\left|K_4\right|=239$ computes in 71 seconds. This is an
+amazing computational performance improvement over the remaining 10 hours for brute-force
+enumeration. The code is parallel across threads, thus we may conclude that the implementation
+we've chosen is adequate. Of course, the sizes of the sets we work with are still rather large.
+Only now, we may start to consider memory and storage as our most limiting factors. As
 $\left|K_n\right|$ approaches $\left|M_n\right|$, the amount of memory required to continue working
 with the sets grows extremely fast. In one case, we used $M_n$ as our $K_n$ and the program ran out
-of memory. This is suboptimal, considering we would like to be able to use this algorithm to compute large orders with minimal information.
+of memory. This is suboptimal, considering we would like to be able to use this algorithm to
+compute large orders with minimal information.
 
 \par The simplest solution to this is additional parallelization, although there also exists the
 possibility for set partitioning. Additionally, we could revisit how the sets are represented
@@ -561,32 +577,34 @@ time and budget constraints, we see partitioning as the most viable solution to 
 memory/storage requirement at the cost of program runtime.
 
 \par The amortized runtime analysis of the algorithm is difficult considering the amount of
-abstraction used in the body of the code. Given that we compute (approximately) $\beta$ by $K_n \times K_n$ and $\beta
-  \times K_n$, we may say the algorithm runs somewhere around $O\left(n^3\right)+C$. This beats the
-performance of iterative brute-force which is $O\left(n!\right)+C$. With this in mind, the set
-reduction incurred by looking at group actions in this way is likely vast. The largest possible set
-with $n=239$ is $\approx 1.36519 \times 10^7$ whereas $16!\approx 2.09227 \times 10^{13}$.
+abstraction used in the body of the code. Given that we compute (approximately) $\beta$ by $K_n
+  \times K_n$ and $\beta \times K_n$, we may say the algorithm runs somewhere around
+$O\left(n^3\right)+C$. This beats the performance of iterative brute-force which is
+$O\left(n!\right)+C$. With this in mind, the set reduction incurred by looking at group actions in
+this way is likely vast. The largest possible set with $n=239$ is $\approx 1.36519 \times 10^7$
+whereas $16!\approx 2.09227 \times 10^{13}$.
 
 \section{Generating Sets}
 
 \par While the maximum set size difference is great for $n=239$, it is entirely dependent on our
 choice of $K_n$. In a way, the choice of $K_n$ is completely arbitrary. We will choose a different
-set now, also calling it $K_4$, however, we will select the first 440 magic squares from $M_4$ in lexicographical order.
-This set contains 232 unique magic squares, produces a set of 20,210 actions, but only generates
-871 unique magic squares from $K_4\prime$. This is interesting since it is the first
-choice of $K_4$ that actually fails to compute $M_4$. What if we chose a different set using a
-different sampling method?
+set now, also calling it $K_4$, however, we will select the first 440 magic squares from $M_4$ in
+lexicographical order. This set contains 232 unique magic squares, produces a set of 20,210
+actions, but only generates 871 unique magic squares from ${K_4}^\prime$. This is interesting since
+it
+is the first choice of $K_4$ that actually fails to compute $M_4$. What if we chose a different set
+using a different sampling method?
 
 \par One of our hypotheses was that certain types of magic squares have different kinds of
-influence on the output of $K_4\prime$, and we thought it could be related to the order
-of the permutations in the set. Specifically, the order of a permutation is the \texttt{lcm} of all
-its cycle lengths and represents the smallest integer $n \ni p^n = e$. Given our assumption, we
-selected four elements from each conjugacy class and ran the resulting set through our algorithm, producing
-$K_4\prime$. The input set was small, only 104 elements, yet still produced $M_4$. Following
-this, elements were iteratively removed from the set via backtracking if $M_4$
-could still be computed without them. The resulting set contained only 50 elements and
-$K_4\prime$ still resulted in $M_4$. This discovery was extremely valuable since we could
-now compute $M_4$ from 50 magic squares alone with a total run time of about 1 second.
+influence on the output of ${K_4}^\prime$, and we thought it could be related to the order of the
+permutations in the set. Specifically, the order of a permutation is the \texttt{lcm} of all its
+cycle lengths and represents the smallest integer $n \ni p^n = e$. Given our assumption, we
+selected four elements from each conjugacy class and ran the resulting set through our algorithm,
+producing ${K_4}^\prime$. The input set was small, only 104 elements, yet still produced $M_4$.
+Following this, elements were iteratively removed from the set via backtracking if $M_4$ could
+still be computed without them. The resulting set contained only 50 elements and ${K_4}^\prime$
+still resulted in $M_4$. This discovery was extremely valuable since we could now compute $M_4$
+from 50 magic squares alone with a total run time of about 1 second.
 
 \par Initially, we were not entirely sure what the smallest set $K_n$ that produces $M_n$
 represented, assuming one existed. Our main theory was that the elements in the minimal set are
@@ -601,14 +619,13 @@ containing the elements of $M_n$. This implies that the smallest set $K_n$ that 
 considered a ``minimal set $S$ that generates $G$'' which we  use interchangeably with ``generating
 subset of minimal cardinality''. For finite, solvable groups, the cardinality $k$ of the minimally
 generating subset is at least $\lceil\log_{p}{\left|G\right|}\rceil$ (where $p$ is the smallest
-prime dividing $G$), which is a byproduct of Lagrange's Theorem. Using the ``Groups, Algorithms,
-and Programming'' system (GAP), an open-source programming model for computational discrete algebra
-, we found that the group containing all magic squares of order four has an order of
-10,461,394,944,000 $\left(\frac{16!}{2}\right)$, which is equal to the order of the group generated 
-by our small $K_4$. This may
-indicate that these groups are identical. With $p=2$, $\left|G\right|$=10,461,394,944,000, we found
-that the minimal cardinality of the subset that generates $G$ is 44 (rounded up to the nearest
-integer).
+prime dividing $G$), which is a byproduct of Lagrange's Theorem [Arvind]. Using the ``Groups,
+Algorithms, and Programming'' system (GAP), an open-source programming model for computational
+discrete algebra , we found that the group containing all magic squares of order four has an order
+of 10,461,394,944,000 $\left(\frac{16!}{2}\right)$, which is equal to the order of the group
+generated by our small $K_4$[GAP4]. This may indicate that these groups are identical. With $p=2$,
+$\left|G\right|$=10,461,394,944,000, we found that the minimal cardinality of the subset that
+generates $G$ is 44 (rounded up to the nearest integer).
 
 \par In other words, the group containing all magic squares of order four requires that our initial
 generating set contain at least 44 magic squares as generators, assuming our group is finite and
@@ -619,7 +636,7 @@ group. The process for actually describing a generating set with minimal cardina
 difficult, even for computational approaches. In general, it's easiest to use methods that don't
 require a total enumeration of the group. Also known as the Rank Problem, the concept of computing
 a generating subset of a group with minimal cardinality is one of the most well known and
-challenging problems in algorithmic group theory.
+challenging problems in algorithmic group theory [Baumslag].
 
 \par One other hypothesis we had is that different sampling methods or random distributions may
 allow us to build more interesting sets to use as $K_n$. The relative distance between elements in
@@ -630,23 +647,24 @@ generated by using different sampling methods. Of course, the next easiest metho
 $K_n$ from the various constructive algorithms that exist for magic squares. It would be
 interesting to see what kind of variety and sampling distributions of $M_n$ we can achieve by using
 certain algorithms to produce small sets of solutions as well as what effect this has on the output
-of $K_4\prime$.
+of ${K_4}^\prime$.
 
-\newpage{}
 \section{Magic-Preserving Group}
 
 \par The action of the dihedral group on any magic square will always result in a magic square.
 This is true for all magic squares, since the actions of rotating and reflecting a square are
-magic-preserving. Similarly, other kinds of transformations exist that when applied to a
-magic square, also produce a magic square. This group, in the context of group actions on sets and
+magic-preserving. Similarly, other kinds of transformations exist that when applied to a magic
+square, also produce a magic square. This group, in the context of group actions on sets and
 element transformations, reveals a high degree of symmetry and can be used to further improve the
-computational performance of enumerating magic squares.
-
-\par Recall that we collect the actions that fail at least once to produce a magic square when applied to $Iso(K_4)$.
-This set of actions, $\beta\prime$, contains the set of counterexamples, assuming all actions $\alpha\in\beta$ result in
-a magic square when we compute $\pi\alpha$ for $\pi\in Iso(K_4)$. Thus, $MP=\beta\setminus\beta\prime$ is the set of all actions,
-that when applied to $\pi\in Iso(K_4)$, are guaranteed to result in a magic square. To our surprise, $\left|MP\right|=4$ unique up to isometry, implying three new
-magic-preserving symmetries in addition to the identity element. These permutations as squares are:
+computational performance of enumerating magic squares. \par Recall that we collect the actions
+that fail at least once to produce a magic square when applied to $Iso(K_4)$. This set of actions,
+${\beta}^\prime$, contains the set of counterexamples, assuming all actions $\alpha\in\beta$ result
+in a magic square when we compute $\pi\alpha$ for $\pi\in Iso(K_4)$. Thus,
+$MP=\beta\setminus{\beta}^\prime$ is the set of all actions, that when applied to $\pi\in
+  Iso(K_4)$, are guaranteed to result in a magic square. To our surprise, $\left|MP\right|=4$
+unique
+up to isometry, implying three new magic-preserving symmetries in addition to the identity element.
+These permutations as squares are:
 
 \begin{figure}[h!]
   \begin{align*}
@@ -689,9 +707,10 @@ magic-preserving symmetries in addition to the identity element. These permutati
   \caption{Members of the magic-preserving group.}\label{fig:preserving}
 \end{figure}
 
-\par It is proven computationally that $\forall\pi\in\ M_4,\alpha\in MP, \pi\alpha \in M_4$. One question that
-arises from the knowledge of this set is on whether $\pi\alpha$ should still be considered
-uniquely as $\pi$, since this is how we treat the actions of the rotation and reflection isometries on $\pi$.
+\par It is proven computationally that $\forall\pi\in\ M_4,\alpha\in MP, \pi\alpha \in M_4$. One
+question that arises from the knowledge of this set is on whether $\pi\alpha$ should still be
+considered uniquely as $\pi$, since this is how we treat the actions of the rotation and reflection
+isometries on $\pi$.
 
 \chapter{Conclusions}
 
@@ -748,10 +767,9 @@ different results based on their own group structure analysis.
 \section{Open Questions}
 
 \indent Aside from the questions induced by thinking about potential generalizations of our
-algorithm,
-there are still some things we don't know but would find useful in our discovery. Many questions
-that we've had depend on the individual assumptions we've made up to that point. Eliminating or
-potentially proving our assumptions will almost certainly improve our results.
+algorithm, there are still some things we don't know but would find useful in our discovery. Many
+questions that we've had depend on the individual assumptions we've made up to that point.
+Eliminating or potentially proving our assumptions will almost certainly improve our results.
 \linebreak
 \linebreak
 \textbf{Does random sampling from a given distribution improve the relative variety of our
