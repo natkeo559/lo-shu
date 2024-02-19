@@ -1,8 +1,8 @@
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
-use lo_shu::{minimize_permutation_isometry, read_serial, write_serial, Parity};
-use lo_shu::{CheckVector, Enumerable, Permutation, O4};
+use lo_shu::prelude::*;
+use lo_shu::{read_serial, write_serial, CheckVector, Enumerable, Permutation, O4};
 use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
 
 use itertools::Itertools;
@@ -27,20 +27,15 @@ fn main() {
     // ========================================================================================= //
     let file: BTreeSet<u64> = read_serial("examples/collected/orderfour/Reduced.txt").unwrap();
 
-    let magic_squares = file
-        .into_iter()
-        // ===================================================================================== //
-        // As more elements are taken, the computation time increases.                           //
-        // To generate all magic squares from an input file, take:                               //
-        //     Part.txt:            >= 440                                                       //
-        //     Census.txt:          >= 447                                                       //
-        //     UniqueCensus.txt:    >= 239                                                       //
-        //     Reduced.txt:         >= 50                                                        //
-        // ===================================================================================== //
-        .take(50)
-        // ===================================================================================== //
-        .map(|a| Permutation::<O4>::kth(a))
-        .collect::<BTreeSet<_>>();
+    // ===================================================================================== //
+    // As more elements are taken, the computation time increases.                           //
+    // To generate all magic squares from an input file, take:                               //
+    //     Part.txt:            >= 440                                                       //
+    //     Census.txt:          >= 447                                                       //
+    //     UniqueCensus.txt:    >= 239                                                       //
+    //     Reduced.txt:         >= 50                                                        //
+    // ===================================================================================== //
+    let magic_squares = k_set_to_permutation_set(&file, 50);
 
     println!("Input Size: {}", magic_squares.len());
 
@@ -48,12 +43,9 @@ fn main() {
     // Filter the set of magic squares from file to contain only unique elements up to rotations //
     // and reflections.                                                                          //
     // ========================================================================================= //
-    let mut unique_set = unique_squares(&magic_squares);
+    // let mut unique_set = reduce_isometry(&magic_squares);
 
-    unique_set = unique_set
-        .into_iter()
-        .map(|p| minimize_permutation_isometry(p))
-        .collect();
+    let mut unique_set = minimize_set_isometry(&magic_squares);
 
     println!("(Unique): {}", unique_set.len());
     println!("Collecting Actions...");
@@ -61,13 +53,13 @@ fn main() {
     // ========================================================================================= //
     // Collect Actions                                                                           //
     // ========================================================================================= //
-    let actions = compute_group_actions(&unique_set);
+    let actions = compute_factors_ainvc(&unique_set);
 
     // ========================================================================================= //
     // Filter the set of actions to contain only unique elements up to rotations and             //
     // reflections.                                                                              //
     // ========================================================================================= //
-    let unique_actions = unique_squares(&actions);
+    let unique_actions = reduce_isometry(&actions);
 
     println!("Actions: {}", unique_actions.len());
     println!("Extending...");
@@ -136,7 +128,7 @@ fn main() {
     // Ensure that the resulting set contains only unique elements up to rotations and           //
     // reflections.                                                                              //
     // ========================================================================================= //
-    let unique_set = unique_squares(&unique_set);
+    let unique_set = reduce_isometry(&unique_set);
 
     println!("|M| = {}", unique_set.len());
     println!("|A| = {}", unique_actions.len());
@@ -180,56 +172,6 @@ fn main() {
         )
         .unwrap();
     }
-
-    let mut even = 0;
-    let mut odd = 0;
-
-    for i in actions.iter() {
-        if i.sign() == Parity::Even {
-            even += 1;
-        } else {
-            odd += 1;
-        }
-    }
-
-    println!("Actions Parity");
-    println!("Even: {even}\nOdd: {odd}")
-}
-
-/// Filters a set to contain unique squares up to all possible rotations and reflections.
-///
-/// # Parameters:
-/// origin: &BTreeSet<Permutation<O4>>
-fn unique_squares(origin: &BTreeSet<Permutation<O4>>) -> BTreeSet<Permutation<O4>> {
-    let mut unique_set = BTreeSet::new();
-    for s in origin.iter() {
-        if unique_set
-            .intersection(&s.generate_d().into_iter().collect())
-            .map(|i| *i)
-            .collect::<BTreeSet<_>>()
-            .is_empty()
-        {
-            unique_set.insert(*s);
-        }
-    }
-    unique_set
-}
-
-/// Computes the transformations between squares in a set.
-///
-/// Factored action "b" from a * b = c
-///
-/// b = (c.inv * a).inv
-///
-/// # Parameters
-/// group: &BTreeSet<Permutation<O4>>
-fn compute_group_actions(group: &BTreeSet<Permutation<O4>>) -> BTreeSet<Permutation<O4>> {
-    group
-        .iter()
-        .cartesian_product(group.iter())
-        .par_bridge()
-        .map(|(&a, &c)| a.inv() * c)
-        .collect::<BTreeSet<_>>()
 }
 
 #[cfg(test)]

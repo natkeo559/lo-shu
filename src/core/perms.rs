@@ -5,6 +5,7 @@ use std::cmp::Ordering;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 
+/// Enumeration representing the parity (even or odd) of a permutation.
 #[derive(Debug, PartialEq)]
 pub enum Parity {
     Even,
@@ -48,6 +49,9 @@ impl<P: Params + Copy> Permutation<P>
 where
     [(); P::ELEMENTS]:,
 {
+    /// Returns the identity permutation.
+    ///
+    /// Constructs and returns the identity permutation for the given permutation type `P`.
     #[must_use]
     pub fn identity() -> Self {
         let mut data: [u32; P::ELEMENTS] = [0; P::ELEMENTS];
@@ -59,6 +63,11 @@ where
         }
     }
 
+    /// Computes the next lexicographically greater permutation.
+    ///
+    /// Modifies the current permutation to its lexicographically next greater permutation
+    /// and returns it. Returns `None` if the current permutation is the last permutation
+    /// in lexicographic order.
     pub fn next_perm(&mut self) -> Option<&mut Self> {
         // Find non-increasing suffix
         let mut i: usize = P::ELEMENTS - 1;
@@ -81,6 +90,10 @@ where
         Some(self)
     }
 
+    /// Computes the sign (parity) of the permutation.
+    ///
+    /// Returns `Parity::Even` if the number of inversions in the permutation is even,
+    /// `Parity::Odd` otherwise.
     #[must_use]
     pub fn sign(&self) -> Parity
     where
@@ -181,6 +194,7 @@ impl_ord_for_enumerable_params!(O5);
 
 //-------------------------------------------------------------------------------------------------
 
+//---------------------------------------------SERDE-----------------------------------------------
 struct SquareDataVisitor<const N: usize>;
 
 impl<'de, const N: usize> serde::de::Visitor<'de> for SquareDataVisitor<N> {
@@ -227,6 +241,8 @@ where
         })
     }
 }
+
+//---------------------------------------------SERDE-----------------------------------------------
 
 #[cfg(test)]
 mod test_perms {
@@ -360,20 +376,4 @@ mod test_perms {
 
         Ok(())
     }
-
-    // #[test]
-    // fn test_perm_iter_3() {
-    //     let a = Permutation::<O3>::permutation_range(0, 8);
-    //     let a_vec = a.collect::<Vec<Permutation<O3>>>();
-    //     assert_eq!(8, a_vec.len());
-    //     assert_eq!(7, a_vec.last().unwrap().index)
-    // }
-
-    // #[test]
-    // fn test_perm_iter_4() {
-    //     let a = Permutation::<O4>::permutation_range(0, 8);
-    //     let a_vec = a.collect::<Vec<Permutation<O4>>>();
-    //     assert_eq!(8, a_vec.len());
-    //     assert_eq!(7, a_vec.last().unwrap().index)
-    // }
 }

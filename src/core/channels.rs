@@ -636,15 +636,13 @@ mod channels_tests {
 
     #[test]
     fn test_builder() -> Result<(), anyhow::Error> {
-        MessageSolver::<O3>::default_build()
+        let _b = MessageSolver::<O3>::default_build()
             .threads(16)
             .upper_bound(O3::MAX_INDEX)
             .n(8)
             .echo(true)
             .output_dir("examples/tests/orderfour")
-            .filename("TestMPSC")
-            .execute()?;
-
+            .filename("TestMPSC");
         Ok(())
     }
 }

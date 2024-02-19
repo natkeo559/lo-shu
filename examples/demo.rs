@@ -38,7 +38,7 @@ fn main() {
         names
             .into_iter()
             .zip(input.map(|i| {
-                minimize_permutation_isometry(Cycles::<O4>::from_vecs(i).into_permutation())
+                minimize_permutation_isometry(&Cycles::<O4>::from_vecs(i).into_permutation())
             }))
             .collect::<BTreeSet<_>>();
 
@@ -114,9 +114,24 @@ fn main() {
             println!(
                 "| {:<25} | {:<55} | {:<8} | {:<6} | {:<6} |",
                 name, p, is_magic, is_new, parity
-            )
+            );
         }
     }
+    let ainv = vec![
+            vec![2, 4, 16, 11, 8, 5, 12],
+            vec![3, 13, 6, 14, 7],
+            vec![9, 15, 10],
+        ];
+    let perm = Cycles::<O4>::from_vecs(ainv).into_permutation().inv();
+    let p = format!("{}", perm.cyclic_notation());
+    let is_magic = perm.check_s().is_some();
+    let is_new = !input_ms_isometry_set.contains(&perm) && is_magic;
+    let parity = format!("{}", perm.sign());
+    println!(
+        "| {:<25} | {:<55} | {:<8} | {:<6} | {:<6} |",
+        "a.inv()", p, is_magic, is_new, parity
+    );
+
     println!("+---------------------------+---------------------------------------------------------+----------+--------+--------+");
     for (name, perm) in actions.iter() {
         let is_magic = perm.check_s().is_some();
@@ -124,7 +139,7 @@ fn main() {
         let p = format!("{}", perm.cyclic_notation());
         let parity = format!("{}", perm.sign());
         println!(
-            "| {:<25} | {:<55} | {:<8} | {:<6} | {:<6} |",
+            "|>{:<25} | {:<55} | {:<8} | {:<6} | {:<6} |",
             name, p, is_magic, is_new, parity
         )
     }
@@ -174,7 +189,7 @@ fn main() {
     }
     println!("+---------------------------+---------------------------------------------------------+----------+--------+--------+");
     for perm in unique_result_ms_perms_set {
-        let min_perm = minimize_permutation_isometry(perm);
+        let min_perm = minimize_permutation_isometry(&perm);
         let p = format!("{}", min_perm.cyclic_notation());
         let is_magic = min_perm.check_s().is_some();
         let is_new = !input_ms_isometry_set.contains(&min_perm) && is_magic;
