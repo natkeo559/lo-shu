@@ -329,7 +329,7 @@ most likely benefit from operating on larger streams of data than how they are b
 currently, thus possibly having more influence on benchmarks for magic square orders greater than
 four. In hindsight, it still makes sense to target checking for optimizations since it takes about
 six times more time to check an arbitrary square than it does to generate new permutations (101.8
-ns vs 16.7 ns).
+ns vs. 16.7 ns).
 
 \par We alse implemented a form of message passing in Rust that utilizes a Multiple Producer Single
 Consumer (MPSC) Queue to better manage threads performing parallel computations on magic squares.
@@ -348,7 +348,7 @@ be useful to other scientists exploring magic squares. Additional features inclu
 log or serialize computations to files, encode magic sqaures in compressed formats, implement
 parameter sets defining large-order squares, use contructive methods, and run examples with
 extensive documentation. The code itself is structured as a crate or library, so given sufficent
-interest, it can be readily published. Alternatively, all of the code is on Github [Keough].
+interest, it can be readily published. Alternatively, all of the code is on GitHub [Keough].
 
 \chapter{Permutation Groups}
 
@@ -789,6 +789,19 @@ question that arises from the knowledge of this set is on whether $\pi\alpha$ sh
 considered uniquely as $\pi$, since this is how we treat the actions of the rotation and reflection
 isometries on $\pi$.
 
+\section{Additional Observations}
+
+\par Our code also makes note of permutation parity as it relates to computations on permutations
+of magic squares. The parity of a permutation $\pi$ is \texttt{even} if the sign funtion
+$sgn\left(\pi\right)=1$. The sign function is defined as ${\left(-1 \right)}^k$ where $k$ is the
+total number of disjoint transpotions of the permutation $\pi$. It is surprising to us that all
+magic squares in $M_4$ map exclusively to even permutations in $S_n$. The set of all even
+permutations in $S_n$ actually forms a subgroup of $S_n$ and is called the Alternating Group or
+$A_n$. The order of $A_n$ is $\frac{n!}{2}$ which is the order of $\left\langle M_4 \right\rangle$.
+Formally, we might be able to prove that $\left\langle M_4 \right\rangle \cong A_{16}$. Doing so
+would allow us to better understand the subgroup structrure of $\left\langle M_4 \right\rangle$ but
+we leave this as an exercise for the reader.
+
 \chapter{Conclusions}
 
 \section{Introduction}
@@ -865,6 +878,12 @@ computations.
 from formality. Since developing the algorithm in code was always a priority over formalization of
 the underlying mathematics, our terminology and definitions might inadvertently be limiting our
 ability to perform efficient analysis.
+\linebreak
+\linebreak
+\textbf{How do the subgroup structures of $\left\langle M_4 \right\rangle$ generalize?} We noticed
+a relationship between $\left\langle M_4 \right\rangle$ and $A_{16}$. Does this relationship
+persist for all $n$ or is it only true for certain values? Specifically, is it true for all $n$
+that $\left\langle M_n \right\rangle$ $\cong$ $A_{n^2}$
 \linebreak
 \linebreak
 \textbf{Are our results unique?} To our knowledge, our method introduces something new in the way
