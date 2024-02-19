@@ -297,9 +297,10 @@ context, special emphasis was placed on making the code's interface as usable as
 missing out on performance. In Rust, this is easy to guarantee through a process called ``Bounded
 Parametric Polymorphism'' wherein we can monomorphize for various arbitrary but constrained
 parameter sets containing constants, where the constants feed generic types evaluated at compile
-time [Luca]. This improves the performance greatly, but increases compile times and binary sizes
-\hyphen{} a necessary tradeoff to maximize the performance potential of our code. The resulting
-code appears generic and agnostic to magic square order.
+time [Luca]. In our case, these parameter sets hold metadata for specific magic square orders and
+drive the overall behavior of the code. This improves the performance greatly, but increases
+compile times and binary sizes \hyphen{} a necessary tradeoff to maximize the performance potential
+of our code. The resulting code appears generic and agnostic to magic square order.
 
 \section{High-Performance Computing}
 
