@@ -268,6 +268,53 @@ parameter sets defining large-order squares, use contructive methods, and run ex
 extensive documentation. The code itself is structured as a crate or library, so given sufficent
 interest, it can be readily published. Alternatively, all of the code is on GitHub [Keough].
 
+\section{Permutation Groups}
+
+The set of magic square solutions falls under the definition of a permutation group.
+Generally, there are many kinds of permutation groups. For example, $S_n$ is considered a
+permutation group, but as a whole, it is typically considered a representation of the symmetric
+group. Additionally, a permutation group may be considered a subgroup of the symmetric group on $S$,
+a set of $n$ integers.
+
+\begin{thm} A Permutation Group is a Subgroup of The Symmetric Group.
+\end{thm}\label{thmperm}
+
+\begin{proof}
+  Recall that $\left(\varGamma\left(S\right), \circ \right)$ is the symmetric group on $S$ of $n$
+    elements ($S_n$). Let $\left(H,\circ\right)$ be a set of permutations of $S$ forming a group
+    under
+    $\circ$. Following the definition of a subgroup, $\left(H,\circ\right)$ is a subgroup of
+    $\left(\varGamma\left(S\right), \circ \right)$,\\ $\therefore$ a permutation group is a
+    subgroup of
+    $S_n$.
+\end{proof}
+
+A set of magic squares may also be considered elements of a permutation group. The group
+operation, in this case, is composition. This is different from the typical arithmetic operation.
+We may think of permutations as functions that bijectively map a set to itself. The product of two
+functions, $\pi\cdot\sigma$ is the function mapping any element $x$ in the set to
+$\pi\left(\sigma\left(x\right)\right)$. Generally, the operation is defined for left composition,
+but since these are permutation representations (and to simplify expressions in our code) we will
+use right composition. In other words ``$\pi$ is permuted by $\sigma$'' or ``$\pi$ is acted on by
+$\sigma$''.
+
+It follows that a permutation composed with a permutation results in another permutation.
+Notably, we can define a function $g$ to be the group operation of composition, and $X$ to be a
+permutation group. Then $g:X\rightarrow X$ denotes that g is a function mapping any element in $X$
+back to another element in $X$ which is a group endomorphism. Any composition of permutations
+results in a permutation. Likewise, the inverse of a permutation is also a permutation.
+
+\begin{thm} Composite of a Permutation is a Permutation.
+\end{thm}\label{thmcomp}
+
+\begin{proof}
+  Let $\pi,\sigma$ be permutations of the set $S$, and $\pi\circ\sigma$ denotes the composite of
+    the permutations. Recall that a permutation of $S$ is a bijection, and that composition of
+    bijections is a bijection. Their domain and codomains are coincident,\\ $\therefore
+      \pi\circ\sigma$
+    must also be a permutation of $S$.
+\end{proof}
+
 % \section{The title of the second section}
 % The class file contains definitions for several environments (e.g., {\ttfamily thm, corollary,
 %     lemma}, etc). Examples follow below.
