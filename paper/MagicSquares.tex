@@ -1,0 +1,165 @@
+\documentclass{rhumj_new}
+
+%\title[short title (for header)]{full title}
+\title[Magic Squares]{An Approach to Computing Magic Squares Using High-Performance Computing and Group Theory}
+
+%\author[short author name (for header)]{author name}
+%\affiliation{author affiliation}
+%\email{author email}
+
+\author[Keough]{Nathan H. Keough\thanks{Thanks to all who encouraged and supported me.}}
+\affiliation{Maryville College}
+\email{nathan.keough@my.maryvillecollege.edu}
+
+%additional authors; list in alphabetical order by last name
+% \author[Euler]{Leonard Euler\thanks{Thanks for nothing, Bernoulli.}}
+% \affiliation{University of Basel}
+% \email{oiler@notmail.com}
+
+%please include 2010 mathematics subject classification:
+%https://mathscinet.ams.org/msc/msc2010.html
+% Computer science {For papers containing software, source code, etc. in a specific mathematical area, see the classification number –04 in that area}
+\subjclass{68V99}
+%please provide keywords for your article
+\keywords{magic squares, computational group theory, rust}
+
+%\abstract{A brief abstract goes here.}
+
+\begin{document}
+\abstract{This paper introduces a novel algorithm for computing magic squares, exploiting
+  group theory concepts such as permutation representation, group operations, and group actions to
+  encode symmetries. By defining the group operation as composition, the set as a subset of the
+  group of magic squares in a specific order, we may systematically explore the permutations of the
+  group and extrapolate information about the magic squares to generate new magic squares not in
+  the originating set. This vastly reduces computation times for enumerating the solutions to magic
+  squares, while also encoding the symmetries in a manner that is easier to analyze
+  programmatically. Overall, this study reveals the profound connection between magic squares and
+  group theory, offering promising avenues for symmetry-driven algorithms and applications in
+  combinatorial mathematics.}
+
+\section{Introduction}
+
+\subsection{Something Subsection}
+
+Ideally, the introduction should introduce the background of the problem at hand and motivate why mathematicians (and/or others) are interested in studying it. This should be aimed at the level of undergraduates who are not experts in your area. We'd also like the introduction to contain a road map for the article; i.e., a description of what to expect in each section.
+
+
+\section{The title of the second section}
+The class file contains definitions for several environments (e.g., {\ttfamily thm, corollary, lemma}, etc). Examples follow below.
+
+Important definitions should be set in the \texttt{defin} environment.
+\begin{defin} \label{prim-def}
+Let $p \in \mathbf{N}$ and suppose the following hold:
+\begin{itemize}
+\item[\sffamily\bfseries P1.] If $d \in \mathbf{N}$ such that $d \mid p$, then $d = 1$ or $d=p$.
+\item[\sffamily\bfseries P2.] $p \neq 1$.
+\end{itemize}
+Then we say that $p$ is a \emph{prime number}.
+\end{defin}
+
+Use the \texttt{label} command for reference to these environments later on in your document. The class file uses the \texttt{cleveref} package which determines the type of label being referenced:
+\begin{center}
+\begin{tabular}{lcr}
+ & \LaTeX\ code & Result \\
+ \hline
+Using \texttt{ref}: & \verb|\textbf{definition \ref{prim-def}}| & \textbf{definition \ref{prim-def}} \\
+Using \texttt{cref}: & \verb|\cref{prim-def}| & \cref{prim-def}
+\end{tabular}
+\end{center}
+
+%an example of the lemma environment
+\begin{lemma} \label{baby-ftoa}
+If $n \in \mathbf{N}$, then there exists a prime number $p$ such that $p \mid n$.
+\end{lemma}
+
+\begin{proof}
+Suppose, for contradiction, that there exists $n \in \mathbb{N}$ such that $n >1$ and $n$ is not divisible by any prime. Let
+\[ S = \{ n \in \mathbf{N}: n>1,\ \text{$n$ is not divisible by a prime}\}.\]
+Then $S$ is a non-empty subset of $\mathbf{N}$. The well-ordering principle\footnote{An excellent principle.} fashions a least element of $S$, say $m$. Note that $m$ is not prime (otherwise it would be divisible by a prime, namely itself). Since $m$ is not prime, there exists $a \in \mathbf{N}$ such that $a \mid m$ and $a \neq 1$ and $a \neq m$. Let $b \in \mathbf{Z}$ such that $ab = m$. Note that $b \in \mathbf{N}$ since $a,m \in \mathbf{N}$. What's more, $b >1$ since otherwise $a=m$. So it must be that $1 < a,b < m$. Since divisibility is transitive, it follows that neither $a$ nor $b$ is divisible by a prime. But then $a \in S$ (and so is $b$) and $a  = m/b < m$ contradicting the minimality of $m$. Thus it must be that $S$ is empty which proves the lemma.
+\end{proof}
+
+%an example of the thm environment
+\begin{thm}[Euclid] There are infinitely many prime numbers.
+\end{thm} \label{inf-prim}
+
+\begin{proof}
+Let $p_1,p_2,\ldots, p_k$ be primes, and let 
+\[ n = p_1p_2 \cdots p_k + 1.\]
+By \cref{baby-ftoa}, there exists a prime $p$ such that $p \mid n$. Suppose, for contradiction, that $p = p_i$ for some $i=1,2,\ldots, k$. It follows that $p \mid n-p_1p_2\cdots p_k = 1$, but this is absurd. So it must be that $p \neq p_i$ for any $i = 1,2,\ldots k$. This shows that a new prime can be constructed from any finite list of primes. Hence the number of primes is not finite. 
+\end{proof}
+
+Use the \texttt{cite} command to cite references. For example, the above proof can be found in Euclid's Elements \cite{elements}. See below for how to add citations to the \texttt{thebibliography} environment.
+
+\section{A title for the third section}
+
+There is an \texttt{example} environment.
+
+\begin{exa} \label{geo-series} The geometric series
+\[ \sum_{k=0}^{\infty} \frac{1}{2^k} \]
+converges to $2$.
+\end{exa}
+
+When starting a sentence with a reference, use the \texttt{Cref} command. \Cref{geo-series} can be used to prove that $2$ is not the only prime.
+
+\begin{thm} \label{more-primes} The set of primes includes more numbers than just $2$.
+\end{thm}
+
+\begin{proof}
+If $2$ were the only prime number, then the fundamental theorem of arithmetic would give us that
+\[ \sum_{n=1}^{\infty} \frac{1}{n} = \sum_{k=0}^{\infty} \frac{1}{2^k}.\]
+The series on the left diverges whereas the series on the right converges. This is impossible, so there must be more prime numbers beyond the number $2$.
+\end{proof}
+
+There is a \texttt{remark} environment as well.
+
+\begin{remark} The idea in \cref{more-primes} can be extended to show that the set of primes includes more numbers than just $2$ and $3$. In fact, Euler went on to prove that if the number of primes were finite, then the harmonic series would converge.
+\end{remark}
+
+\section{A title for the fourth section}
+
+There are \texttt{prop} and \texttt{corollary} environments as well.
+
+\begin{prop} \label{sqr-decomp} Every natural number can be written uniquely as a product of a square-free number and a square.
+\end{prop}
+
+As a corollary to \cref{sqr-decomp} we obtain
+
+\begin{corollary} \label{low-bound} Let $\pi(n)$ denote the number of primes less than or equal to $n$. Then
+\[ \pi(n) \geq \frac{\log n}{2\log 2}.\]
+\end{corollary}
+
+\begin{proof} There are no more than $2^{\pi(n)}$ square free numbers less than $n$. Also, there are no more than $\sqrt{n}$ squares less than $n$. It follows from \cref{sqr-decomp} that 
+\[ n \leq 2^{\pi(n)} \sqrt{n}.\]
+The corollary follows by applying log.
+\end{proof}
+
+For an unnumbered remark, use the \texttt{xrem} environment.
+\begin{xrem} Note that \cref{low-bound} implies that there are infinitely many primes.
+\end{xrem}
+
+\begin{thebibliography}{10}
+
+%items in the bibliography should be listed in alphabetical order
+%in order to ensure that your reference is formatted correctly, do the following:
+%   1) Visit mathscinet to find your citation; for example, search author=euclid, title=elements. Click on the citation
+%   2) Copy (ctrl-c) the reference from mathscinet; for example:
+%Euclid
+%Euclid's Elements.
+%All thirteen books complete in one volume. The Thomas L. Heath %translation. Edited by Dana Densmore. Green Lion Press, Santa Fe, %NM, 2002. xxx+499 pp. ISBN: 1-888009-18-7; 1-888009-19-5
+%01A75 (01A20 01A60 51-03)
+%   3) paste (ctrl-v) the reference into mref %https://mathscinet.ams.org/mref
+%   4) click search, then click TeX
+%   5) copy/paste the TeX code from mref as shown below:
+
+\bibitem{elements}
+Euclid, {\it Euclid's {\it Elements}}, the Thomas L. Heath translation, Green Lion Press, Santa Fe, NM, 2002. MR1932864
+
+\bibitem{diff-calc}
+Euler, {\it Foundations of differential calculus}, translated from the Latin by John D. Blanton, Springer-Verlag, New York, 2000. MR1753095
+
+\bibitem{eulogy}
+P. G. L. Dirichlet, Ged\"{a}chtni\ss rede auf Carl Gustav Jacob Jacobi, in {\it Nachrufe auf Berliner Mathematiker des 19. Jahrhunderts}, 6--34, Teubner-Arch. Math., 10, Teubner, Leipzig. MR1104895
+
+\end{thebibliography}
+
+\end{document} 
