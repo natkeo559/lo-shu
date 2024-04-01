@@ -1,18 +1,17 @@
 % chktex-file 44
 % chktex-file 29
 \documentclass{rhumj_new}
-\usepackage{amsmath}
+\usepackage{amsmath} \usepackage{float}
 \usepackage{collcell} \newcommand{\fwcell}[1]{\makebox[\arraystretch\normalbaselineskip]{$#1$}}
 
-%\title[short title (for header)]{full title}
+\graphicspath{{./images/}}
+
 \title[Magic Squares]{An Approach to Computing Magic Squares Using High-Performance Computing and
   Group Theory}
 
-%\author[short author name (for header)]{author name}
-%\affiliation{author affiliation}
-%\email{author email}
-
-\author[Keough]{Nathan H. Keough\thanks{Thanks to all who encouraged and supported me.}}
+\author[Keough]{Nathan H. Keough
+  \thanks{Thank you, friends, peers, and professors, for allowing and
+    encouraging me to succeed.}}
 \affiliation{Maryville College}
 \email{nathan.keough@my.maryvillecollege.edu}
 
@@ -42,7 +41,6 @@
   programmatically. Overall, this study reveals the profound connection between magic squares and
   group theory, offering promising avenues for symmetry-driven algorithms and applications in
   combinatorial mathematics.}
-
 \newpage{}
 \section{Introduction}
 
@@ -64,7 +62,7 @@ The secrets behind magic squares have engaged mathematicians for millennia. The 
 problem itself is believed to have originated in China around 2200 BCE with the introduction of
 what are now known as “Lo-Shu” magic squares. These magic squares are defined as $3\times3$ grids
 with the numbers $1$ through $9$ arranged such that the sums of all the rows, columns, and
-diagonals are the same. Note in that the rows, columns, and diagonals each
+diagonals are the same. Note in Fig.~\ref{fig:square} that the rows, columns, and diagonals each
 add to $15$.
 
 This property is what makes a square ``magic,'' lending a connotation of power that is
@@ -96,7 +94,29 @@ satisfies this equation for the magic sum. The number of rows, columns, and diag
 $2n+2$ with $n$ being the order of the square. This is considered the number of ``constraint
 vectors'' of a magic square.
 
-% FIG UNIQUE
+\begin{figure}[ht!]
+  \begin{align*}
+    \quad \renewcommand{\arraystretch}{2}
+    \begin{tabular}{|
+      *{3}{>{\collectcell\fwcell}c<{\endcollectcell} |} }
+      \hline 2 & 9 & 4 \\
+      \hline 7 & 5 & 3 \\
+      \hline 6 & 1 & 8 \\
+      \hline
+    \end{tabular}
+    \quad \renewcommand{\arraystretch}{2}
+    \equiv
+    \quad \renewcommand{\arraystretch}{2}
+    \begin{tabular}{|
+      *{3}{>{\collectcell\fwcell}c<{\endcollectcell} |} }
+      \hline 6 & 7 & 2 \\
+      \hline 1 & 5 & 9 \\
+      \hline 8 & 3 & 4 \\
+      \hline
+    \end{tabular}
+  \end{align*}
+  \caption{The magic squares are isometric.}\label{fig:unique}
+\end{figure}
 
 We are also only interested in studying ``unique'' magic squares. By this, we mean magic
 squares that are unique up to rotations and reflections or isometry. An example of this is taking a
@@ -104,10 +124,10 @@ magic square $A$ and rotating it $90^{\circ }$ or reflecting it about the y-axis
 times. The resulting square will always be considered equivalent to $A$. There may also be times
 when we refer to a ``positionally distinct'' magic square. In this case, isometries of a magic
 square $A$, result in a ``different'' square $B$. Neither of these definitions affect the validity
-of magic squares; they only affect how we count them. Fig.***** accurately represents
+of magic squares; they only affect how we count them. Fig.~\ref{fig:unique} accurately represents
 two magic squares that we would consider to be the ``same'' square up to isometry.
 
-There is only one unique solution for the Lo-Shu Square, pictured in Fig.*****.
+There is only one unique solution for the Lo-Shu Square, pictured in Fig.~\ref{fig:square}.
 There are extensions to the magic square problem, with variants having larger side lengths (order),
 different ``magic'' requirements, or different kinds of element values. For order four, there are
 $880$ unique solutions. For order five, there are $275,305,224$ unique solutions [Fahimi]. However,
@@ -133,8 +153,22 @@ of $n^{2}$! permutations of a square, where $n$ is the order of the square. The 
 squares represent the different possible configurations of integers in the square, many of them
 meeting the requirements to be considered magic squares.
 
+\begin{figure}[ht!]
+  \begin{align*}
+    \quad \renewcommand{\arraystretch}{2}
+    \begin{tabular}{|
+      *{3}{>{\collectcell\fwcell}c<{\endcollectcell} |} }
+      \hline a & b & c \\
+      \hline d & e & f \\
+      \hline g & h & i \\
+      \hline
+    \end{tabular}
+  \end{align*}
+  \caption{The set $S$ may be imagined as an $n\times n$ grid square.}\label{fig:squareperm}
+\end{figure}
+
 The concept of interpreting grid squares as permutations may be realized by
-Fig.***** where the set $S = \{a, b, c, d, e, f, g, h, i\} \in S_9$. By decomposing
+Fig.~\ref{fig:squareperm} where the set $S = \{a, b, c, d, e, f, g, h, i\} \in S_9$. By decomposing
 the rows of an $n\times n$ square into an ordered set containing all elements from $1\cdots n^2$,
 we may consistently map the set to unique permutations on $n^2$ objects.
 
@@ -409,11 +443,16 @@ as a basis for the type of configurations we can produce on a Rubix Cube. More g
 describe the kinds of permutations that can exist in a group, given a set $S$ of permutations and
 group $G$ that acts on it via composition.
 
-% FIG CAYLEY
+\begin{figure}[H]
+  \begin{align*}
+    \includegraphics[scale=0.6]{cayleytable.png}
+  \end{align*}
+  \caption{The Cayley Table for the dihedral group $D_8$ is shown.}\label{fig:cayley}
+\end{figure}
 
 Computationally, we can select a unique element from the square's isometries consistently by
 selecting the first element from the Cayley table of transformations. Alternatively, we can
-generate the full set of the square's isometries. This table, shown in Fig.*****,
+generate the full set of the square's isometries. This table, shown in Fig.~\ref{fig:cayley},
 represents the transformations of the dihedral group D generated by $<r,s\vert
   r^4=s^2={\left(sr\right)}^2=1>$. We treat the table like a set and filter another set containing
 various arbitrary magic squares such that the resulting set only contains unique elements. This is
@@ -568,9 +607,10 @@ memory/storage requirement at the cost of program runtime.
 
 The amortized runtime analysis of the algorithm is difficult considering the amount of
 abstraction used in the body of the code. Given that we compute (approximately) $\beta$ by $K_n
-  \times K_n$ and $\beta \times K_n$, we may say the algorithm runs somewhere around
-$O\left(n^3\right)+C$. This beats the performance of iterative brute-force which is
-$O\left(n!\right)+C$. With this in mind, the set reduction incurred by looking at group actions in
+  \times K_n$ and $\beta \times K_n$, we may say the algorithm runs at approximately
+$O\left(n^c\right)$ where $c$ is a constant. This beats the performance of iterative brute-force
+which is
+$O\left(n!\right)$. With this in mind, the set reduction incurred by looking at group actions in
 this way is likely vast. The largest possible set with $n=239$ is $\approx 1.36519 \times 10^7$
 whereas $16!\approx 2.09227 \times 10^{13}$.
 
@@ -705,7 +745,6 @@ These permutations as squares are:
   \caption{The following squares are members of the magic-preserving group.}\label{fig:preserving}
 \end{figure}
 
-\newpage{}
 It is proven computationally that $\forall\pi\in\ M_4,\alpha\in MP, \pi\alpha \in M_4$. One
 question that arises from the knowledge of this set is on whether $\pi\alpha$ should still be
 considered uniquely as $\pi$, since this is how we treat the actions of the rotation and reflection
@@ -807,118 +846,6 @@ that $\left\langle M_n \right\rangle$ $\cong$ $A_{n^2}$?
 of solving magic squares, however we are not completely confident in its uniqueness according to
 group theory. We believe with moderate confidence that our method uses results from theorems that
 haven't necessarily been formalized in this paper.
-
-% \section{The title of the second section}
-% The class file contains definitions for several environments (e.g., {\ttfamily thm, corollary,
-%     lemma}, etc). Examples follow below.
-
-% Important definitions should be set in the \texttt{defin} environment.
-% \begin{defin}\label{prim-def}
-%   Let $p \in \mathbf{N}$ and suppose the following hold:
-%   \begin{itemize}
-%     \item[\sffamily\bfseries P1.] If $d \in \mathbf{N}$ such that $d \mid p$, then $d = 1$ or $d=p$.
-%     \item[\sffamily\bfseries P2.] $p \neq 1$.
-%   \end{itemize}
-%   Then we say that $p$ is a \emph{prime number}.
-% \end{defin}
-
-% Use the \texttt{label} command for reference to these environments later on in your document. The
-% class file uses the \texttt{cleveref} package which determines the type of label being referenced:
-% \begin{center}
-%   \begin{tabular}{lcr}
-%                          & \LaTeX\ code                              & Result          \\
-%     \hline
-%     Using \texttt{ref}:  & \verb|\textbf{definition \ref{prim-def}}| &
-%     \textbf{definition~\ref{prim-def}}                                                 \\
-%     Using \texttt{cref}: & \verb|\cref{prim-def}|                    & \cref{prim-def}
-%   \end{tabular}
-% \end{center}
-
-% %an example of the lemma environment
-% \begin{lemma}\label{baby-ftoa}
-%   If $n \in \mathbf{N}$, then there exists a prime number $p$ such that $p \mid n$.
-% \end{lemma}
-
-% \begin{proof}
-%   Suppose, for contradiction, that there exists $n \in \mathbb{N}$ such that $n >1$ and $n$ is not
-%   divisible by any prime. Let
-%   \[ S = \{ n \in \mathbf{N}: n>1,\ \text{$n$ is not divisible by a prime}\}.\]
-%   Then $S$ is a non-empty subset of $\mathbf{N}$. The well-ordering principle\footnote{An excellent
-%     principle.} fashions a least element of $S$, say $m$. Note that $m$ is not prime (otherwise it
-%   would be divisible by a prime, namely itself). Since $m$ is not prime, there exists $a \in
-%     \mathbf{N}$ such that $a \mid m$ and $a \neq 1$ and $a \neq m$. Let $b \in \mathbf{Z}$ such that
-%   $ab = m$. Note that $b \in \mathbf{N}$ since $a,m \in \mathbf{N}$. What's more, $b >1$ since
-%   otherwise $a=m$. So it must be that $1 < a,b < m$. Since divisibility is transitive, it follows
-%   that neither $a$ nor $b$ is divisible by a prime. But then $a \in S$ (and so is $b$) and $a  = m/b
-%     < m$ contradicting the minimality of $m$. Thus it must be that $S$ is empty which proves the lemma.
-% \end{proof}
-
-% %an example of the thm environment
-% \begin{thm}[Euclid] There are infinitely many prime numbers.
-% \end{thm}\label{inf-prim}
-
-% \begin{proof}
-%   Let $p_1,p_2,\ldots, p_k$ be primes, and let
-%   \[ n = p_1p_2 \cdots p_k + 1.\]
-%   By \cref{baby-ftoa}, there exists a prime $p$ such that $p \mid n$. Suppose, for contradiction,
-%   that $p = p_i$ for some $i=1,2,\ldots, k$. It follows that $p \mid n-p_1p_2\cdots p_k = 1$, but
-%   this is absurd. So it must be that $p \neq p_i$ for any $i = 1,2,\ldots k$. This shows that a new
-%   prime can be constructed from any finite list of primes. Hence the number of primes is not finite.
-% \end{proof}
-
-% Use the \texttt{cite} command to cite references. For example, the above proof can be found in
-% Euclid's Elements~\cite{elements}. See below for how to add citations to the
-% \texttt{thebibliography} environment.
-
-% \section{A title for the third section}
-
-% There is an \texttt{example} environment.
-
-% \begin{exa}\label{geo-series} The geometric series
-%   \[ \sum_{k=0}^{\infty} \frac{1}{2^k} \]
-%   converges to $2$.
-% \end{exa}
-
-% When starting a sentence with a reference, use the \texttt{Cref} command. \Cref{geo-series} can be
-% used to prove that $2$ is not the only prime.
-
-% \begin{thm}\label{more-primes} The set of primes includes more numbers than just $2$.
-% \end{thm}
-
-% \begin{proof}
-%   If $2$ were the only prime number, then the fundamental theorem of arithmetic would give us that
-%   \[ \sum_{n=1}^{\infty} \frac{1}{n} = \sum_{k=0}^{\infty} \frac{1}{2^k}.\]
-%   The series on the left diverges whereas the series on the right converges. This is impossible, so
-%   there must be more prime numbers beyond the number $2$.
-% \end{proof}
-
-% There is a \texttt{remark} environment as well.
-
-% \begin{remark} The idea in \cref{more-primes} can be extended to show that the set of primes
-%   includes more numbers than just $2$ and $3$. In fact, Euler went on to prove that if the number of
-%   primes were finite, then the harmonic series would converge.
-% \end{remark}
-
-% \section{A title for the fourth section}
-
-% There are \texttt{prop} and \texttt{corollary} environments as well.
-
-% \begin{prop}\label{sqr-decomp} Every natural number can be written uniquely as a product of a
-%   square-free number and a square.
-% \end{prop}
-
-% As a corollary to \cref{sqr-decomp} we obtain
-
-% \begin{corollary}\label{low-bound} Let $\pi(n)$ denote the number of primes less than or equal to
-%   $n$. Then
-%   \[ \pi(n) \geq \frac{\log n}{2\log 2}.\]
-% \end{corollary}
-
-% \begin{proof} There are no more than $2^{\pi(n)}$ square free numbers less than $n$. Also, there
-%   are no more than $\sqrt{n}$ squares less than $n$. It follows from \cref{sqr-decomp} that
-%   \[ n \leq 2^{\pi(n)} \sqrt{n}.\]
-%   The corollary follows by applying log.
-% \end{proof}
 
 % For an unnumbered remark, use the \texttt{xrem} environment.
 % \begin{xrem} Note that \cref{low-bound} implies that there are infinitely many primes.
