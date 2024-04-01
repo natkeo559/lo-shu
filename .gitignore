@@ -3,6 +3,7 @@
 /tests
 /notes
 /examples/tests
+/.Vscode
 
 /paper/*
 !*.tex
