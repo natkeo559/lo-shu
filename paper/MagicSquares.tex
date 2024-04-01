@@ -1,5 +1,6 @@
 % chktex-file 44
 % chktex-file 29
+% chktex-file 8
 \documentclass{rhumj_new}
 \usepackage{amsmath} \usepackage{float}
 \usepackage{collcell} \newcommand{\fwcell}[1]{\makebox[\arraystretch\normalbaselineskip]{$#1$}}
@@ -10,7 +11,7 @@
   Group Theory}
 
 \author[Keough]{Nathan H. Keough
-  \thanks{Thank you, friends, peers, and professors, for allowing and
+  \thanks{Thank you to my friends, peers, and professors, for allowing and
     encouraging me to succeed.}}
 \affiliation{Maryville College}
 \email{nathan.keough@my.maryvillecollege.edu}
@@ -76,10 +77,10 @@ remains a great mystery, especially as the size of the square grows.
 Today, magic squares hold less of a mythical and powerful cultural reputation. Mathematics, at
 this point in history, has been able to deduce new and creative uses for magic squares in various
 different fields, especially physics. In 2021, scientists found a connection between electrostatic
-potentials and magic squares of the $4^{th}$ and $5^{th}$ order [Fahimi]. Similarly, magic squares
-of the $6^{th}$ order have been associated with the Weak Force in physics [ONeill]. Outside of
+potentials and magic squares of the $4^{th}$ and $5^{th}$ order\cite{Fahimi}. Similarly, magic squares
+of the $6^{th}$ order have been associated with the Weak Force in physics\cite{ONeill}. Outside of
 physics, there are also uses for magic squares in image encryption, specifically, using large
-squares as chaos maps in chaos-based encryption schemes [Wang]. For these reasons and many others,
+squares as chaos maps in chaos-based encryption schemes\cite{Wang}. For these reasons and many others,
 the continual study of magic squares carries with it the possibility of new breakthroughs in
 applied mathematics.
 
@@ -130,7 +131,7 @@ two magic squares that we would consider to be the ``same'' square up to isometr
 There is only one unique solution for the Lo-Shu Square, pictured in Fig.~\ref{fig:square}.
 There are extensions to the magic square problem, with variants having larger side lengths (order),
 different ``magic'' requirements, or different kinds of element values. For order four, there are
-$880$ unique solutions. For order five, there are $275,305,224$ unique solutions [Fahimi]. However,
+$880$ unique solutions. For order five, there are $275,305,224$ unique solutions\cite{Fahimi}. However,
 the number of exact unique solutions for order six remains unknown. The number of unique solutions
 for each order exhibits a kind of exponential growth, and their values have been of interest to
 mathematicians and hobbyists since the puzzle's inception.
@@ -141,7 +142,7 @@ The main mechanism that we use for encoding a magic square and its properties co
 and Number Theory. Specifically, we will study the permutations of magic squares. In the 1770s,
 Joseph Louis Lagrange studied permutations of the roots of polynomial equations. This led to Galois
 theory founded by Évariste Galois, which describes what is or is not possible with respect to
-solving polynomial equations by radicals [Fraser]. In modern mathematics, there are many similar
+solving polynomial equations by radicals\cite{Fraser}. In modern mathematics, there are many similar
 situations where studying permutations can help us understand a problem.
 
 Roughly speaking, magic squares may be represented as permutations of $n^2$ objects. By the
@@ -189,7 +190,7 @@ this very easily for certain orders and with certain algorithms. Prior to modern
 mathematicians were computing large orders by hand using various methods. Some in particular
 developed by W.S. Andrews in 1908 utilized ``constructions'', whereby assumptions about initial
 known values are used to help complete a magic square using some algorithmic process, potentially
-cutting down on the total amount of computation [Andrews]. Some aspects of constructions are
+cutting down on the total amount of computation\cite{Andrews}. Some aspects of constructions are
 similar to the method outlined in this paper but with some differences. Our method makes no
 assumptions about initial values, but some code exists that could support constructive methods of
 magic square generation. Listing magic squares in this way, as we will see, is useful and allows us
@@ -203,7 +204,7 @@ factorial number system, is a mixed radix adapted for combinatorial systems. In 
 express the permutations of $n$ objects in lexicographical order, that is naturally from $0$ to
 $n!-1$ as a bijection. Using the factor-adic number system's properties we can treat magic squares
 (or any grid square) as a permutation, and map that permutation uniquely to an integer. More
-generally, this concept is called a Lehmer Encoding of a permutation on $n$ integers [Lehmer]. This
+generally, this concept is called a Lehmer Encoding of a permutation on $n$ integers\cite{Lehmer}. This
 not only simplifies our intuition of what a unique magic square looks like, but also improves the
 performance of a magic square computation in some cases, specifically, the cost of copying integers
 over whole arrays and storing magic squares in memory.
@@ -222,7 +223,7 @@ time. A problem X in NP is considered NP-complete if and only if any other probl
 reducible to X. The class of NP-Hard problems contains all NP-Complete problems but also includes
 those that are undecidable. The theoretical complexity of predicting magic squares is unknown, yet,
 there do exist applications in artificial intelligence for predicting and classifying magic squares
-  [Weed]. The role of artificial intelligence in mathematics is becoming increasingly apparent.
+~\cite{Weed}. The role of artificial intelligence in mathematics is becoming increasingly apparent.
 Opting for AI-driven solutions could be a great approach for future studies.
 
 \section{Computational Approach}
@@ -237,14 +238,14 @@ implements some of the best known strategies for working with magic square struc
 mathematically and programmatically.
 
 All implementations are justified through the use of a benchmark-driven software development
-policy, meaning certain implementations or algorithms are added, used, and possibly modified
+policy, meaning certain implementations or algorithms are added, used, and possibly
 modified based on benchmarking and profiling results. This, of course, is highly dependent on the
 hardware being used. Our specific hardware being used to quantify and express the results of
 computed magic squares includes:
 
 \begin{itemize}
-  \item AMD Ryzen 7 5800X x8 (16) @ 4.200GHz, 32GB RAM \textemdash{}  Pop!\_Os 22.04 LTS x86\_64
-  \item Apple M2 x8 (8) (x4 performance, x4 efficiency) @ 3.500GHz, 24GB RAM \textemdash{} macOS
+  \item AMD Ryzen 7 5800X x8 (16) @ 4.200GHz, 32 GB RAM \textemdash{}  Pop!\_Os 22.04 LTS x86\_64
+  \item Apple M2 x8 (8) (x4 performance, x4 efficiency) @ 3.500GHz, 24 GB RAM \textemdash{} macOS
         13.3.1
         22E261 ARM64
 \end{itemize}
@@ -267,9 +268,9 @@ context, special emphasis was placed on making the code's interface as usable as
 missing out on performance. In Rust, this is easy to guarantee through a process called ``Bounded
 Parametric Polymorphism'' wherein we can monomorphize for various arbitrary but constrained
 parameter sets containing constants, where the constants feed generic types evaluated at compile
-time [Luca]. In our case, these parameter sets hold metadata for specific magic square orders and
+time\cite{Cardelli}. In our case, these parameter sets hold metadata for specific magic square orders and
 drive the overall behavior of the code. This improves the performance greatly, but increases
-compile times and binary sizes \textemdash{} a necessary tradeoff to maximize the performance
+compile times and binary sizes \textemdash{} a necessary trade off to maximize the performance
 potential
 of our code. The resulting code appears generic and agnostic to magic square order.
 
@@ -285,7 +286,7 @@ use of benchmarks and profiling. In our benchmarks we found that using multi-thr
 brute-force performance of order three magic squares by about 91.12\% on average. This resulted in
 a total computation time of 1.03 ms. Combined with trivial set reduction, multi-threading resulted
 in computation times of about 349.60 µs. This is a massive improvement over standard brute-force
-iteration. In addition we found that certain thread management strategies tend to produce better
+iteration. In addition, we found that certain thread management strategies tend to produce better
 performance benchmarks. We concluded that non-linear partitioning of thread data and reduction of
 shared memory resulted in 29.79\% better performance on average.
 
@@ -294,7 +295,7 @@ checking. This is a somewhat niche optimization that exists on the specific hard
 We interact with the CPU architecture through the use of intrinsics to manage specific registers
 that operate in parallel so that we may process a higher throughput of data. The alternative to
 using SIMD registers is to use scalar CPU operations. We compared the performance of both scalar
-and vector code. We found that the performance gained from using SIMD intrinsics was negligible
+and vector code and found that the performance gained from using SIMD intrinsics was negligible
 compared to scalar code. We also encountered some inconsistencies attributable to environment and
 hardware related caveats that are difficult to control for. Overall, we concluded that SIMD would
 most likely benefit from operating on larger streams of data than how they are being used
@@ -303,7 +304,7 @@ four. In hindsight, it still makes sense to target checking for optimizations si
 six times more time to check an arbitrary square than it does to generate new permutations (101.8
 ns vs. 16.7 ns).
 
-We alse implemented a form of message passing in Rust that utilizes a Multiple Producer Single
+We also implemented a form of message passing in Rust that utilizes a Multiple Producer Single
 Consumer (MPSC) Queue to better manage threads performing parallel computations on magic squares.
 We tested multiple strategies regarding thread management and found that MPSC thread management
 also benefits from partitioning and reduction of shared state concurrency. Each ``producer'' in the
@@ -317,10 +318,10 @@ method will be our primary method for brute-force computing magic squares in par
 
 In addition to the high-performance aspects of our code, we've also added features that would
 be useful to other scientists exploring magic squares. Additional features include the ability to
-log or serialize computations to files, encode magic sqaures in compressed formats, implement
-parameter sets defining large-order squares, use contructive methods, and run examples with
-extensive documentation. The code itself is structured as a crate or library, so given sufficent
-interest, it can be readily published. Alternatively, all of the code is on GitHub [Keough].
+log or serialize computations to files, encode magic squares in compressed formats, implement
+parameter sets defining large-order squares, use constructive methods, and run examples with
+extensive documentation. The code itself is structured as a crate or library, so given sufficient
+interest, it can be readily published. Alternatively, all the code is on GitHub\cite{Keough}.
 
 \section{Permutation Groups}
 
@@ -400,7 +401,7 @@ structure. With these, far more can be learned and analysis of the group then is
 dependent on computation time. For magic squares, this is not the case since not much is known
 about how the internal structures and generating subsets generalize for larger order squares. The
 route we are left with is to use iterative brute force methods to find the generators of $M_n$ so
-that we may perform further analyses.
+that we may perform further analysis.
 
 \subsection{Group Action}
 
@@ -649,11 +650,11 @@ containing the elements of $M_n$. This implies that the smallest set $K_n$ that 
 considered a ``minimal set $S$ that generates $G$'' which we  use interchangeably with ``generating
 subset of minimal cardinality''. For finite, solvable groups, the cardinality $k$ of the minimally
 generating subset is at least $\lceil\log_{p}{\left|G\right|}\rceil$ (where $p$ is the smallest
-prime dividing $G$), which is a byproduct of Lagrange's Theorem [Arvind]. Using the ``Groups,
+prime dividing $G$), which is a byproduct of Lagrange's Theorem\cite{Arvind}. Using the ``Groups,
 Algorithms, and Programming'' system (GAP), an open-source programming model for computational
 discrete algebra, we found that the group containing all magic squares of order four has an order
 of 10,461,394,944,000 $\left(\frac{16!}{2}\right)$, which is equal to the order of the group
-generated by our small $K_4$[GAP4]. This may indicate that these groups are identical. With $p=2$,
+generated by our small $K_4$\cite{GAP4}. This may indicate that these groups are identical. With $p=2$,
 $\left|G\right|$=10,461,394,944,000, we found that the minimal cardinality of the subset that
 generates $G$ is 44 (rounded up to the nearest integer).
 
@@ -661,12 +662,12 @@ In other words, the group containing all magic squares of order four requires th
 generating set contain at least 44 magic squares as generators, assuming our group is finite and
 solvable. This is very close to the size of our small set ($\left|K_n\right|=50$). Finding a
 group's minimally generating subset, whose length is the rank of the group, would allow us to more
-accurately describe the group's structure, relationships, and dependencies among elements of the
+accurately describe the group's structure, relationships, and dependencies amongst elements of the
 group. The process for actually describing a generating set with minimal cardinality is still quite
 difficult, even for computational approaches. In general, it's easiest to use methods that don't
 require a total enumeration of the group. Also known as the Rank Problem, the concept of computing
 a generating subset of a group with minimal cardinality is one of the most well known and
-challenging problems in algorithmic group theory [Baumslag].
+challenging problems in algorithmic group theory\cite{Baumslag}.
 
 One other hypothesis we had is that different sampling methods or random distributions may
 allow us to build more interesting sets to use as $K_n$. The relative distance between elements in
@@ -753,14 +754,14 @@ isometries on $\pi$.
 \subsection{Additional Observations}
 
 Our code also makes note of permutation parity as it relates to computations on permutations
-of magic squares. The parity of a permutation $\pi$ is \texttt{even} if the sign funtion
+of magic squares. The parity of a permutation $\pi$ is \texttt{even} if the sign function
 $sgn\left(\pi\right)=1$. The sign function is defined as ${\left(-1 \right)}^k$ where $k$ is the
-total number of disjoint transpotions of the permutation $\pi$. It is surprising to us that all
+total number of disjoint transpositions of the permutation $\pi$. It is surprising to us that all
 magic squares in $M_4$ map exclusively to even permutations in $S_n$. The set of all even
 permutations in $S_n$ forms a subgroup of $S_n$ and is called the Alternating Group or
 $A_n$. The order of $A_n$ is $\frac{n!}{2}$ which is the order of $\left\langle M_4 \right\rangle$.
 Formally, we might be able to prove that $\left\langle M_4 \right\rangle \cong A_{16}$. Doing so
-would allow us to better understand the subgroup structrure of $\left\langle M_4 \right\rangle$ but
+would allow us to better understand the subgroup structure of $\left\langle M_4 \right\rangle$, but
 we leave this as an exercise for the reader.
 
 \section{Conclusions}
@@ -784,7 +785,7 @@ found that researchers tended to apply general linear group structures over perm
 While this is a completely different approach, bringing with it other kinds of questions and
 results, this is a perfectly valid way to go about solving magic squares as the information in
 general linear groups is more geared towards grid/matrix problems, and thus contains a more
-intuitive structure. Standard models, however, are typically very well defined and date back to
+intuitive structure. Standard models, however, are typically very well-defined and date back to
 some of the earliest research into the magic square puzzle. Oftentimes these standard models use
 methods on magic squares that do not encapsulate the full solution set, rather, they typically aim
 to produce magic squares in the most efficient/intuitive way regardless of the specific value of a
@@ -819,7 +820,7 @@ different results based on their own group structure analysis.
 
 Aside from the questions induced by thinking about potential generalizations of our
 algorithm, there are still some things we don't know but would find useful in our discovery. Many
-questions that we've had depend on the individual assumptions we've made up to that point.
+questions that we've had depended on the individual assumptions we've made up to that point.
 Eliminating or potentially proving our assumptions will almost certainly improve our results.
 
 \textbf{Does random sampling from a given distribution improve the relative variety of our
@@ -864,21 +865,82 @@ haven't necessarily been formalized in this paper.
   %   3) paste (ctrl-v) the reference into mref %https://mathscinet.ams.org/mref
   %   4) click search, then click TeX
   %   5) copy/paste the TeX code from mref as shown below:
+  \bibitem{Andrews}
+    Andrews, W.S. {\it Schrutka
+    Literaturberichte: Magic squares and cubes}.
+    Chicago, Court Publishing Co. 1908
+    Monatsh. Math. Phys.20(1909), no.1, A57. 
+    MR1547984
 
-  \bibitem{elements}
-  Euclid, {\it Euclid's {\it Elements}}, the Thomas L. Heath translation, Green Lion Press, Santa
-  Fe,
-  NM, 2002. MR1932864
+  \bibitem{Arvind}
+    Arvind V.
+    {\it Some Algorithmic questions in Finite Group Theory}.
+    \url{https://www.imsc.res.in/~knr/facets15/Slides/va.pdf}.
+    Accessed: 2-17-2024
 
-  \bibitem{diff-calc}
-  Euler, {\it Foundations of differential calculus}, translated from the Latin by John D. Blanton,
-  Springer-Verlag, New York, 2000. MR1753095
+  \bibitem{Baumslag}
+    Baumslag G;\@ Miller C. F.
+    {\it Algorithms and classification in combinatorial group theory}.
+    Papers from the Workshop on Algorithms, Word Problems and Classification in Combinatorial
+    Group Theory held in Berkeley, California, January 1989. 
+    Math. Sci. Res. Inst. Publ., 23.
+    Springer-Verlag, New York, 1992.\ viii+232 pp.
+    MR1230626
 
-  \bibitem{eulogy}
-  P. G. L. Dirichlet, Ged\"{a}chtni\ss{} rede auf Carl Gustav Jacob Jacobi, in {\it Nachrufe auf
-      Berliner Mathematiker des 19. Jahrhunderts}, 6--34, Teubner-Arch. Math., 10, Teubner,
-  Leipzig.
-  MR1104895
+  \bibitem{Cardelli}
+    Cardelli, Luca; Wegner, Peter.
+    {\it On understanding types, data abstraction, and polymorphism}.
+    Computing Surveys, Vol 17 n. 4, pp 471-522, December 1985.
+    \url{https://doi.org/10.1145/6041.6042}
+
+  \bibitem{Fahimi}
+  Fahimi, Peyman; Toussi, Cyrus Ahmadi; Trump, Walter; Haddadnia, Javad; Matta, Chérif F. 
+      {\it Striking patterns in natural magic squares' associated electrostatic potentials: 
+      matrices of the 4th and 5th order}.
+  Discrete Math.344(2021), no.3, Paper No. 112229, 11 pp. 
+  MR4182931
+
+  \bibitem{Fraser}
+    Fraser, Craig G.
+    {\it Chapter 19 - Joseph Louis Lagrange, Théorie des fonctions analytiques, first edition (1797)}.
+    {\it Landmark Writings in Western Mathematics 1640-1940}.
+    Edited by I. Grattan-Guinness Elsevier B. V., Amsterdam, 2005.\ xviii+1022 pp.
+    MR2169816
+
+  \bibitem{GAP4}
+    {\it GAP - Groups, Algorithms, and Programming, Version 4.12.2}.
+    The GAP~Group, 2022.
+    \url{https://www.gap-system.org}
+
+  \bibitem{Keough}
+    Keough, Nathan.
+    {\it Lo-Shu (crate)}.
+    \url{https://github.com/natkeo559/lo-shu}
+
+  \bibitem{Lehmer}
+    Lehmer, D. H.
+    {\it Teaching combinatorial tricks to a computer}.
+    Proc. Sympos. Appl. Math., Vol. 10, pp. 179-193.
+    American Mathematical Society, Providence, RI, 1960.
+    MR0113289
+
+  \bibitem{ONeill}
+    O'Neill, Christopher.
+    {\it The Weak Force Magic Square Order 6}.
+    Cataphysics Group, 2021.
+    DOI:10.13140/RG.2.2.26326.16965
+
+  \bibitem{Wang}
+    Wang J, Liu L.
+    {\it A Novel Chaos-Based Image Encryption Using Magic Square Scrambling and Octree Diffusing}.
+    Mathematics 2022, 10(3), 457.
+    \url{https://doi.org/10.3390/math10030457}
+
+  \bibitem{Weed}
+    Weed Jared.
+    {\it Applications of AI for Magic Squares}.
+    eprint arXiv:1602.01401, 2016.
+    \url{https://api.semanticscholar.org/CorpusID:119634667}
 
 \end{thebibliography}
 
