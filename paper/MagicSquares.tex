@@ -240,7 +240,14 @@ To help us compute magic squares, we have implemented a custom Computational Alg
 square data to find magic squares. Once we have magic squares, we may do additional processing on
 them to learn more about their structures. The system is geared for high performance and thus
 implements some of the best known strategies for working with magic square structures, both
-mathematically and programmatically.
+mathematically and programmatically. The code itself is structured as a crate or library, so given sufficient
+interest, it can be readily published. Alternatively, all the code is on GitHub\cite{Keough}.
+
+In addition to the high-performance aspects of our code, we've also added features that would
+be useful to other scientists exploring magic squares. Additional features include the ability to
+log or serialize computations to files, encode magic squares in compressed formats, implement
+parameter sets defining large-order squares, use constructive methods, and run examples with
+extensive documentation.
 
 All implementations are justified through the use of a benchmark-driven software development
 policy, meaning certain implementations or algorithms are added, used, and possibly
@@ -320,36 +327,26 @@ results in vast performance improvements for computing magic squares using brute
 system we implemented solved the entire set of order three magic squares in about 243.64 µs. This
 method will be our primary method for brute-force computing magic squares in parallel.
 
-\subsection{Additional Features}
-
-In addition to the high-performance aspects of our code, we've also added features that would
-be useful to other scientists exploring magic squares. Additional features include the ability to
-log or serialize computations to files, encode magic squares in compressed formats, implement
-parameter sets defining large-order squares, use constructive methods, and run examples with
-extensive documentation. The code itself is structured as a crate or library, so given sufficient
-interest, it can be readily published. Alternatively, all the code is on GitHub\cite{Keough}.
-
 \section{Permutation Groups}
 
 The set of magic square solutions falls under the definition of a permutation group.
 Generally, there are many kinds of permutation groups. For example, $S_n$ is considered a
 permutation group, but as a whole, it is typically considered a representation of the symmetric
 group. Additionally, a permutation group may be considered a subgroup of the symmetric group on
-$S$,
-a set of $n$ integers.
+$S$, a set of $n$ integers\cite{Whitelaw}.
 
-\begin{thm} A Permutation Group is a Subgroup of The Symmetric Group.
-\end{thm}\label{thmperm}
+% \begin{thm} A Permutation Group is a Subgroup of The Symmetric Group.
+% \end{thm}\label{thmperm}
 
-\begin{proof}
-  Recall that $\left(\varGamma\left(S\right), \circ \right)$ is the symmetric group on $S$ of $n$
-  elements ($S_n$). Let $\left(H,\circ\right)$ be a set of permutations of $S$ forming a group
-  under
-  $\circ$. Following the definition of a subgroup, $\left(H,\circ\right)$ is a subgroup of
-  $\left(\varGamma\left(S\right), \circ \right)$,\\ $\therefore$ a permutation group is a
-  subgroup of
-  $S_n$.
-\end{proof}
+% \begin{proof}
+%   Recall that $\left(\varGamma\left(S\right), \circ \right)$ is the symmetric group on $S$ of $n$
+%   elements ($S_n$). Let $\left(H,\circ\right)$ be a set of permutations of $S$ forming a group
+%   under
+%   $\circ$. Following the definition of a subgroup, $\left(H,\circ\right)$ is a subgroup of
+%   $\left(\varGamma\left(S\right), \circ \right)$,\\ $\therefore$ a permutation group is a
+%   subgroup of
+%   $S_n$.
+% \end{proof}
 
 A set of magic squares may also be considered elements of a permutation group. The group
 operation, in this case, is composition. This is different from the typical arithmetic operation.
@@ -364,28 +361,28 @@ It follows that a permutation composed with a permutation results in another per
 Notably, we can define a function $g$ to be the group operation of composition, and $X$ to be a
 permutation group. Then $g:X\rightarrow X$ denotes that g is a function mapping any element in $X$
 back to another element in $X$ which is a group endomorphism. Any composition of permutations
-results in a permutation. Likewise, the inverse of a permutation is also a permutation.
+results in a permutation\cite{Deskins}. Likewise, the inverse of a permutation is also a permutation\cite{Deskins}.
 
-\begin{thm} Composite of a Permutation is a Permutation.
-\end{thm}\label{thmcomp}
+% \begin{thm} Composite of a Permutation is a Permutation.
+% \end{thm}\label{thmcomp}
 
-\begin{proof}
-  Let $\pi,\sigma$ be permutations of the set $S$, and $\pi\circ\sigma$ denotes the composite of
-  the permutations. Recall that a permutation of $S$ is a bijection, and that composition of
-  bijections is a bijection. Their domain and codomains are coincident,\\ $\therefore
-    \pi\circ\sigma$
-  must also be a permutation of $S$.
-\end{proof}
+% \begin{proof}
+%   Let $\pi,\sigma$ be permutations of the set $S$, and $\pi\circ\sigma$ denotes the composite of
+%   the permutations. Recall that a permutation of $S$ is a bijection, and that composition of
+%   bijections is a bijection. Their domain and codomains are coincident,\\ $\therefore
+%     \pi\circ\sigma$
+%   must also be a permutation of $S$.
+% \end{proof}
 
-\begin{thm} Inverse of a Permutation is a Permutation.
-\end{thm}\label{thminv}
+% \begin{thm} Inverse of a Permutation is a Permutation.
+% \end{thm}\label{thminv}
 
-\begin{proof}
-  Let $f : S \rightarrow S$ be a permutation of the set $S$. Recall that permutations are
-  bijections and that by definition of bijection $f^{-1}$ is also a bijection. By definition of
-  inverse relation, the domain and codomains of $f$ and $f^{-1}$ are coincident. The domain and
-  codomain of $f^{-1}$ is $S$,\\ $\therefore$ $f^{-1}$ must be a permutation of $S$.
-\end{proof}
+% \begin{proof}
+%   Let $f : S \rightarrow S$ be a permutation of the set $S$. Recall that permutations are
+%   bijections and that by definition of bijection $f^{-1}$ is also a bijection. By definition of
+%   inverse relation, the domain and codomains of $f$ and $f^{-1}$ are coincident. The domain and
+%   codomain of $f^{-1}$ is $S$,\\ $\therefore$ $f^{-1}$ must be a permutation of $S$.
+% \end{proof}
 
 Generally, we may study how magic squares behave under composition. Magic squares, being
 permutations in $S_{n^2}$, exhibit group properties. However, we may not describe a set of magic
@@ -887,9 +884,15 @@ haven't necessarily been formalized in this paper.
   Springer-Verlag, New York, 1992.\ viii+232 pp.
   MR1230626
 
+  % \bibitem{Borowski}
+  % Borowski, Ephraim J.; Borwein, Jonathan M.
+  %   {\it Dictionary of Mathematics}.
+  % University of California.
+  % Collins (1989)
+
   \bibitem{Cammann}
   Cammann, Schuyler V. R.
-    {The Evolution of Magic Squares in China}.
+    {\it The Evolution of Magic Squares in China}.
   Journal of the American Oriental Society, 80 (1960): 116.
   \url{https://www.jstor.org/stable/595587?origin=crossref}
 
@@ -898,6 +901,13 @@ haven't necessarily been formalized in this paper.
     {\it On understanding types, data abstraction, and polymorphism}.
   Computing Surveys, Vol 17 n. 4, pp 471-522, December 1985.
   \url{https://doi.org/10.1145/6041.6042}
+
+  \bibitem{Deskins}
+  Deskins, W.E.
+    {\it Abstract Algebra}.
+  {\it A series of advanced mathematics texts}.
+  University of Michigan.
+  Macmillan, 1964
 
   \bibitem{Fahimi}
   Fahimi, Peyman; Toussi, Cyrus Ahmadi; Trump, Walter; Haddadnia, Javad; Matta, Chérif F.
@@ -948,6 +958,11 @@ haven't necessarily been formalized in this paper.
     {\it Applications of AI for Magic Squares}.
   eprint arXiv:1602.01401, 2016.
   \url{https://api.semanticscholar.org/CorpusID:119634667}
+
+  \bibitem{Whitelaw}
+  Whitelaw, Thomas A.
+    {\it An introduction to abstract algebra}.
+  Blackie, 1978.
 
 \end{thebibliography}
 
