@@ -135,7 +135,7 @@ interest to mathematicians and hobbyists since the puzzle's inception.
 
 The main mechanism that we use for encoding a magic square and its properties comes from Group and
 Number Theory. Specifically, we will study the permutations of magic squares. In the 1770s, Joseph
-Louis Lagrange studied permutations of the roots of polynomial equations. This led to Galois theory
+Louis Lagrange studied permutations of the roots of polynomial equations. This led to Galois Theory
 founded by Évariste Galois, which describes what is or is not possible with respect to solving
 polynomial equations by radicals\cite{Fraser}. In modern mathematics, there are many similar
 situations where studying permutations can help us understand a problem.
@@ -338,13 +338,12 @@ integers\cite{Whitelaw}.
 % \end{proof}
 
 A set of magic squares may also be considered elements of a permutation group. The group operation,
-in this case, is composition. This is different from the typical arithmetic operation. We may think
-of permutations as functions that bijectively map a set to itself. The product of two functions,
-$\pi\cdot\sigma$ is the function mapping any element $x$ in the set to
-$\pi\left(\sigma\left(x\right)\right)$. Generally, the operation is defined for left composition,
-but since these are permutation representations (and to simplify expressions in our code) we will
-use right composition. In other words ``$\pi$ is permuted by $\sigma$'' or ``$\pi$ is acted on by
-$\sigma$''.
+in this case, is composition. We may think of permutations as functions that bijectively map a set
+to itself. The product of two functions, $\pi\cdot\sigma$ is the function mapping any element $x$
+in the set to $\pi\left(\sigma\left(x\right)\right)$. Generally, the operation is defined for left
+composition, but since these are permutation representations (and to simplify expressions in our
+code) we will use right composition. In other words ``$\pi$ is permuted by $\sigma$'' or ``$\pi$ is
+acted on by $\sigma$''.
 
 It follows that a permutation composed with a permutation results in another permutation. Notably,
 we can define a function $g$ to be the group operation of composition, and $X$ to be a permutation
@@ -524,7 +523,7 @@ at least 10.67 hours.
 We begin by reading the set of 440 cached magic squares as permutations, which we computed
 previously. We then filter the set to reduce duplication, hence the resulting set only contains
 unique squares up to isometry. The resulting unique set, in our case, contains 239 permutations,
-and we will consider this set as $K_4$ where $K_4\subset M_4$. Up to this point, we have only
+and we will consider this set as $K_4$ where $K_4\subseteq M_4$. Up to this point, we have only
 defined $K_4$ as a set containing 239 magic squares as permutations in relative order. It should be
 noted that these are not necessarily the first 239 unique magic squares in lexicographical order
 since our original $K_n$ was produced by multiple threads and at different rates, but we will
@@ -537,7 +536,8 @@ out isometries, this set contains 22,490 permutations.
 
 Now, compute the full set of trivial isometries for all permutations in $K_n$ which we call
 $Iso(K_4)$. Simply, this is the set of all rotations and reflections of the magic square
-permutations in $K_4$ where $K_4\subsetneq Iso(K_4)$ and $|Iso(K_4)| = 8|K_4|$.
+permutations in $K_4$ where $K_4\subsetneq Iso(K_4)$ and $|Iso(K_4)| = 8|K_4|$ assuming $K_4$
+contains only unique permutations of squares.
 
 Then, we compute the product $Iso(K_4)\times\beta = \{\pi\in Iso(K_4),\alpha\in\beta | \pi\alpha
   \text{ is magic}\}$. For each permutation in $Iso(K_4)$ and for each $\alpha$ in $\beta$, if
@@ -582,7 +582,7 @@ suboptimal, considering we would like to be able to use this algorithm to comput
 minimal information.
 
 The simplest solution to this is additional parallelization, although there also exists the
-possibility for set partitioning. Additionally, we could revisit how the sets are represented
+possibility for set partitioning. Alternatively, we could revisit how the sets are represented
 computationally to use more efficient implementations at this particular scale. The combination of
 these solutions lands the problem in the realm of High-Performance Computing (HPC) for proper
 multiprocess computation using extremely high CPU counts, super-scale storage solutions, and vast
